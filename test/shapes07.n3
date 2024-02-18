@@ -1,0 +1,11 @@
+@prefix sh: <http://www.w3.org/ns/shacl#>.
+@prefix ex: <http:/example.org/> .
+
+# in a separate file because target nodes missing in the data graph should be ignored
+ex:shape sh:targetNode ex:valid, ex:invalid, ex:missing ;
+    sh:property [
+        sh:path ex:name ;
+        sh:minCount 1 ;
+    ]
+ .
+
