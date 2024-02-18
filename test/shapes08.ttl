@@ -1,0 +1,38 @@
+@prefix sh: <http://www.w3.org/ns/shacl#>.
+@prefix ex: <http:/example.org/> .
+
+# shapes
+ex:shape sh:targetNode ex:valid ;
+    sh:property [
+        sh:path ex:knows ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] ;
+    sh:property [
+        sh:path (ex:knows ex:knows) ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] ;
+    sh:property [
+        sh:path [ sh:oneOrMorePath ex:knows ] ;
+        sh:minCount 2 ;
+        sh:maxCount 2 ;
+    ] ;
+    sh:property [
+        sh:path [ sh:inversePath ex:knows ] ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] ;
+
+    sh:property [
+        sh:path [ sh:alternativePath (ex:knows ex:loves) ] ;
+        sh:minCount 2 ;
+        sh:maxCount 2 ;
+    ] ;
+
+    sh:property [
+        sh:path [ sh:alternativePath (ex:loves [sh:inversePath ex:knows]) ] ;
+        sh:minCount 2 ;
+        sh:maxCount 2 ;
+    ] ;
+ .
