@@ -1,0 +1,35 @@
+@prefix log: <http://www.w3.org/2000/10/swap/log#> .
+@prefix sh: <http://www.w3.org/ns/shacl#>.
+@prefix this: <http://eye-shacl#> .
+
+
+{
+    [] this:shapesGraph ?shapesGraph .
+    ?shapesGraph log:includes {
+        ?shape sh:severity ?severity
+    } .
+}
+=>
+{
+    ?shape sh:severity ?severity 
+} .
+
+{
+    ?shape a sh:Shape .
+    [] log:notIncludes {
+        ?shape sh:severity ?severity
+    } .
+}
+=>
+{
+    ?shape sh:severity sh:Violation
+} .
+
+{
+    ?result sh:sourceShape ?shape .
+    ?shape sh:severity ?severity .
+}
+=>
+{
+    ?result sh:resultSeverity ?severity
+} .
