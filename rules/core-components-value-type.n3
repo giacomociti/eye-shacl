@@ -1,0 +1,23 @@
+# https://www.w3.org/TR/shacl/#core-components-value-type
+
+@prefix log: <http://www.w3.org/2000/10/swap/log#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix sh: <http://www.w3.org/ns/shacl#>.
+@prefix this: <http://eye-shacl#> .
+
+{ ?value this:class ?class } <= { ?value a ?class }.
+{ ?value this:class ?class } <= { ?subclass rdfs:subClassOf ?class . ?value this:class ?subclass }.
+
+{ ?value this:nodeKind sh:IRI } <= { ?value log:rawType log:Other . ?value log:uri [] }. 
+{ ?value this:nodeKind sh:Literal } <= { ?value log:rawType log:Literal }. 
+{ ?value this:nodeKind sh:BlankNode } <= { ?value log:rawType log:LabeledBlankNode }. 
+{ ?value this:nodeKind sh:BlankNode } <= { ?value log:rawType log:UnlabeledBlankNode }. 
+{ ?value this:nodeKind sh:BlankNodeOrIRI } <= { ?value this:nodeKind sh:BlankNode }. 
+{ ?value this:nodeKind sh:BlankNodeOrIRI } <= { ?value this:nodeKind sh:IRI }. 
+{ ?value this:nodeKind sh:IRIOrLiteral } <= { ?value this:nodeKind sh:IRI }. 
+{ ?value this:nodeKind sh:IRIOrLiteral } <= { ?value this:nodeKind sh:Literal }. 
+{ ?value this:nodeKind sh:BlankNodeOrLiteral } <= { ?value this:nodeKind sh:BlankNode }. 
+{ ?value this:nodeKind sh:BlankNodeOrLiteral } <= { ?value this:nodeKind sh:Literal }. 
+
+{ ?value this:datatype ?datatype } <= { ([] ?datatype) log:dtlit ?value }.
+

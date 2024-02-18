@@ -1,0 +1,44 @@
+@prefix list: <http://www.w3.org/2000/10/swap/list#> .
+@prefix log: <http://www.w3.org/2000/10/swap/log#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix sh: <http://www.w3.org/ns/shacl#>.
+@prefix this: <http://eye-shacl#> .
+@prefix ex: <http:/example.org/> .
+@prefix earl: <http://www.w3.org/ns/earl#> .
+
+[] sh:shapesGraph <> .
+
+# shapes
+ex:shape sh:targetObjectsOf ex:name ;
+    sh:not ex:nameShape ;
+ .
+
+ex:nameShape sh:datatype xsd:string .
+
+# data
+ex:foo ex:name "a", 5 .
+
+# assertions
+{
+    (?x { ?x a sh:ValidationResult} ?results) log:collectAllIn [] .
+    ?results list:length 2 .
+    [
+        a sh:ValidationResult ;
+        sh:sourceConstraintComponent sh:NotConstraintComponent ;
+        sh:sourceShape ex:shape ;
+        sh:focusNode "a" ;
+        sh:value "a" ;
+    ].
+    [
+        a sh:ValidationResult ;
+        sh:sourceConstraintComponent sh:DatatypeConstraintComponent ;
+        sh:sourceShape ex:nameShape ;
+        sh:focusNode 5 ;
+        sh:value 5 ;
+        this:output false # to be discarded in report
+    ]
+}
+=>
+{
+    <> a earl:Pass
+} .

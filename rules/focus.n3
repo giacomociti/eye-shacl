@@ -1,0 +1,51 @@
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix log: <http://www.w3.org/2000/10/swap/log#> .
+@prefix sh: <http://www.w3.org/ns/shacl#>.
+@prefix this: <http://eye-shacl#> .
+
+{
+    ?shape a sh:Shape .
+    [] this:shapesGraph [ log:includes { ?shape sh:targetClass ?targetClass } ]
+}
+=>
+{
+    { ?focusNode this:class ?targetClass } => { ?shape this:focusNode ?focusNode }
+} .
+
+{
+    ?shape a sh:Shape .
+    [] this:shapesGraph [ log:includes { ?shape a rdfs:Class } ]
+}
+=>
+{
+    { ?focusNode this:class ?targetClass } => { ?shape this:focusNode ?focusNode }
+} .
+
+{
+    ?shape a sh:Shape .
+    [] this:shapesGraph [ log:includes { ?shape sh:targetNode ?targetNode } ]
+}
+=>
+{
+    { ?targetNode [] [] } => { ?shape this:focusNode ?targetNode } .
+    { [] [] ?targetNode } => { ?shape this:focusNode ?targetNode } .
+    { [] ?targetNode [] } => { ?shape this:focusNode ?targetNode } .
+} .
+
+{
+    ?shape a sh:Shape .
+    [] this:shapesGraph [ log:includes { ?shape sh:targetObjectsOf ?predicate } ]
+}
+=>
+{
+    { [] ?predicate ?focusNode } => { ?shape this:focusNode ?focusNode } .
+} .
+
+{
+    ?shape a sh:Shape .
+    [] this:shapesGraph [ log:includes { ?shape sh:targetSubjectsOf ?predicate } ]
+}
+=>
+{
+    { ?focusNode ?predicate [] } => { ?shape this:focusNode ?focusNode } .
+} .

@@ -1,0 +1,44 @@
+# https://www.w3.org/TR/shacl/#core-components-count
+
+@prefix math: <http://www.w3.org/2000/10/swap/math#> .
+@prefix list: <http://www.w3.org/2000/10/swap/list#> .
+@prefix sh: <http://www.w3.org/ns/shacl#>.
+@prefix this: <http://eye-shacl#> .
+
+# MinCountConstraintComponent
+{
+    ?shape sh:minCount ?minCount ;
+        sh:path ?path ;
+        this:focusNode ?focusNode .
+    (?focusNode ?path) this:values ?values .
+    ?values list:length [ math:lessThan ?minCount ]
+} 
+=>
+{
+    [
+        a sh:ValidationResult ;
+        sh:sourceConstraintComponent sh:MinCountConstraintComponent ;
+        sh:sourceShape ?shape ;
+        sh:focusNode ?focusNode ;
+        sh:resultPath ?path ;
+    ]
+}.
+
+# MaxCountConstraintComponent
+{
+    ?shape sh:maxCount ?maxCount ;
+        sh:path ?path ;
+        this:focusNode ?focusNode .
+    (?focusNode ?path) this:values ?values .
+    ?values list:length [ math:greaterThan ?maxCount ] .
+} 
+=>
+{
+    [
+        a sh:ValidationResult ;
+        sh:sourceConstraintComponent sh:MaxCountConstraintComponent ;
+        sh:sourceShape ?shape ;
+        sh:focusNode ?focusNode ;
+        sh:resultPath ?path ;
+    ]
+}.

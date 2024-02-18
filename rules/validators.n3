@@ -1,0 +1,67 @@
+@prefix list: <http://www.w3.org/2000/10/swap/list#> .
+@prefix log: <http://www.w3.org/2000/10/swap/log#> .
+@prefix sh: <http://www.w3.org/ns/shacl#>.
+@prefix this: <http://eye-shacl#> .
+
+sh:in this:validator list:in .
+
+sh:class this:validator this:class .
+sh:nodeKind this:validator this:nodeKind .
+sh:datatype this:validator this:datatype .
+ 
+sh:minExclusive this:validator this:minExclusive .
+sh:minInclusive this:validator this:minInclusive .
+sh:maxExclusive this:validator this:maxExclusive .
+sh:maxInclusive this:validator this:maxInclusive .
+
+sh:minLength this:validator this:minLength .
+sh:maxLength this:validator this:maxLength .
+sh:pattern this:validator this:pattern .
+sh:languageIn this:validator this:languageIn .
+
+{
+    ?parameter this:validator ?validator .
+    ?parameter this:constraint ?constraint .
+
+    ?shape a sh:NodeShape ;
+        ?parameter ?parameterValue .
+
+    ?shape this:focusNode ?focusNode .
+    [] log:notIncludes { ?focusNode ?validator ?parameterValue }
+}
+=>
+{
+    [
+        a sh:ValidationResult ;
+        sh:sourceConstraintComponent ?constraint ;
+        sh:sourceShape ?shape ;
+        sh:focusNode ?focusNode ;
+        sh:value ?focusNode ;
+    ]
+} .
+
+{
+    ?parameter this:validator ?validator .
+    ?parameter this:constraint ?constraint .
+
+    ?shape a sh:PropertyShape ;
+        sh:path ?path ;
+        ?parameter ?parameterValue .
+
+    ?shape this:focusNode ?focusNode .
+    (?focusNode ?path) this:value ?value .
+    [] log:notIncludes { ?value ?validator ?parameterValue }
+}
+=>
+{
+    [
+        a sh:ValidationResult ;
+        sh:sourceConstraintComponent ?constraint ;
+        sh:sourceShape ?shape ;
+        sh:focusNode ?focusNode ;
+        sh:resultPath ?path ;
+        sh:value ?value ;
+    ]
+} .
+
+

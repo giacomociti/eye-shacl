@@ -1,0 +1,59 @@
+# https://www.w3.org/TR/shacl/#core-components-others
+
+@prefix list: <http://www.w3.org/2000/10/swap/list#> .
+@prefix log: <http://www.w3.org/2000/10/swap/log#> .
+@prefix sh: <http://www.w3.org/ns/shacl#>.
+@prefix this: <http://eye-shacl#> .
+
+# ClosedConstraintComponent
+{
+    ?shape sh:closed true .
+    [] log:notIncludes { ?shape sh:ignoredProperties [] }
+} 
+=> 
+{
+    ?shape sh:ignoredProperties () .
+}.
+
+{
+    ?shape sh:closed true ;
+        sh:ignoredProperties ?ignoredProperties .
+    (?x { ?shape sh:property [ sh:path ?x ] . ?x this:nodeKind sh:IRI } ?xs) log:collectAllIn [] .
+    (?xs ?ignoredProperties) list:append ?allowed .
+     
+    ?shape this:focusNode ?focusNode .
+    [] log:includes { ?focusNode ?p [] } .
+    [] log:notIncludes { ?p list:in ?allowed }
+} 
+=>
+{
+    [
+        a sh:ValidationResult ;
+        sh:sourceConstraintComponent sh:ClosedConstraintComponent ;
+        sh:sourceShape ?shape ;
+        sh:focusNode ?focusNode ;
+        sh:resultPath ?path ;
+    ]
+}.
+
+# HasValueConstraintComponent
+{
+    ?shape sh:hasValue ?hasValue ;
+        sh:path ?path .
+    ?shape this:focusNode ?focusNode .
+    (?focusNode ?path) this:values ?values .
+    [] log:notIncludes { ?values list:member ?hasValue }
+} 
+=>
+{
+    [
+        a sh:ValidationResult ;
+        sh:sourceConstraintComponent sh:HasValueConstraintComponent ;
+        sh:sourceShape ?shape ;
+        sh:focusNode ?focusNode ;
+        sh:resultPath ?path ;
+    ]
+}.
+
+# InConstraintComponent
+# { ?value this:in ?in } <= { ?value list:in ?in }.

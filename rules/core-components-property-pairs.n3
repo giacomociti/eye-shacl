@@ -1,0 +1,93 @@
+# https://www.w3.org/TR/shacl/#core-components-property-pairs
+
+@prefix list: <http://www.w3.org/2000/10/swap/list#> .
+@prefix log: <http://www.w3.org/2000/10/swap/log#> .
+@prefix math: <http://www.w3.org/2000/10/swap/math#> .
+@prefix string: <http://www.w3.org/2000/10/swap/string#> .
+@prefix sh: <http://www.w3.org/ns/shacl#>.
+@prefix this: <http://eye-shacl#> .
+
+# EqualsConstraintComponent
+{ 
+    ?shape sh:equals ?otherPredicate ;
+        sh:path ?path ;
+        this:focusNode ?focusNode .
+    (?focusNode ?path) this:values ?thisValues .
+    (?focusNode ?otherPredicate) this:values ?otherValues .
+    ?thisValues list:setNotEqualTo ?otherValues .
+} 
+=> 
+{
+    [
+        a sh:ValidationResult ;
+        sh:sourceConstraintComponent sh:EqualsConstraintComponent ;
+		sh:sourceShape ?shape ;
+		sh:focusNode ?focusNode ;
+        sh:resultPath ?path ;
+    ]
+}.
+
+# DisjointConstraintComponent
+{ 
+    ?shape sh:disjoint ?otherPredicate ;
+        sh:path ?path ;
+        this:focusNode ?focusNode .
+    (?focusNode ?path) this:value ?value .
+    ?focusNode ?otherPredicate ?value .
+} 
+=> 
+{
+    [
+        a sh:ValidationResult ;
+        sh:sourceConstraintComponent sh:DisjointConstraintComponent ;
+		sh:sourceShape ?shape ;
+		sh:focusNode ?focusNode ;
+        sh:resultPath ?path ;
+        sh:value ?value ;
+    ]
+}.
+
+# LessThanConstraintComponent
+{ 
+    ?shape sh:lessThan ?otherPredicate ;
+        sh:path ?path ;
+        this:focusNode ?focusNode .
+    (?focusNode ?path) this:value ?value .
+    ?focusNode ?otherPredicate ?y .
+    # todo for other types and handle non comparable values
+    ?value math:notLessThan ?y .
+} 
+=> 
+{
+    [
+        a sh:ValidationResult ;
+        sh:sourceConstraintComponent sh:LessThanConstraintComponent ;
+		sh:sourceShape ?shape ;
+		sh:focusNode ?focusNode ;
+        sh:resultPath ?path ;
+        sh:value ?value ;
+    ]
+}.
+
+
+# LessThanOrEqualsConstraintComponent
+{ 
+    ?shape sh:lessThanOrEquals ?otherPredicate ;
+        sh:path ?path ;
+        this:focusNode ?focusNode .
+    (?focusNode ?path) this:value ?value .
+    ?focusNode ?otherPredicate ?y .
+    # todo for other types and handle non comparable values
+    ?value math:greaterThan ?y .
+} 
+=> 
+{
+    [
+        a sh:ValidationResult ;
+        sh:sourceConstraintComponent sh:LessThanOrEqualsConstraintComponent ;
+		sh:sourceShape ?shape ;
+		sh:focusNode ?focusNode ;
+        sh:resultPath ?path ;
+        sh:value ?value ;
+    ]
+}.

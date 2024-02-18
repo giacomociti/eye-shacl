@@ -1,0 +1,10 @@
+# https://www.w3.org/TR/shacl/#core-components-range
+
+@prefix math: <http://www.w3.org/2000/10/swap/math#> .
+@prefix this: <http://eye-shacl#> .
+
+{ ?value this:minExclusive ?minExclusive } <= { ?value math:greaterThan ?minExclusive }.
+{ ?value this:minInclusive ?minInclusive } <= { ?value math:notLessThan ?minInclusive }.
+{ ?value this:maxExclusive ?maxExclusive } <= { ?value math:lessThan ?maxExclusive }.
+{ ?value this:maxInclusive ?maxInclusive } <= { ?value math:notGreaterThan ?maxInclusive }.
+# todo also string?

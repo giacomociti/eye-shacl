@@ -1,0 +1,94 @@
+# https://www.w3.org/TR/shacl/#core-components-logical
+
+@prefix log: <http://www.w3.org/2000/10/swap/log#> .
+@prefix list: <http://www.w3.org/2000/10/swap/list#> .
+@prefix sh: <http://www.w3.org/ns/shacl#>.
+@prefix this: <http://eye-shacl#> .
+
+# not, and, or, xone
+
+# todo handle when ?shape is a property shape
+
+# NotConstraintComponent
+{ 
+    ?shape a sh:NodeShape .
+    ?shape sh:not ?not .
+    ?shape this:focusNode ?focusNode .
+} 
+=>
+{
+    ?not this:focusNode ?focusNode .
+
+    {
+        ?result a sh:ValidationResult ;
+            sh:sourceShape ?not ;
+            sh:focusNode ?focusNode ;
+    }
+    =>
+    {
+        ?result this:output false .
+    } .
+
+    {
+        [] log:notIncludes {
+            [
+                a sh:ValidationResult ;
+                sh:focusNode ?focusNode ;
+                sh:sourceShape ?not ;
+            ]
+        } .
+    }
+    =>
+    {
+        [
+            a sh:ValidationResult ;
+            sh:sourceConstraintComponent sh:NotConstraintComponent ;
+            sh:sourceShape ?shape ;
+            sh:focusNode ?focusNode ;
+            sh:value ?focusNode ;
+        ]
+    } .
+} .
+
+# OrConstraintComponent
+{
+    ?shape a sh:NodeShape .
+    ?shape sh:or ?or .
+    ?shape this:focusNode ?focusNode .
+    ?innerShape list:in ?or .
+}
+=>
+{
+    ?innerShape this:focusNode ?focusNode .
+
+    {
+        ?result a sh:ValidationResult ;
+            sh:sourceShape ?innerShape ;
+            sh:focusNode ?focusNode ;
+    }
+    =>
+    {
+        ?result this:output false .
+    }.
+
+    {
+        (
+            { ?alt list:in ?or }
+            {
+                [] a sh:ValidationResult ;
+                    sh:focusNode ?focusNode ;
+                    sh:sourceShape ?alt ;
+            }
+        ) log:forAllIn [] . 
+    }
+    =>
+    {
+        [
+            a sh:ValidationResult ;
+            sh:sourceConstraintComponent sh:OrConstraintComponent ;
+            sh:sourceShape ?shape ;
+            sh:focusNode ?focusNode ;
+            sh:value ?focusNode ;
+        ]
+    } .
+} .

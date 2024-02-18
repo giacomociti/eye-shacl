@@ -1,0 +1,9 @@
+@prefix earl: <http://www.w3.org/ns/earl#> .
+
+{
+    ?test a earl:Pass
+}
+=>
+{
+    ?test a earl:Pass
+} .

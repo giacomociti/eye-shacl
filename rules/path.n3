@@ -1,0 +1,123 @@
+@prefix log: <http://www.w3.org/2000/10/swap/log#> .
+@prefix list: <http://www.w3.org/2000/10/swap/list#> .
+@prefix sh: <http://www.w3.org/ns/shacl#>.
+@prefix this: <http://eye-shacl#> .
+
+{
+    (?focusNode ?path) this:values ?values
+}
+<=
+{
+    (?x { (?focusNode ?path) this:value ?x } ?xs) log:collectAllIn [] .
+    ?xs list:unique ?values
+} .
+
+# predicate path 
+{ 
+    (?focusNode ?path) this:value ?value 
+} 
+<= 
+{ 
+    ?path this:nodeKind sh:IRI . 
+    ?focusNode ?path ?value .
+} .
+
+# sequence path
+{
+    (?focusNode (?path)) this:value ?value 
+}
+<=
+{
+    (?focusNode ?path) this:value ?value
+} .
+
+{
+    (?focusNode ?path) this:value ?value 
+}
+<=
+{
+    ?path list:firstRest (?first ?rest) .
+    ?focusNode ?first ?v .
+    (?v ?rest) this:value ?value
+} .
+
+# alternative path
+{ 
+    (?focusNode ?path) this:value ?value 
+} 
+<= 
+{ 
+    ?path sh:alternativePath ?alternatives .
+    ?alternatives list:member ?alt .
+    (?focusNode ?alt) this:value ?value
+}.
+
+# inverse path
+{ 
+    (?focusNode ?path) this:value ?value 
+} 
+<= 
+{ 
+    ?path sh:inversePath ?inversePath .
+    (?value ?inversePath) this:value ?focusNode
+}.
+
+
+# zero-or-more path 
+{ 
+    (?focusNode ?path) this:value ?focusNode 
+} 
+<= 
+{ 
+    ?path sh:zeroOrMorePath ?zeroOrMorePath .
+}.
+
+{ 
+    (?focusNode ?path) this:value ?value 
+} 
+<= 
+{ 
+    ?path sh:zeroOrMorePath ?zeroOrMorePath .
+    (?focusNode ?zeroOrMorePath) this:value ?v .
+    (?v ?zeroOrMorePath) this:value ?value
+}.
+
+
+# one-or-more path
+{ 
+    (?focusNode ?path) this:value ?value
+} 
+<= 
+{ 
+    ?path sh:oneOrMorePath ?oneOrMorePath .
+    (?focusNode ?oneOrMorePath) this:value ?value
+}.
+
+{
+    (?focusNode ?path) this:value ?value 
+} 
+<= 
+{ 
+    ?path sh:oneOrMorePath ?oneOrMorePath .
+    (?focusNode ?oneOrMorePath) this:value ?v .
+    (?v ?oneOrMorePath) this:value ?value
+}.
+
+
+# zero-or-one path
+{ 
+    (?focusNode ?path) this:value ?focusNode 
+} 
+<= 
+{ 
+    ?path sh:zeroOrOnePath ?zeroOrOnePath .
+}.
+
+{ 
+    (?focusNode ?path) this:value ?value
+} 
+<= 
+{ 
+    ?path sh:zeroOrOnePath ?zeroOrOnePath .
+    (?focusNode ?zeroOrOnePath) this:value ?value .
+}.
