@@ -14,6 +14,7 @@ ex:shape1 sh:targetSubjectsOf ex:name ;
  .
 
  ex:shape2 sh:targetObjectsOf ex:name ;
+    sh:message "The name should be a string" ;
     sh:datatype xsd:string ;
  .
 
@@ -40,6 +41,7 @@ ex:foo ex:name 5 .
         sh:sourceShape ex:shape2 ;
         sh:focusNode 5 ;
         sh:value 5 ;
+        sh:resultMessage "The name should be a string" ;
     ] .
 }
 =>
