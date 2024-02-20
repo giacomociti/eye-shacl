@@ -1,0 +1,7 @@
+@prefix sh: <http://www.w3.org/ns/shacl#>.
+
+{ ?report a sh:ValidationReport ; ?p ?o } => { ?report ?p ?o } .
+
+{ ?report sh:result ?result . ?result ?p ?o } => { ?result ?p ?o } .
+
+# TODO: values of sh:resultPath
