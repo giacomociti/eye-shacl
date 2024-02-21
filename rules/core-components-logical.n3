@@ -7,78 +7,83 @@
 
 # not, and, or, xone
 
-# todo handle when ?shape is a property shape
+{
+    ?focusNode this:violates ?shape .
+}
+<=
+{
+    [] a sh:ValidationResult ; sh:focusNode ?focusNode ; sh:sourceShape ?shape
+} .
 
-# NotConstraintComponent
-{ 
-    ?shape a sh:NodeShape .
-    ?shape sh:not ?not .
+{
+    ?focusNode this:conformsTo ?shape .
+}
+<=
+{
     ?shape this:focusNode ?focusNode .
-} 
+    [] log:notIncludes { ?focusNode this:violates ?shape }
+} .
+
+{
+    ?shape this:borrows ?focusNode .
+}
 =>
 {
-    ?not this:focusNode ?focusNode .
+    ?shape this:focusNode ?focusNode .
 
     {
-        ?result a sh:ValidationResult ;
-            sh:sourceShape ?not ;
-            sh:focusNode ?focusNode ;
+        ?result a sh:ValidationResult ; sh:sourceShape ?shape ; sh:focusNode ?focusNode
     }
     =>
     {
         ?result this:output false .
-    } .
-
-    {
-        [] log:notIncludes {
-            [
-                a sh:ValidationResult ;
-                sh:focusNode ?focusNode ;
-                sh:sourceShape ?not ;
-            ]
-        } .
     }
-    =>
+} .
+
+
+# todo handle when ?shape is a property shape
+
+# NotConstraintComponent
+{
+    ?shape a sh:NodeShape ;
+        sh:not ?innerShape ;
+        this:focusNode ?focusNode .
+}
+=>
+{
+    ?innerShape this:borrows ?focusNode .
+   
     {
-        [
-            a sh:ValidationResult ;
+        ?focusNode this:conformsTo ?innerShape
+    } 
+    => 
+    {
+        [] a sh:ValidationResult ;
             sh:sourceConstraintComponent sh:NotConstraintComponent ;
             sh:sourceShape ?shape ;
             sh:focusNode ?focusNode ;
             sh:value ?focusNode ;
-        ]
-    } .
+    }
 } .
+
+
+
 
 # OrConstraintComponent
 {
-    ?shape a sh:NodeShape .
-    ?shape sh:or ?or .
-    ?shape this:focusNode ?focusNode .
-    ?innerShape list:in ?or .
+    ?shape a sh:NodeShape ;
+        sh:or ?innerShapes ;
+        this:focusNode ?focusNode .
+    ?innerShape list:in ?innerShapes .
 }
 =>
 {
-    ?innerShape this:focusNode ?focusNode .
-
-    {
-        ?result a sh:ValidationResult ;
-            sh:sourceShape ?innerShape ;
-            sh:focusNode ?focusNode ;
-    }
-    =>
-    {
-        ?result this:output false .
-    }.
+    ?innerShape this:borrows ?focusNode .
 
     {
         (
-            { ?alt list:in ?or }
-            {
-                [] a sh:ValidationResult ;
-                    sh:focusNode ?focusNode ;
-                    sh:sourceShape ?alt ;
-            }
+            { ?alternative list:in ?innerShapes }
+            { ?focusNode this:violates ?alternative }
         ) log:forAllIn [] . 
     }
     =>
@@ -92,3 +97,4 @@
         ]
     } .
 } .
+
