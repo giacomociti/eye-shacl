@@ -32,6 +32,7 @@
     ?shape this:focusNode ?focusNode .
 
     {
+        ?shape this:borrows ?focusNode .
         ?result a sh:ValidationResult ; sh:sourceShape ?shape ; sh:focusNode ?focusNode
     }
     =>
@@ -41,7 +42,6 @@
 } .
 
 
-# todo handle when ?shape is a property shape
 
 # NotConstraintComponent
 {
@@ -66,6 +66,31 @@
     }
 } .
 
+{
+    ?shape a sh:PropertyShape ;
+        sh:not ?innerShape ;
+        sh:path ?path ;
+        this:focusNode ?focusNode .
+    (?focusNode ?path) this:value ?value .
+}
+=>
+{
+    ?innerShape this:borrows ?value .
+   
+    {
+        ?shape this:focusNode ?focusNode .
+        (?focusNode ?path) this:value ?value .
+        ?value this:conformsTo ?innerShape
+    } 
+    => 
+    {
+        [] a sh:ValidationResult ;
+            sh:sourceConstraintComponent sh:NotConstraintComponent ;
+            sh:sourceShape ?shape ;
+            sh:focusNode ?focusNode ;
+            sh:value ?value ;
+    }
+} .
 
 
 
@@ -98,3 +123,37 @@
     } .
 } .
 
+{
+    ?shape a sh:PropertyShape ;
+        sh:or ?innerShapes ;
+        sh:path ?path ;
+        this:focusNode ?focusNode .
+    (?focusNode ?path) this:value ?value .
+    ?innerShape list:in ?innerShapes .
+}
+=>
+{
+    ?innerShape this:borrows ?value .
+
+    {
+        ?shape this:focusNode ?focusNode .
+        (?focusNode ?path) this:value ?value .
+
+        (
+            { 
+                ?alternative list:in ?innerShapes .
+            }
+            { ?value this:violates ?alternative }
+        ) log:forAllIn [] . 
+    }
+    =>
+    {
+        [
+            a sh:ValidationResult ;
+            sh:sourceConstraintComponent sh:OrConstraintComponent ;
+            sh:sourceShape ?shape ;
+            sh:focusNode ?focusNode ;
+            sh:value ?value ;
+        ]
+    } .
+} .

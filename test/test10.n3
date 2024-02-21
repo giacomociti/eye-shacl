@@ -1,0 +1,45 @@
+@prefix list: <http://www.w3.org/2000/10/swap/list#> .
+@prefix log: <http://www.w3.org/2000/10/swap/log#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix sh: <http://www.w3.org/ns/shacl#>.
+@prefix ex: <http:/example.org/> .
+@prefix earl: <http://www.w3.org/ns/earl#> .
+@prefix this: <http://eye-shacl#> .
+
+
+[] sh:shapesGraph <> .
+
+# shapes
+ex:shape sh:targetClass ex:Class ;
+    sh:path ex:predicate ;
+    sh:not ex:literalShape .
+
+ex:literalShape sh:nodeKind sh:Literal .
+
+# data
+ex:valid a ex:Class ; ex:predicate [] .
+ex:invalid a ex:Class ; ex:predicate 5 .
+
+# assertions
+{
+    (?x { ?x a sh:ValidationResult} ?results) log:collectAllIn [] .
+    ?results list:length 2 .
+
+    [
+        a sh:ValidationResult ;
+        sh:sourceConstraintComponent sh:NodeKindConstraintComponent ;
+        sh:sourceShape ex:literalShape ;
+        this:output false ;
+    ] .
+    [
+        a sh:ValidationResult ;
+        sh:sourceConstraintComponent sh:NotConstraintComponent ;
+        sh:sourceShape ex:shape ;
+        sh:focusNode ex:invalid ;
+        sh:value 5 ;
+    ] .
+}
+=>
+{
+    <> a earl:Pass
+} .
