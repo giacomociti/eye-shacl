@@ -13,7 +13,7 @@
 { ?value this:maxLength ?maxLength } <= { ?value log:rawType log:Other ; log:uri ?text . ?text string:length [math:notGreaterThan ?maxLength] }.
 
 { ?value this:pattern ?pattern } <= { ?value string:matches ?pattern }. # flags?
-{ ?value this:languageIn ?languageIn } <= { ?lang list:in ?languageIn . ( [] ?lang ) log:langlit ?value }. #sublang?
+{ ?value this:languageIn ?languageIn } <= { ?languageIn list:member ?lang . ( [] ?lang ) log:langlit ?value }. #sublang?
 
 # UniqueLangConstraintComponent
 { 

@@ -55,5 +55,20 @@
     ]
 }.
 
+{
+    ?shape sh:hasValue ?hasValue ;
+        a sh:NodeShape .
+    ?shape this:focusNode ?focusNode .
+    ?focusNode log:notEqualTo ?hasValue 
+} 
+=>
+{
+    [
+        a sh:ValidationResult ;
+        sh:sourceConstraintComponent sh:HasValueConstraintComponent ;
+        sh:sourceShape ?shape ;
+        sh:focusNode ?focusNode ;
+    ]
+}.
 # InConstraintComponent
 # { ?value this:in ?in } <= { ?value list:in ?in }.
