@@ -5,47 +5,52 @@
 
 {
     ?shape a sh:Shape .
-    [] this:shapesGraph [ log:includes { ?shape sh:targetClass ?targetClass } ]
+    [] this:shapesGraph [ log:includes { ?shape sh:targetClass ?targetClass } ] .
+    [] this:dataGraph [ log:includes { ?focusNode a ?targetClass } ] # todo subclasses
 }
 =>
 {
-    { ?focusNode this:class ?targetClass } => { ?shape this:focusNode ?focusNode }
+    ?shape this:focusNode ?focusNode
 } .
 
 {
     ?shape a sh:Shape .
-    [] this:shapesGraph [ log:includes { ?shape a rdfs:Class } ]
+    [] this:shapesGraph [ log:includes { ?shape a rdfs:Class } ] .
+    [] this:dataGraph [ log:includes { ?focusNode a ?shape } ] # todo subclasses
 }
 =>
 {
-    { ?focusNode this:class ?targetClass } => { ?shape this:focusNode ?focusNode }
+    ?shape this:focusNode ?focusNode
 } .
 
 {
     ?shape a sh:Shape .
-    [] this:shapesGraph [ log:includes { ?shape sh:targetNode ?targetNode } ]
+    [] this:shapesGraph [ log:includes { ?shape sh:targetNode ?targetNode } ] .
 }
 =>
 {
-    { ?targetNode [] [] } => { ?shape this:focusNode ?targetNode } .
-    { [] [] ?targetNode } => { ?shape this:focusNode ?targetNode } .
-    { [] ?targetNode [] } => { ?shape this:focusNode ?targetNode } .
+    { [] this:dataGraph [ log:includes { ?targetNode [] [] } ] } => { ?shape this:focusNode ?targetNode } .
+    { [] this:dataGraph [ log:includes { [] [] ?targetNode } ] } => { ?shape this:focusNode ?targetNode } .
+    { [] this:dataGraph [ log:includes { [] ?targetNode [] } ] } => { ?shape this:focusNode ?targetNode } .
+} .
+
+
+{
+    ?shape a sh:Shape .
+    [] this:shapesGraph [ log:includes { ?shape sh:targetObjectsOf ?predicate } ] .
+    [] this:dataGraph [ log:includes { [] ?predicate ?focusNode } ]
+}
+=>
+{
+    ?shape this:focusNode ?focusNode
 } .
 
 {
     ?shape a sh:Shape .
-    [] this:shapesGraph [ log:includes { ?shape sh:targetObjectsOf ?predicate } ]
+    [] this:shapesGraph [ log:includes { ?shape sh:targetSubjectsOf ?predicate } ] .
+    [] this:dataGraph [ log:includes { ?focusNode ?predicate [] } ]
 }
 =>
 {
-    { [] ?predicate ?focusNode } => { ?shape this:focusNode ?focusNode } .
-} .
-
-{
-    ?shape a sh:Shape .
-    [] this:shapesGraph [ log:includes { ?shape sh:targetSubjectsOf ?predicate } ]
-}
-=>
-{
-    { ?focusNode ?predicate [] } => { ?shape this:focusNode ?focusNode } .
+    ?shape this:focusNode ?focusNode
 } .

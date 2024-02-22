@@ -21,3 +21,12 @@
 {
     ?url this:shapesGraph ?shapesGraph 
 } .
+
+{
+    [] this:data ?url .
+    ?url log:semantics ?dataGraph
+}
+=>
+{
+    ?url this:dataGraph ?dataGraph
+} .

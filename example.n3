@@ -1,0 +1,12 @@
+@prefix sh: <http://www.w3.org/ns/shacl#>.
+@prefix this: <http://eye-shacl#> .
+@prefix ex: <http:/example.org/> .
+
+[] this:shapesGraph {
+    ex:shape sh:targetClass ex:Class ;
+    	sh:nodeKind sh:IRI 
+} .
+[] this:dataGraph {
+    ex:foo a ex:Class .
+    _:foo a ex:Class .
+} .

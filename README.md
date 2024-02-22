@@ -6,7 +6,7 @@ A [SHACL](https://www.w3.org/TR/shacl/) implementation using the [EYE](https://e
 # create image file eye-shacl.pvm 
 ./build.sh
 
-# validate example.ttl
-./eye-shacl.sh example.ttl
+# validate example.n3
+./eye-shacl.sh example.n3
 ```
 

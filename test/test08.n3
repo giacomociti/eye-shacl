@@ -2,6 +2,7 @@
 @prefix log: <http://www.w3.org/2000/10/swap/log#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix sh: <http://www.w3.org/ns/shacl#>.
+@prefix this: <http://eye-shacl#> .
 @prefix ex: <http:/example.org/> .
 @prefix earl: <http://www.w3.org/ns/earl#> .
 
@@ -9,11 +10,13 @@
 
 
 
-# data
+[] this:dataGraph {
+    ex:valid ex:knows [ ex:knows [] ] .
+    ex:valid ex:loves [] .
+    [] ex:knows ex:valid .
+} .
 
-ex:valid ex:knows [ ex:knows [] ] .
-ex:valid ex:loves [] .
-[] ex:knows ex:valid .
+
 
 # assertions
 {

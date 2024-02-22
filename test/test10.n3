@@ -7,18 +7,19 @@
 @prefix this: <http://eye-shacl#> .
 
 
-[] sh:shapesGraph <> .
+[] this:shapesGraph {
+    ex:shape sh:targetClass ex:Class ;
+        sh:path ex:predicate ;
+        sh:not ex:literalShape .
 
-# shapes
-ex:shape sh:targetClass ex:Class ;
-    sh:path ex:predicate ;
-    sh:not ex:literalShape .
+    ex:literalShape sh:nodeKind sh:Literal .
+} .
 
-ex:literalShape sh:nodeKind sh:Literal .
+[] this:dataGraph {
+    ex:valid a ex:Class ; ex:predicate [] .
+    ex:invalid a ex:Class ; ex:predicate 5 .
+} .
 
-# data
-ex:valid a ex:Class ; ex:predicate [] .
-ex:invalid a ex:Class ; ex:predicate 5 .
 
 # assertions
 {

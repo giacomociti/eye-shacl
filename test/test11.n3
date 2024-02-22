@@ -2,24 +2,27 @@
 @prefix log: <http://www.w3.org/2000/10/swap/log#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix sh: <http://www.w3.org/ns/shacl#>.
+@prefix this: <http://eye-shacl#> .
 @prefix ex: <http:/example.org/> .
 @prefix earl: <http://www.w3.org/ns/earl#> .
 @prefix this: <http://eye-shacl#> .
 
 
-[] sh:shapesGraph <> .
+[] this:shapesGraph {
+    ex:shape sh:targetClass ex:Class ;
+        sh:path ex:name ;
+        sh:or (ex:nameShape ex:iriShape) .
 
-# shapes
-ex:shape sh:targetClass ex:Class ;
-    sh:path ex:name ;
-    sh:or (ex:nameShape ex:iriShape) .
+    ex:nameShape sh:datatype xsd:string .
+    ex:iriShape sh:nodeKind sh:IRI .
+} .
 
-ex:nameShape sh:datatype xsd:string .
-ex:iriShape sh:nodeKind sh:IRI .
+[] this:dataGraph {
+    ex:valid a ex:Class ; ex:name "foo" .
+    ex:invalid a ex:Class ; ex:name 5 .
+} .
 
-# data
-ex:valid a ex:Class ; ex:name "foo" .
-ex:invalid a ex:Class ; ex:name 5 .
+
 
 # assertions
 {
