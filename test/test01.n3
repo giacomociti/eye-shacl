@@ -6,11 +6,11 @@
 @prefix ex: <http:/example.org/> .
 @prefix earl: <http://www.w3.org/ns/earl#> .
 
-[] this:shapesGraph {
+[] this:shapes {
     ex:shape sh:targetClass ex:Class ;
     sh:nodeKind sh:IRI 
 } .
-[] this:dataGraph {
+[] this:data {
     ex:foo a ex:Class .
     _:foo a ex:Class .
 } .

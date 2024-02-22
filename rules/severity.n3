@@ -4,10 +4,7 @@
 
 
 {
-    [] this:shapesGraph ?shapesGraph .
-    ?shapesGraph log:includes {
-        ?shape sh:severity ?severity
-    } .
+    [] this:shapes [ log:includes { ?shape sh:severity ?severity } ]
 }
 =>
 {
@@ -16,9 +13,7 @@
 
 {
     ?shape a sh:Shape .
-    [] log:notIncludes {
-        ?shape sh:severity ?severity
-    } .
+    [] log:notIncludes { ?shape sh:severity ?severity }
 }
 =>
 {

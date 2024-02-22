@@ -6,7 +6,7 @@
 @prefix ex: <http:/example.org/> .
 @prefix earl: <http://www.w3.org/ns/earl#> .
 
-[] this:shapesGraph {
+[] this:shapes {
     ex:shape1 sh:targetSubjectsOf ex:name ;
         sh:severity sh:Warning ;
         sh:class ex:Person;
@@ -19,7 +19,7 @@
 
 } .
 
-[] this:dataGraph {
+[] this:data {
     ex:foo ex:name 5
 } .
 

@@ -6,7 +6,7 @@
 @prefix ex: <http:/example.org/> .
 @prefix earl: <http://www.w3.org/ns/earl#> .
 
-[] this:shapesGraph {
+[] this:shapes {
     ex:shape sh:targetObjectsOf ex:name ;
         sh:not ex:nameShape ;
     .
@@ -14,7 +14,7 @@
     ex:nameShape sh:datatype xsd:string .
 } .
 
-[] this:dataGraph {
+[] this:data {
     ex:foo ex:name "a", 5 .
 } .
 

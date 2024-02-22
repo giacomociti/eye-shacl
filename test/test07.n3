@@ -6,7 +6,7 @@
 @prefix ex: <http:/example.org/> .
 @prefix earl: <http://www.w3.org/ns/earl#> .
 
-[] this:shapesGraph {
+[] this:shapes {
     ex:shape sh:targetNode ex:valid, ex:invalid, ex:missing ;
     sh:property [
         sh:path ex:name ;
@@ -15,7 +15,7 @@
  .
 } .
 
-[] this:dataGraph {
+[] this:data {
     ex:valid ex:name "abc" .
     ex:invalid ex:surname "ab" .
 } .

@@ -9,24 +9,24 @@
 }
 =>
 {
-    ?url this:shapesGraph ?shapesGraph
+    ?url this:shapes ?shapesGraph
 } .
 
 {
-    [] this:shapesGraph ?graph .
+    [] this:shapes ?graph .
     ?graph log:includes { [] owl:imports ?url } .
     ?url log:semantics ?shapesGraph
 }
 =>
 {
-    ?url this:shapesGraph ?shapesGraph 
+    ?url this:shapes ?shapesGraph 
 } .
 
 {
-    [] this:data ?url .
+    [] this:dataGraph ?url .
     ?url log:semantics ?dataGraph
 }
 =>
 {
-    ?url this:dataGraph ?dataGraph
+    ?url this:data ?dataGraph
 } .

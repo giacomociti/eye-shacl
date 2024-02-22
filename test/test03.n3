@@ -9,7 +9,7 @@
 
 
 # shapes
-[] this:shapesGraph {
+[] this:shapes {
     ex:shape sh:targetClass ex:Class ;
         sh:property [
             sh:path ex:name ;
@@ -19,7 +19,7 @@
     ex:nameShape sh:datatype xsd:string .
 } .
 
-[] this:dataGraph {
+[] this:data {
     ex:foo a ex:Class ;
         ex:name "foo" , 5 .
 } .

@@ -6,7 +6,7 @@
 @prefix ex: <http:/example.org/> .
 @prefix earl: <http://www.w3.org/ns/earl#> .
 
-[] this:shapesGraph {
+[] this:shapes {
     ex:shape sh:targetObjectsOf ex:name ;
         sh:or (ex:nameShape ex:iriShape);
     .
@@ -15,7 +15,7 @@
     ex:iriShape sh:nodeKind sh:IRI .
 } .
 
-[] this:dataGraph {
+[] this:data {
     ex:foo ex:name 5, "a"
 } .
 

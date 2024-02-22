@@ -4,10 +4,7 @@
 
 
 {
-    [] this:shapesGraph ?shapesGraph .
-    ?shapesGraph log:includes {
-        ?shape sh:message ?message
-    } .
+    [] this:shapes [ log:includes { ?shape sh:message ?message } ]
 }
 =>
 {

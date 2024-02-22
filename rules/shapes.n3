@@ -4,7 +4,7 @@
 
 {
     ?parameter this:constraint [] .
-    [] this:shapesGraph ?shapesGraph .
+    [] this:shapes ?shapesGraph .
     ?shapesGraph log:includes {
         ?shape sh:path ?path .
         ?shape ?parameter ?parameterValue .
@@ -23,7 +23,7 @@
 
 {
     ?parameter this:constraint [] .
-    [] this:shapesGraph ?shapesGraph .
+    [] this:shapes ?shapesGraph .
     ?shapesGraph log:includes {
         ?shape ?parameter ?parameterValue .
     } .

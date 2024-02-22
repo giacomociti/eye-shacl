@@ -7,7 +7,7 @@
 @prefix this: <http://eye-shacl#> .
 
 
-[] this:shapesGraph {
+[] this:shapes {
     ex:shape sh:targetClass ex:Class ;
         sh:path ex:predicate ;
         sh:not ex:literalShape .
@@ -15,7 +15,7 @@
     ex:literalShape sh:nodeKind sh:Literal .
 } .
 
-[] this:dataGraph {
+[] this:data {
     ex:valid a ex:Class ; ex:predicate [] .
     ex:invalid a ex:Class ; ex:predicate 5 .
 } .
