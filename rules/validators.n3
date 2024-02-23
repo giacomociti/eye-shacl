@@ -59,7 +59,6 @@ sh:languageIn this:validator this:languageIn .
         sh:sourceConstraintComponent ?constraint ;
         sh:sourceShape ?shape ;
         sh:focusNode ?focusNode ;
-        sh:resultPath ?path ;
         sh:value ?value ;
     ]
 } .

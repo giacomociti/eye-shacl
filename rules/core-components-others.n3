@@ -32,7 +32,6 @@
         sh:sourceConstraintComponent sh:ClosedConstraintComponent ;
         sh:sourceShape ?shape ;
         sh:focusNode ?focusNode ;
-        sh:resultPath ?path ;
     ]
 }.
 
@@ -51,7 +50,6 @@
         sh:sourceConstraintComponent sh:HasValueConstraintComponent ;
         sh:sourceShape ?shape ;
         sh:focusNode ?focusNode ;
-        sh:resultPath ?path ;
     ]
 }.
 

@@ -20,7 +20,6 @@
         sh:sourceConstraintComponent sh:MinCountConstraintComponent ;
         sh:sourceShape ?shape ;
         sh:focusNode ?focusNode ;
-        sh:resultPath ?path ;
     ]
 }.
 
@@ -39,6 +38,5 @@
         sh:sourceConstraintComponent sh:MaxCountConstraintComponent ;
         sh:sourceShape ?shape ;
         sh:focusNode ?focusNode ;
-        sh:resultPath ?path ;
     ]
 }.

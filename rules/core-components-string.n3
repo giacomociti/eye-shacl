@@ -33,6 +33,5 @@
         sh:sourceConstraintComponent sh:UniqueLangConstraintComponent ;
 		sh:sourceShape ?shape ;
 		sh:focusNode ?focusNode ;
-        sh:resultPath ?path ;
     ]
 }.

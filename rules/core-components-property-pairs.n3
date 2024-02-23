@@ -23,7 +23,6 @@
         sh:sourceConstraintComponent sh:EqualsConstraintComponent ;
 		sh:sourceShape ?shape ;
 		sh:focusNode ?focusNode ;
-        sh:resultPath ?path ;
     ]
 }.
 
@@ -42,7 +41,6 @@
         sh:sourceConstraintComponent sh:DisjointConstraintComponent ;
 		sh:sourceShape ?shape ;
 		sh:focusNode ?focusNode ;
-        sh:resultPath ?path ;
         sh:value ?value ;
     ]
 }.
@@ -64,7 +62,6 @@
         sh:sourceConstraintComponent sh:LessThanConstraintComponent ;
 		sh:sourceShape ?shape ;
 		sh:focusNode ?focusNode ;
-        sh:resultPath ?path ;
         sh:value ?value ;
     ]
 }.
@@ -87,7 +84,6 @@
         sh:sourceConstraintComponent sh:LessThanOrEqualsConstraintComponent ;
 		sh:sourceShape ?shape ;
 		sh:focusNode ?focusNode ;
-        sh:resultPath ?path ;
         sh:value ?value ;
     ]
 }.

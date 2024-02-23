@@ -1,3 +1,4 @@
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix log: <http://www.w3.org/2000/10/swap/log#> .
 @prefix list: <http://www.w3.org/2000/10/swap/list#> .
 @prefix sh: <http://www.w3.org/ns/shacl#>.
@@ -41,6 +42,17 @@
     (?v ?rest) this:value ?value
 } .
 
+{
+    (?focusNode ?path) this:value ?value 
+}
+<=
+{
+    ?path list:firstRest (?first ?rest) .
+    (?focusNode ?first) this:value ?v .
+    (?v ?rest) this:value ?value
+} .
+
+
 # alternative path
 { 
     (?focusNode ?path) this:value ?value 
@@ -78,8 +90,7 @@
 <= 
 { 
     [] this:shapes [ log:includes { ?path sh:zeroOrMorePath ?zeroOrMorePath } ] .
-    (?focusNode ?zeroOrMorePath) this:value ?v .
-    (?v ?zeroOrMorePath) this:value ?value
+    (?focusNode ?zeroOrMorePath) this:value ?value .
 }.
 
 
@@ -121,3 +132,131 @@
     [] this:shapes [ log:includes { ?path sh:zeroOrOnePath ?zeroOrOnePath } ] .
     (?focusNode ?zeroOrOnePath) this:value ?value .
 }.
+
+
+
+# predicate this:path asserts triples for paths in shapes graphs
+
+{ ?x this:path ?x } <= { ?x log:rawType log:Other } .
+
+() this:path () .
+
+{ (?x) this:path (?path) } <= { ?x this:path ?path } .
+
+{ 
+    ?list this:path ?path .
+} 
+<= 
+{ 
+    ?list list:firstRest (?first ?rest) .
+    ?first this:path ?firstPath .
+    ?rest this:path ?restPath .
+    ((?firstPath) ?restPath) list:append ?path . 
+} .
+
+
+
+{
+    [] this:shapes [ log:includes {?x sh:path ?path}]  .
+    ?path log:rawType rdf:List .
+    ?path this:path ?resultPath
+}
+=>
+{
+    ?path this:path ?resultPath
+} .
+
+{
+    [] this:shapes [ log:includes {?path sh:inversePath ?inversePath}] .
+    ?inversePath this:path ?innerPath .
+}
+=>
+{
+    ?path this:path [ sh:inversePath ?innerPath ] .
+} .
+
+{
+    [] this:shapes [ log:includes {?path sh:alternativePath ?alternatives}] .
+    ?alternatives list:firstRest (?first ?rest) .
+    ?first this:path ?firstPath .
+    ?rest this:path ?restPath .
+    ((?firstPath) ?restPath) list:append ?result .
+}
+=>
+{
+    ?path this:path [ sh:alternativePath ?result ] .
+} .
+
+{
+    [] this:shapes [ log:includes {?path sh:zeroOrMorePath ?zeroOrMorePath}] .
+    ?zeroOrMorePath this:path ?result
+}
+=>
+{
+    ?path this:path [ sh:zeroOrMorePath ?result ] .
+} .
+
+{
+    [] this:shapes [ log:includes {?path sh:oneOrMorePath ?oneOrMorePath}] .
+    ?oneOrMorePath this:path ?result
+}
+=>
+{
+    ?path this:path [ sh:oneOrMorePath ?result ] .
+} .
+
+{
+    [] this:shapes [ log:includes {?path sh:zeroOrOnePath ?zeroOrOnePath}] .
+    ?zeroOrOnePath this:path ?result
+}
+=>
+{
+    ?path this:path [ sh:zeroOrOnePath ?result ] .
+} .
+
+
+# results
+{
+    ?result sh:sourceShape [ sh:path ?path ] .
+    ?path this:path ?resultPath
+}
+=>
+{
+    ?result sh:resultPath ?resultPath .
+} .
+
+# needed to ensure nested paths are returned by the report query 
+
+{
+    ?result sh:resultPath ?resultPath .
+    ?resultPath ?p ?o .
+    ?p list:in (
+        sh:inversePath
+        sh:zeroOrMorePath
+        sh:oneOrMorePath
+        sh:zeroOrOnePath
+    ).
+}
+=>
+{
+    this:report this:includes ?o .
+} .
+
+{
+    ?result sh:resultPath ?resultPath .
+    ?resultPath sh:alternativePath ?alts .
+    ?alts list:member ?alt .
+}
+=>
+{
+    this:report this:includes ?alt .
+} .
+
+{
+    this:report this:includes ?s .
+    ?s ?p ?o
+}
+=>
+{
+    this:report this:includes ?o .
+} .

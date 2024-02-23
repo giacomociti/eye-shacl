@@ -1,0 +1,60 @@
+@prefix list: <http://www.w3.org/2000/10/swap/list#> .
+@prefix log: <http://www.w3.org/2000/10/swap/log#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix sh: <http://www.w3.org/ns/shacl#>.
+@prefix this: <http://eye-shacl#> .
+@prefix ex: <http:/example.org/> .
+@prefix earl: <http://www.w3.org/ns/earl#> .
+
+[] this:shapes {
+    ex:shape sh:targetNode ex:invalid ;
+    
+    sh:property [
+        sh:path 
+            [ 
+                sh:alternativePath (
+                    ex:loves 
+                    [
+                        sh:inversePath 
+                        [ sh:alternativePath (ex:knows ex:loves) ]
+                    ]
+                ) 
+            ] ;
+        sh:minCount 1 ;
+    ] 
+} .
+
+
+
+[] this:data {
+    ex:invalid ex:name "invalid" .
+} .
+
+
+
+# assertions
+{
+    (?x { ?x a sh:ValidationResult} ?results) log:collectAllIn [] .
+    ?results list:length 1 .
+
+     [
+        a sh:ValidationResult ;
+        sh:sourceConstraintComponent sh:MinCountConstraintComponent ;
+        sh:focusNode ex:invalid ;
+        sh:resultPath 
+            [
+                sh:alternativePath (
+                    ex:loves 
+                    [
+                        sh:inversePath 
+                        [ sh:alternativePath (ex:knows ex:loves) ]
+                    ]
+                ) 
+            ] ;
+    ]
+
+}
+=>
+{
+    <> a earl:Pass
+} .
