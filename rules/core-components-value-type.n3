@@ -1,12 +1,15 @@
 # https://www.w3.org/TR/shacl/#core-components-value-type
 
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix log: <http://www.w3.org/2000/10/swap/log#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix sh: <http://www.w3.org/ns/shacl#>.
 @prefix this: <http://eye-shacl#> .
 
-{ ?value this:class ?class } <= { ?value a ?class }.
-{ ?value this:class ?class } <= { ?subclass rdfs:subClassOf ?class . ?value this:class ?subclass }.
+{ ?value this:class ?class } <= { [] this:data [ log:includes { ?value a ?class } ] }.
+{ ?value this:class ?class } <= { [] this:data [ log:includes { ?subclass rdfs:subClassOf ?class } ] . ?value this:class ?subclass }.
+
+
 
 { ?value this:nodeKind sh:IRI } <= { ?value log:rawType log:Other . ?value log:uri [] }. 
 { ?value this:nodeKind sh:Literal } <= { ?value log:rawType log:Literal }. 

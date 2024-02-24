@@ -26,6 +26,42 @@
     ]
 }.
 
+{ 
+    ?shape sh:equals ?otherPredicate ;
+        a sh:NodeShape ;
+        this:focusNode ?focusNode .
+    (?focusNode ?otherPredicate) this:values ?otherValues .
+    [] log:notIncludes { ?focusNode list:in ?otherValues} .
+} 
+=> 
+{
+    [
+        a sh:ValidationResult ;
+        sh:sourceConstraintComponent sh:EqualsConstraintComponent ;
+		sh:sourceShape ?shape ;
+		sh:focusNode ?focusNode ;
+        sh:value ?focusNode ;
+    ]
+}.
+
+{ 
+    ?shape sh:equals ?otherPredicate ;
+        a sh:NodeShape ;
+        this:focusNode ?focusNode .
+    (?focusNode ?otherPredicate) this:value ?otherValue .
+    ?otherValue log:notEqualTo ?focusNode .
+} 
+=> 
+{
+    [
+        a sh:ValidationResult ;
+        sh:sourceConstraintComponent sh:EqualsConstraintComponent ;
+		sh:sourceShape ?shape ;
+		sh:focusNode ?focusNode ;
+        sh:value ?otherValue ;
+    ]
+}.
+
 # DisjointConstraintComponent
 { 
     ?shape sh:disjoint ?otherPredicate ;
@@ -42,6 +78,23 @@
 		sh:sourceShape ?shape ;
 		sh:focusNode ?focusNode ;
         sh:value ?value ;
+    ]
+}.
+
+{ 
+    ?shape sh:disjoint ?otherPredicate ;
+        a sh:NodeShape ;
+        this:focusNode ?focusNode .
+    (?focusNode ?otherPredicate) this:value ?focusNode .
+} 
+=> 
+{
+    [
+        a sh:ValidationResult ;
+        sh:sourceConstraintComponent sh:DisjointConstraintComponent ;
+		sh:sourceShape ?shape ;
+		sh:focusNode ?focusNode ;
+        sh:value ?focusNode ;
     ]
 }.
 

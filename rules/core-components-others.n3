@@ -18,11 +18,13 @@
 {
     ?shape sh:closed true ;
         sh:ignoredProperties ?ignoredProperties .
+
     (?x { ?shape sh:property [ sh:path ?x ] . ?x this:nodeKind sh:IRI } ?xs) log:collectAllIn [] .
     (?xs ?ignoredProperties) list:append ?allowed .
      
     ?shape this:focusNode ?focusNode .
-    [] log:includes { ?focusNode ?p [] } .
+    
+    [] this:data [ log:includes { ?focusNode ?p ?o } ].
     [] log:notIncludes { ?p list:in ?allowed }
 } 
 =>
@@ -32,6 +34,8 @@
         sh:sourceConstraintComponent sh:ClosedConstraintComponent ;
         sh:sourceShape ?shape ;
         sh:focusNode ?focusNode ;
+        sh:resultPath ?p ;
+        sh:value ?o
     ]
 }.
 
