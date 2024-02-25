@@ -6,7 +6,7 @@
 {
     ?shape a sh:Shape .
     [] this:shapes [ log:includes { ?shape sh:targetClass ?targetClass } ] .
-    [] this:data [ log:includes { ?focusNode a ?targetClass } ] # todo subclasses
+    ?focusNode this:class ?targetClass .
 }
 =>
 {
@@ -16,7 +16,7 @@
 {
     ?shape a sh:Shape .
     [] this:shapes [ log:includes { ?shape a rdfs:Class } ] .
-    [] this:data [ log:includes { ?focusNode a ?shape } ] # todo subclasses
+    ?focusNode this:class ?shape .
 }
 =>
 {

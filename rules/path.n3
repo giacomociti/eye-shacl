@@ -38,16 +38,6 @@
 <=
 {
     ?path list:firstRest (?first ?rest) .
-    [] this:data [ log:includes { ?focusNode ?first ?v } ].
-    (?v ?rest) this:value ?value
-} .
-
-{
-    (?focusNode ?path) this:value ?value 
-}
-<=
-{
-    ?path list:firstRest (?first ?rest) .
     (?focusNode ?first) this:value ?v .
     (?v ?rest) this:value ?value
 } .
