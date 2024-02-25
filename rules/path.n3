@@ -127,7 +127,7 @@
 
 # predicate this:path asserts triples for paths in shapes graphs
 
-{ ?x this:path ?x } <= { ?x log:rawType log:Other } .
+{ ?x this:path ?x } <= { ?x this:nodeKind sh:IRI } .
 
 () this:path () .
 
@@ -241,6 +241,16 @@
 {
     this:report this:includes ?alt .
 } .
+
+{
+    ?result sh:resultPath ?resultPath .
+    ?resultPath list:member ?member .
+}
+=>
+{
+    this:report this:includes ?member .
+} .
+
 
 {
     this:report this:includes ?s .
