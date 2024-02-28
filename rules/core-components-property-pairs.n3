@@ -104,9 +104,8 @@
         sh:path ?path ;
         this:focusNode ?focusNode .
     (?focusNode ?path) this:value ?value .
-    ?focusNode ?otherPredicate ?y .
-    # todo for other types and handle non comparable values
-    ?value math:notLessThan ?y .
+    (?focusNode ?otherPredicate) this:value ?otherValue .
+    [] log:notIncludes { ?value this:maxExclusive ?otherValue } .
 } 
 => 
 {
@@ -126,9 +125,8 @@
         sh:path ?path ;
         this:focusNode ?focusNode .
     (?focusNode ?path) this:value ?value .
-    ?focusNode ?otherPredicate ?y .
-    # todo for other types and handle non comparable values
-    ?value math:greaterThan ?y .
+    (?focusNode ?otherPredicate) this:value ?otherValue .
+    [] log:notIncludes { ?value this:maxInclusive ?otherValue } .
 } 
 => 
 {

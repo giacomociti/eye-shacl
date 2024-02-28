@@ -22,5 +22,6 @@
 { ?value this:nodeKind sh:BlankNodeOrLiteral } <= { ?value this:nodeKind sh:BlankNode }. 
 { ?value this:nodeKind sh:BlankNodeOrLiteral } <= { ?value this:nodeKind sh:Literal }. 
 
+# should also check that is not ill-typed
 { ?value this:datatype ?datatype } <= { ([] ?datatype) log:dtlit ?value }.
 
