@@ -62,6 +62,31 @@
     ]
 }.
 
+{
+    ?node this:violates ?constraint .
+}
+<=
+{
+    ?constraint sh:equals ?otherPredicate .
+    ?constraint this:shape ?shape .
+    ?shape sh:path ?path .
+    (?node ?path) this:values ?thisValues .
+    (?node ?otherPredicate) this:values ?otherValues .
+    ?thisValues list:setNotEqualTo ?otherValues .
+} .
+
+{
+    ?node this:violates ?constraint .
+}
+<=
+{
+    ?constraint sh:equals ?otherPredicate .
+    ?constraint this:shape ?shape .
+    ?shape a sh:NodeShape .
+    (?node ?otherPredicate) this:values ?otherValues .
+    [] log:notIncludes { ?node list:in ?otherValues} .
+} .
+
 # DisjointConstraintComponent
 { 
     ?shape sh:disjoint ?otherPredicate ;
@@ -98,6 +123,29 @@
     ]
 }.
 
+{
+    ?node this:violates ?constraint .
+}
+<=
+{
+    ?constraint sh:disjoint ?otherPredicate .
+    ?constraint this:shape ?shape .
+    ?shape sh:path ?path .
+    (?node ?path) this:value ?value .
+    ?node ?otherPredicate ?value 
+} .
+
+{
+    ?node this:violates ?constraint .
+}
+<=
+{
+    ?constraint sh:disjoint ?otherPredicate .
+    ?constraint this:shape ?shape .
+    ?shape a sh:NodeShape .
+    (?node ?otherPredicate) this:value ?node .
+} .
+
 # LessThanConstraintComponent
 { 
     ?shape sh:lessThan ?otherPredicate ;
@@ -118,6 +166,18 @@
     ]
 }.
 
+{
+    ?node this:violates ?constraint .
+}
+<=
+{
+    ?constraint sh:lessThan ?otherPredicate .
+    ?constraint this:shape ?shape .
+    ?shape sh:path ?path .
+    (?node ?path) this:value ?value .
+    (?node ?otherPredicate) this:value ?otherValue .
+    [] log:notIncludes { ?value this:maxExclusive ?otherValue } .
+} .
 
 # LessThanOrEqualsConstraintComponent
 { 
@@ -138,3 +198,16 @@
         sh:value ?value ;
     ]
 }.
+
+{
+    ?node this:violates ?constraint .
+}
+<=
+{
+    ?constraint sh:lessThan ?otherPredicate .
+    ?constraint this:shape ?shape .
+    ?shape sh:path ?path .
+    (?node ?path) this:value ?value .
+    (?node ?otherPredicate) this:value ?otherValue .
+    [] log:notIncludes { ?value this:maxInclusive ?otherValue } .
+} .

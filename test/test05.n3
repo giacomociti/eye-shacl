@@ -23,7 +23,7 @@
 # assertions
 {
     (?x { ?x a sh:ValidationResult} ?results) log:collectAllIn [] .
-    ?results list:length 2 .
+    ?results list:length 1 .
     [
         a sh:ValidationResult ;
         sh:sourceConstraintComponent sh:NotConstraintComponent ;
@@ -31,14 +31,6 @@
         sh:focusNode "a" ;
         sh:value "a" ;
     ].
-    [
-        a sh:ValidationResult ;
-        sh:sourceConstraintComponent sh:DatatypeConstraintComponent ;
-        sh:sourceShape ex:nameShape ;
-        sh:focusNode 5 ;
-        sh:value 5 ;
-        this:output false # to be discarded in report
-    ]
 }
 =>
 {

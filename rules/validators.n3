@@ -19,48 +19,74 @@ sh:maxLength this:validator this:maxLength .
 sh:pattern this:validator this:pattern .
 sh:languageIn this:validator this:languageIn .
 
+
 {
-    ?parameter this:validator ?validator .
+    ?shape a sh:Shape .
+    ?shape ?parameter ?value .
     ?parameter this:constraint ?constraint .
-
-    ?shape a sh:NodeShape ;
-        ?parameter ?parameterValue .
-
-    ?shape this:focusNode ?focusNode .
-    [] log:notIncludes { ?focusNode ?validator ?parameterValue }
 }
 =>
 {
-    [
-        a sh:ValidationResult ;
-        sh:sourceConstraintComponent ?constraint ;
-        sh:sourceShape ?shape ;
-        sh:focusNode ?focusNode ;
-        sh:value ?focusNode ;
-    ]
+    [] a this:Constraint ;
+        this:shape ?shape ;
+        this:component ?constraint ;
+        ?parameter ?value .
 } .
 
 {
-    ?parameter this:validator ?validator .
-    ?parameter this:constraint ?constraint .
-
-    ?shape a sh:PropertyShape ;
-        sh:path ?path ;
-        ?parameter ?parameterValue .
-
-    ?shape this:focusNode ?focusNode .
-    (?focusNode ?path) this:value ?value .
-    [] log:notIncludes { ?value ?validator ?parameterValue }
+    ?shape this:focusNode ?node .
+    ?shape a sh:NodeShape .
+    ?constraint this:shape ?shape .
+    ?node this:violates ?constraint .
+    ?constraint this:component ?component .
+    ?component log:notEqualTo sh:PropertyConstraintComponent . 
 }
 =>
 {
-    [
-        a sh:ValidationResult ;
-        sh:sourceConstraintComponent ?constraint ;
+    [] a sh:ValidationResult ; 
+        sh:sourceConstraintComponent ?component ;
         sh:sourceShape ?shape ;
-        sh:focusNode ?focusNode ;
-        sh:value ?value ;
-    ]
+        sh:focusNode ?node ; 
+        sh:value ?node .
 } .
 
+{
+    ?shape this:focusNode ?node .
+    ?shape sh:path ?path .
+    (?node ?path) this:value ?value .
+    ?constraint this:shape ?shape .
+    ?value this:violates ?constraint .
+    ?constraint this:component ?component .
+    ?component log:notEqualTo sh:MinCountConstraintComponent .
+}
+=>
+{
+    [] a sh:ValidationResult ; 
+        sh:sourceConstraintComponent ?component ;
+        sh:sourceShape ?shape ;
+        sh:focusNode ?node ; 
+        sh:value ?value .
+} .
 
+{
+    ?node this:violateShape ?shape .
+}
+<=
+{
+    ?constraint this:shape ?shape .
+    ?node this:violates ?constraint .
+} .
+
+{
+    ?node this:violates ?constraint
+}
+<=
+{
+    ?constraint a this:Constraint .
+    ?constraint this:component ?component .
+    ?parameter this:constraint ?component .
+    ?parameter this:validator ?validator .
+    ?constraint ?parameter ?value .
+
+    [] log:notIncludes { ?node ?validator ?value } .
+} .

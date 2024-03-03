@@ -39,6 +39,22 @@
     ]
 }.
 
+{
+    ?node this:violates ?constraint .
+}
+<=
+{
+    ?constraint sh:closed true  .
+    ?constraint this:shape ?shape .
+    ?shape sh:ignoredProperties ?ignoredProperties .
+    (?x { ?shape sh:property [ sh:path ?x ] . ?x this:nodeKind sh:IRI } ?xs) log:collectAllIn [] .
+    (?xs ?ignoredProperties) list:append ?allowed .
+         
+    [] this:data [ log:includes { ?node ?p ?o } ].
+    [] log:notIncludes { ?p list:in ?allowed }
+} .
+
+
 # HasValueConstraintComponent
 {
     ?shape sh:hasValue ?hasValue ;
@@ -72,5 +88,29 @@
         sh:focusNode ?focusNode ;
     ]
 }.
+
+{
+    ?node this:violates ?constraint .
+}
+<=
+{
+    ?constraint sh:hasValue ?hasValue .
+    ?constraint this:shape ?shape .
+    ?shape sh:path ?path .
+    (?node ?path) this:values ?values .
+    [] log:notIncludes { ?values list:member ?hasValue }
+} .
+
+{
+    ?node this:violates ?constraint .
+}
+<=
+{
+    ?constraint sh:hasValue ?hasValue .
+    ?constraint this:shape ?shape .
+    ?shape a sh:NodeShape .
+    ?node log:notEqualTo ?hasValue 
+} .
+
 # InConstraintComponent
 # { ?value this:in ?in } <= { ?value list:in ?in }.

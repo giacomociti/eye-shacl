@@ -27,10 +27,7 @@
 # assertions
 {
     (?x { ?x a sh:ValidationResult} ?results) log:collectAllIn [] .
-    ?results list:length 4 .
-
-    (?x { ?x a sh:ValidationResult ; this:output false } ?discarded) log:collectAllIn [] .
-    ?discarded list:length 3 .
+    ?results list:length 1 .
 
     [
         a sh:ValidationResult ;

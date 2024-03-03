@@ -20,6 +20,7 @@
         sh:value
         sh:resultSeverity
         sh:resultMessage
+        sh:detail
     )
 } 
 => 

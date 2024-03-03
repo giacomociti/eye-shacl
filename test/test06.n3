@@ -24,7 +24,7 @@
 # assertions
 {
     (?x { ?x a sh:ValidationResult} ?results) log:collectAllIn [] .
-    ?results list:length 4 .
+    ?results list:length 1 .
 
     [
         a sh:ValidationResult ;

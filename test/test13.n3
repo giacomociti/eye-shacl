@@ -8,16 +8,15 @@
 
 
 [] this:shapes {
-    ex:shape sh:targetClass ex:Class ;
-        sh:path ex:predicate ;
-        sh:not ex:literalShape .
+    ex:shape sh:targetNode ex:valid , ex:invalid ;
+        sh:not ex:innerShape .
 
-    ex:literalShape sh:nodeKind sh:Literal .
+    ex:innerShape sh:path ex:predicate ; sh:datatype xsd:string .
 } .
 
 [] this:data {
-    ex:valid a ex:Class ; ex:predicate [] .
-    ex:invalid a ex:Class ; ex:predicate 5 .
+    ex:valid ex:predicate 5 .
+    ex:invalid ex:predicate "a" .
 } .
 
 
@@ -26,12 +25,18 @@
     (?x { ?x a sh:ValidationResult} ?results) log:collectAllIn [] .
     ?results list:length 1 .
 
+    # [
+    #     a sh:ValidationResult ;
+    #     sh:sourceConstraintComponent sh:NodeKindConstraintComponent ;
+    #     sh:sourceShape ex:literalShape ;
+    #     this:output false ;
+    # ] .
     [
         a sh:ValidationResult ;
         sh:sourceConstraintComponent sh:NotConstraintComponent ;
         sh:sourceShape ex:shape ;
         sh:focusNode ex:invalid ;
-        sh:value 5 ;
+        sh:value ex:invalid ;
     ] .
 }
 =>

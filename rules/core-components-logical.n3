@@ -5,155 +5,45 @@
 @prefix sh: <http://www.w3.org/ns/shacl#>.
 @prefix this: <http://eye-shacl#> .
 
-# not, and, or, xone
+# todo and, xone
 
+# not
 {
-    ?focusNode this:violates ?shape .
+    ?node this:violates ?constraint
 }
 <=
 {
-    [] a sh:ValidationResult ; sh:focusNode ?focusNode ; sh:sourceShape ?shape
+    ?constraint a this:Constraint .
+    ?constraint sh:not ?innerShape .
+    ?innerShape a sh:NodeShape .
+    [] log:notIncludes { ?node this:violateShape ?innerShape }
+   
 } .
 
 {
-    ?focusNode this:conformsTo ?shape .
+    ?node this:violates ?constraint
 }
 <=
 {
-    ?shape this:focusNode ?focusNode .
-    [] log:notIncludes { ?focusNode this:violates ?shape }
-} .
-
-{
-    ?shape this:borrows ?focusNode .
-}
-=>
-{
-    ?shape this:focusNode ?focusNode .
-
-    {
-        ?shape this:borrows ?focusNode .
-        ?result a sh:ValidationResult ; sh:sourceShape ?shape ; sh:focusNode ?focusNode
-    }
-    =>
-    {
-        ?result this:output false .
-    }
-} .
-
-
-
-# NotConstraintComponent
-{
-    ?shape a sh:NodeShape ;
-        sh:not ?innerShape ;
-        this:focusNode ?focusNode .
-}
-=>
-{
-    ?innerShape this:borrows ?focusNode .
+    ?constraint a this:Constraint .
+    ?constraint sh:not ?innerShape .
+    ?innerShape sh:path ?path .
+    (?node ?path) this:value ?value .
+    [] log:notIncludes { ?value this:violateShape ?innerShape }
    
-    {
-        ?focusNode this:conformsTo ?innerShape
-    } 
-    => 
-    {
-        [] a sh:ValidationResult ;
-            sh:sourceConstraintComponent sh:NotConstraintComponent ;
-            sh:sourceShape ?shape ;
-            sh:focusNode ?focusNode ;
-            sh:value ?focusNode ;
-    }
-} .
-
-{
-    ?shape a sh:PropertyShape ;
-        sh:not ?innerShape ;
-        sh:path ?path ;
-        this:focusNode ?focusNode .
-    (?focusNode ?path) this:value ?value .
-}
-=>
-{
-    ?innerShape this:borrows ?value .
-   
-    {
-        ?shape this:focusNode ?focusNode .
-        (?focusNode ?path) this:value ?value .
-        ?value this:conformsTo ?innerShape
-    } 
-    => 
-    {
-        [] a sh:ValidationResult ;
-            sh:sourceConstraintComponent sh:NotConstraintComponent ;
-            sh:sourceShape ?shape ;
-            sh:focusNode ?focusNode ;
-            sh:value ?value ;
-    }
 } .
 
 
-
-# OrConstraintComponent
+# or
 {
-    ?shape a sh:NodeShape ;
-        sh:or ?innerShapes ;
-        this:focusNode ?focusNode .
-    ?innerShape list:in ?innerShapes .
+    ?node this:violates ?constraint
 }
-=>
+<=
 {
-    ?innerShape this:borrows ?focusNode .
-
-    {
-        (
-            { ?alternative list:in ?innerShapes }
-            { ?focusNode this:violates ?alternative }
-        ) log:forAllIn [] . 
-    }
-    =>
-    {
-        [
-            a sh:ValidationResult ;
-            sh:sourceConstraintComponent sh:OrConstraintComponent ;
-            sh:sourceShape ?shape ;
-            sh:focusNode ?focusNode ;
-            sh:value ?focusNode ;
-        ]
-    } .
-} .
-
-{
-    ?shape a sh:PropertyShape ;
-        sh:or ?innerShapes ;
-        sh:path ?path ;
-        this:focusNode ?focusNode .
-    (?focusNode ?path) this:value ?value .
-    ?innerShape list:in ?innerShapes .
-}
-=>
-{
-    ?innerShape this:borrows ?value .
-
-    {
-        ?shape this:focusNode ?focusNode .
-        (?focusNode ?path) this:value ?value .
-
-        (
-            { 
-                ?alternative list:in ?innerShapes .
-            }
-            { ?value this:violates ?alternative }
-        ) log:forAllIn [] . 
-    }
-    =>
-    {
-        [
-            a sh:ValidationResult ;
-            sh:sourceConstraintComponent sh:OrConstraintComponent ;
-            sh:sourceShape ?shape ;
-            sh:focusNode ?focusNode ;
-            sh:value ?value ;
-        ]
-    } .
+    ?constraint sh:or ?innerShapes .
+    (
+        { ?innerShapes list:member ?innerShape }
+        { ?node this:violateShape ?innerShape }
+    ) log:forAllIn [] .
+    
 } .

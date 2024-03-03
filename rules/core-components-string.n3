@@ -35,3 +35,17 @@
 		sh:focusNode ?focusNode ;
     ]
 }.
+
+{
+    ?node this:violates ?constraint .
+}
+<=
+{
+    ?constraint sh:uniqueLang true .
+    ?constraint this:shape ?shape .
+    ?shape sh:path ?path .
+    (?node ?path) this:value ?x, ?y .
+    ?x log:notEqualTo ?y .
+    ([] ?lang) log:langlit ?x .
+    ([] ?lang) log:langlit ?y .
+} .

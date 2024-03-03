@@ -5,6 +5,16 @@
 @prefix sh: <http://www.w3.org/ns/shacl#>.
 @prefix this: <http://eye-shacl#> .
 
+# property
+{
+    ?node this:violates ?constraint
+}
+<=
+{
+    ?constraint sh:property ?innerShape .
+    ?node this:violateShape ?innerShape .
+    
+} .
 
 { 
     ?shape sh:property ?property .
@@ -16,6 +26,16 @@
 } .
 
 
+# node
+{
+    ?node this:violates ?constraint
+}
+<=
+{
+    ?constraint sh:node ?innerShape .
+    ?node this:violateShape ?innerShape .
+    
+} .
 
 { 
     ?shape a sh:NodeShape .
@@ -28,18 +48,18 @@
 
     {
         ?result a sh:ValidationResult ;
-            sh:sourceShape ?node ;
-            sh:focusNode ?focusNode ;
-            sh:value ?focusNode ;
-    }
-    =>
-    {
-        [] a sh:ValidationResult ;
             sh:sourceConstraintComponent sh:NodeConstraintComponent ;
             sh:sourceShape ?shape ;
             sh:focusNode ?focusNode ;
-            sh:value ?focusNode ;
-            sh:detail ?result ;
+            sh:value ?value .
+        ?detail a sh:ValidationResult ;
+            sh:sourceShape ?node ;
+            sh:focusNode ?focusNode ;
+            sh:value ?value .   
+    }
+    =>
+    {
+        ?result sh:detail ?detail .
     } .
 } .
 
@@ -56,21 +76,21 @@
 
     {
         ?result a sh:ValidationResult ;
-            sh:sourceShape ?node ;
-            sh:focusNode ?value ;
-            sh:value ?value ;
-    }
-    =>
-    {
-        [] a sh:ValidationResult ;
             sh:sourceConstraintComponent sh:NodeConstraintComponent ;
             sh:sourceShape ?shape ;
             sh:focusNode ?focusNode ;
-            sh:value ?value ;
-            sh:detail ?result ;
+            sh:value ?value .
+        ?detail a sh:ValidationResult ;
+            sh:sourceShape ?node ;
+            sh:focusNode ?value ;
+            sh:value ?value .
+    }
+    =>
+    {
+        ?result sh:detail ?detail .
     } .
 } .
 
 
 
-# sh:qualifiedValueShape, sh:qualifiedMinCount, sh:qualifiedMaxCount
+# # sh:qualifiedValueShape, sh:qualifiedMinCount, sh:qualifiedMaxCount

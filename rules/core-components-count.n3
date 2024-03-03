@@ -23,6 +23,18 @@
     ]
 }.
 
+{
+    ?node this:violates ?constraint .
+}
+<=
+{
+    ?constraint sh:minCount ?minCount .
+    ?constraint this:shape ?shape .
+    ?shape sh:path ?path .
+    (?node ?path) this:values ?values .
+    ?values list:length [ math:lessThan ?minCount ]
+} .
+
 # MaxCountConstraintComponent
 {
     ?shape sh:maxCount ?maxCount ;
@@ -40,3 +52,15 @@
         sh:focusNode ?focusNode ;
     ]
 }.
+
+{
+    ?node this:violates ?constraint .
+}
+<=
+{
+    ?constraint sh:maxCount ?maxCount .
+    ?constraint this:shape ?shape .
+    ?shape sh:path ?path .
+    (?node ?path) this:values ?values .
+    ?values list:length [ math:greaterThan ?maxCount ]
+} .
