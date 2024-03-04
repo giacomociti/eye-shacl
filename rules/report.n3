@@ -7,7 +7,6 @@
 {
     ?report a sh:ValidationReport .
     ?result a sh:ValidationResult .
-    [] log:notIncludes { ?result this:output false } .
     [] log:notIncludes { [] sh:detail ?result } .
 }
 =>
@@ -15,6 +14,15 @@
     ?report sh:result ?result .
 } .
 
+{
+    [] sh:detail ?result .
+    ?report sh:result ?result .
+    { ?report sh:result ?result } log:becomes { }.
+}
+=>
+{
+ 
+} .
 
 {
     ?report sh:conforms true ; sh:result [] .

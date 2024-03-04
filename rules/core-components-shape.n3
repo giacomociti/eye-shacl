@@ -47,6 +47,7 @@
     ?node this:focusNode ?focusNode .
 
     {
+        ?shape sh:node ?node .
         ?result a sh:ValidationResult ;
             sh:sourceConstraintComponent sh:NodeConstraintComponent ;
             sh:sourceShape ?shape ;
@@ -75,6 +76,7 @@
     ?node this:focusNode ?value .
 
     {
+        ?shape sh:node ?node .
         ?result a sh:ValidationResult ;
             sh:sourceConstraintComponent sh:NodeConstraintComponent ;
             sh:sourceShape ?shape ;
