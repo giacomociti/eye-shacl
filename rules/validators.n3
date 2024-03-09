@@ -39,7 +39,18 @@ sh:languageIn this:validator this:languageIn .
     ?constraint this:shape ?shape .
     ?node this:violates ?constraint .
     ?constraint this:component ?component .
-    ?component log:notEqualTo sh:PropertyConstraintComponent . 
+    
+    (   sh:PropertyConstraintComponent 
+        sh:ClosedConstraintComponent 
+        sh:HasValueConstraintComponent 
+        sh:UniqueLangConstraintComponent 
+        sh:EqualsConstraintComponent 
+        sh:LessThanConstraintComponent 
+        sh:LessThanOrEqualsConstraintComponent 
+        sh:DisjointConstraintComponent 
+        sh:MinCountConstraintComponent 
+        sh:MaxCountConstraintComponent 
+    ) list:notMember ?component .
 }
 =>
 {
@@ -57,7 +68,18 @@ sh:languageIn this:validator this:languageIn .
     ?constraint this:shape ?shape .
     ?value this:violates ?constraint .
     ?constraint this:component ?component .
-    ?component log:notEqualTo sh:MinCountConstraintComponent .
+
+    (   sh:PropertyConstraintComponent 
+        sh:ClosedConstraintComponent 
+        sh:HasValueConstraintComponent 
+        sh:UniqueLangConstraintComponent 
+        sh:EqualsConstraintComponent 
+        sh:LessThanConstraintComponent 
+        sh:LessThanOrEqualsConstraintComponent 
+        sh:DisjointConstraintComponent 
+        sh:MinCountConstraintComponent 
+        sh:MaxCountConstraintComponent 
+    ) list:notMember ?component .
 }
 =>
 {

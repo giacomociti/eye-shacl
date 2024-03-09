@@ -7,15 +7,15 @@
 @prefix this: <http://eye-shacl#> .
 @prefix pred: <http://www.w3.org/2007/rif-builtin-predicate#>.
 
-{ ?value this:minExclusive ?minExclusive } <= { ?value a this:Number ; math:greaterThan ?minExclusive }.
-{ ?value this:minInclusive ?minInclusive } <= { ?value a this:Number ; math:notLessThan ?minInclusive }.
-{ ?value this:maxExclusive ?maxExclusive } <= { ?value a this:Number ; math:lessThan ?maxExclusive }.
-{ ?value this:maxInclusive ?maxInclusive } <= { ?value a this:Number ; math:notGreaterThan ?maxInclusive }.
+{ ?value this:minExclusive ?minExclusive } <= { ?minExclusive a this:Number . ?value a this:Number ; math:greaterThan ?minExclusive }.
+{ ?value this:minInclusive ?minInclusive } <= { ?minInclusive a this:Number . ?value a this:Number ; math:notLessThan ?minInclusive }.
+{ ?value this:maxExclusive ?maxExclusive } <= { ?maxExclusive a this:Number . ?value a this:Number ; math:lessThan ?maxExclusive }.
+{ ?value this:maxInclusive ?maxInclusive } <= { ?maxInclusive a this:Number . ?value a this:Number ; math:notGreaterThan ?maxInclusive }.
 
-{ ?value this:minExclusive ?minExclusive } <= { ?value this:datatype xsd:string ; string:greaterThan ?minExclusive }.
-{ ?value this:minInclusive ?minInclusive } <= { ?value this:datatype xsd:string ; string:notLessThan ?minInclusive }.
-{ ?value this:maxExclusive ?maxExclusive } <= { ?value this:datatype xsd:string ; string:lessThan ?maxExclusive }.
-{ ?value this:maxInclusive ?maxInclusive } <= { ?value this:datatype xsd:string ; string:notGreaterThan ?maxInclusive }.
+{ ?value this:minExclusive ?minExclusive } <= { ?minExclusive this:datatype xsd:string . ?value this:datatype xsd:string ; string:greaterThan ?minExclusive }.
+{ ?value this:minInclusive ?minInclusive } <= { ?minInclusive this:datatype xsd:string . ?value this:datatype xsd:string ; string:notLessThan ?minInclusive }.
+{ ?value this:maxExclusive ?maxExclusive } <= { ?maxExclusive this:datatype xsd:string . ?value this:datatype xsd:string ; string:lessThan ?maxExclusive }.
+{ ?value this:maxInclusive ?maxInclusive } <= { ?maxInclusive this:datatype xsd:string . ?value this:datatype xsd:string ; string:notGreaterThan ?maxInclusive }.
 
 { ?value this:minExclusive ?minExclusive } <= { ?value this:datatype xsd:dateTime . (?value ?minExclusive) pred:dateTime-greater-than true }.
 { ?value this:minInclusive ?minInclusive } <= { ?value this:datatype xsd:dateTime . (?value ?minInclusive) pred:dateTime-greater-than-or-equal true }.

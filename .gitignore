@@ -1,1 +1,3 @@
 eye-shacl.pvm
+test/suite/test-*.ttl
+test/suite/core

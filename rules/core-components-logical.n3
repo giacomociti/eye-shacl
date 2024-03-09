@@ -5,8 +5,6 @@
 @prefix sh: <http://www.w3.org/ns/shacl#>.
 @prefix this: <http://eye-shacl#> .
 
-# todo and, xone
-
 # not
 {
     ?node this:violates ?constraint
@@ -47,3 +45,16 @@
     ) log:forAllIn [] .
     
 } .
+
+# and
+{
+    ?node this:violates ?constraint
+}
+<=
+{
+    ?constraint sh:and ?innerShapes .
+    ?innerShapes list:member ?innerShape .
+    ?node this:violateShape ?innerShape .
+} .
+
+# todo xone

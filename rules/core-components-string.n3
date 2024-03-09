@@ -25,6 +25,8 @@
     ?x log:notEqualTo ?y .
     ([] ?lang) log:langlit ?x .
     ([] ?lang) log:langlit ?y .
+
+    ("Language \"%s\" has been used more than once" ?lang) string:format ?message 
 } 
 => 
 {
@@ -33,6 +35,7 @@
         sh:sourceConstraintComponent sh:UniqueLangConstraintComponent ;
 		sh:sourceShape ?shape ;
 		sh:focusNode ?focusNode ;
+        this:message ?message ;
     ]
 }.
 

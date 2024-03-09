@@ -23,6 +23,7 @@
         sh:sourceConstraintComponent sh:EqualsConstraintComponent ;
 		sh:sourceShape ?shape ;
 		sh:focusNode ?focusNode ;
+        # todo: sh:value ?value ;
     ]
 }.
 
@@ -93,7 +94,7 @@
         sh:path ?path ;
         this:focusNode ?focusNode .
     (?focusNode ?path) this:value ?value .
-    ?focusNode ?otherPredicate ?value .
+    (?focusNode ?otherPredicate) this:value ?value .
 } 
 => 
 {
@@ -132,7 +133,7 @@
     ?constraint this:shape ?shape .
     ?shape sh:path ?path .
     (?node ?path) this:value ?value .
-    ?node ?otherPredicate ?value 
+    (?node ?otherPredicate) this:value ?value 
 } .
 
 {
