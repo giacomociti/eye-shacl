@@ -15,9 +15,9 @@
     ex:iriShape sh:nodeKind sh:IRI .
 } .
 
-[] this:data {
-    ex:foo ex:name 5, "a"
-} .
+# [] this:data {
+    ex:foo ex:name 5, "a" .
+# } .
 
 
 

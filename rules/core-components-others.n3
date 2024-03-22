@@ -24,7 +24,9 @@
      
     ?shape this:focusNode ?focusNode .
     
-    [] this:data [ log:includes { ?focusNode ?p ?o } ].
+    # [] this:data [ log:includes { ?focusNode ?p ?o } ].
+    ?focusNode ?p ?o.
+    
     [] log:notIncludes { ?p list:in ?allowed }
 } 
 =>
@@ -50,7 +52,9 @@
     (?x { ?shape sh:property [ sh:path ?x ] . ?x this:nodeKind sh:IRI } ?xs) log:collectAllIn [] .
     (?xs ?ignoredProperties) list:append ?allowed .
          
-    [] this:data [ log:includes { ?node ?p ?o } ].
+    # [] this:data [ log:includes { ?node ?p ?o } ].
+    ?node ?p ?o .
+
     [] log:notIncludes { ?p list:in ?allowed }
 } .
 

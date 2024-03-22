@@ -14,9 +14,9 @@
     ex:nameShape sh:datatype xsd:string .
 } .
 
-[] this:data {
+# [] this:data {
     ex:foo ex:name "a", 5 .
-} .
+# } .
 
 
 

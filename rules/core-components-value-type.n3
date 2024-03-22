@@ -6,9 +6,11 @@
 @prefix sh: <http://www.w3.org/ns/shacl#>.
 @prefix this: <http://eye-shacl#> .
 
-{ ?value this:class ?class } <= { [] this:data [ log:includes { ?value a ?class } ] }.
-{ ?value this:class ?class } <= { [] this:data [ log:includes { ?subclass rdfs:subClassOf ?class } ] . ?value this:class ?subclass }.
+# { ?value this:class ?class } <= { [] this:data [ log:includes { ?value a ?class } ] }.
+# { ?value this:class ?class } <= { [] this:data [ log:includes { ?subclass rdfs:subClassOf ?class } ] . ?value this:class ?subclass }.
 
+{ ?value this:class ?class } <= {  ?value a ?class  }.
+{ ?value this:class ?class } <= { ?subclass rdfs:subClassOf ?class . ?value this:class ?subclass }.
 
 
 { ?value this:nodeKind sh:IRI } <= { ?value log:rawType log:Other . ?value log:uri [] }. 

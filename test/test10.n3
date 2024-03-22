@@ -15,10 +15,10 @@
     ex:literalShape sh:nodeKind sh:Literal .
 } .
 
-[] this:data {
+# [] this:data {
     ex:valid a ex:Class ; ex:predicate [] .
     ex:invalid a ex:Class ; ex:predicate 5 .
-} .
+# } .
 
 
 # assertions

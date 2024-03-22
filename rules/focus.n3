@@ -29,16 +29,21 @@
 }
 =>
 {
-    { [] this:data [ log:includes { ?targetNode [] [] } ] } => { ?shape this:focusNode ?targetNode } .
-    { [] this:data [ log:includes { [] [] ?targetNode } ] } => { ?shape this:focusNode ?targetNode } .
-    { [] this:data [ log:includes { [] ?targetNode [] } ] } => { ?shape this:focusNode ?targetNode } .
+    # { [] this:data [ log:includes { ?targetNode [] [] } ] } => { ?shape this:focusNode ?targetNode } .
+    # { [] this:data [ log:includes { [] [] ?targetNode } ] } => { ?shape this:focusNode ?targetNode } .
+    # { [] this:data [ log:includes { [] ?targetNode [] } ] } => { ?shape this:focusNode ?targetNode } .
+    # { ?targetNode [] [] } => { ?shape this:focusNode ?targetNode } .
+    # { [] [] ?targetNode } => { ?shape this:focusNode ?targetNode } .
+    # { [] ?targetNode [] } => { ?shape this:focusNode ?targetNode } .
+    ?shape this:focusNode ?targetNode . # mmmm
 } .
 
 
 {
     ?shape a sh:Shape .
     [] this:shapes [ log:includes { ?shape sh:targetObjectsOf ?predicate } ] .
-    [] this:data [ log:includes { [] ?predicate ?focusNode } ]
+    # [] this:data [ log:includes { [] ?predicate ?focusNode } ]
+    [] ?predicate ?focusNode
 }
 =>
 {
@@ -48,7 +53,8 @@
 {
     ?shape a sh:Shape .
     [] this:shapes [ log:includes { ?shape sh:targetSubjectsOf ?predicate } ] .
-    [] this:data [ log:includes { ?focusNode ?predicate [] } ]
+    # [] this:data [ log:includes { ?focusNode ?predicate [] } ]
+    ?focusNode ?predicate [] 
 }
 =>
 {

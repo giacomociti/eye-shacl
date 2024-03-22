@@ -15,10 +15,10 @@
     .
 }.
 
-[] this:data {
+# [] this:data {
     ex:foo a ex:Class ;
         ex:name "foo" , 5 .
-} .
+# } .
 
 # assertions
 {

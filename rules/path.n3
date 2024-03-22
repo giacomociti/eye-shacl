@@ -20,7 +20,8 @@
 <= 
 { 
     ?path this:nodeKind sh:IRI . 
-    [] this:data [ log:includes { ?focusNode ?path ?value } ] .
+    # [] this:data [ log:includes { ?focusNode ?path ?value } ] .
+    ?focusNode ?path ?value
 } .
 
 # sequence path

@@ -10,11 +10,11 @@
 
 
 
-[] this:data {
+# [] this:data {
     ex:valid ex:knows [ ex:knows [] ] .
     ex:valid ex:loves [] .
     [] ex:knows ex:valid .
-} .
+# } .
 
 
 

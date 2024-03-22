@@ -22,11 +22,11 @@
     ?url this:shapes ?shapesGraph 
 } .
 
-{
-    [] this:dataGraph ?url .
-    ?url log:semantics ?dataGraph
-}
-=>
-{
-    ?url this:data ?dataGraph
-} .
+# {
+#     [] this:dataGraph ?url .
+#     ?url log:semantics ?dataGraph
+# }
+# =>
+# {
+#     ?url this:data ?dataGraph
+# } .

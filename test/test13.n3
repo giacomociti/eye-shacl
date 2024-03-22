@@ -14,10 +14,10 @@
     ex:innerShape sh:path ex:predicate ; sh:datatype xsd:string .
 } .
 
-[] this:data {
+# [] this:data {
     ex:valid ex:predicate 5 .
     ex:invalid ex:predicate "a" .
-} .
+# } .
 
 
 # assertions

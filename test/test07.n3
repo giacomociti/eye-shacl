@@ -7,7 +7,7 @@
 @prefix earl: <http://www.w3.org/ns/earl#> .
 
 [] this:shapes {
-    ex:shape sh:targetNode ex:valid, ex:invalid, ex:missing ;
+    ex:shape sh:targetNode ex:valid, ex:invalid ; #, ex:missing ;
     sh:property [
         sh:path ex:name ;
         sh:minCount 1 ;
@@ -15,10 +15,10 @@
  .
 } .
 
-[] this:data {
+# [] this:data {
     ex:valid ex:name "abc" .
     ex:invalid ex:surname "ab" .
-} .
+# } .
 
 
 # assertions

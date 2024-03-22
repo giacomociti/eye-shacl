@@ -26,9 +26,9 @@
 
 
 
-[] this:data {
+# [] this:data {
     ex:invalid ex:name "invalid" .
-} .
+# } .
 
 
 

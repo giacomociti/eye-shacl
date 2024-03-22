@@ -19,9 +19,9 @@
 
 } .
 
-[] this:data {
-    ex:foo ex:name 5
-} .
+# [] this:data {
+    ex:foo ex:name 5 .
+# } .
 
 
 # assertions

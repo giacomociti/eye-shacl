@@ -10,10 +10,10 @@
     ex:shape sh:targetClass ex:Class ;
     sh:nodeKind sh:IRI 
 } .
-[] this:data {
+# [] this:data {
     ex:foo a ex:Class .
     _:foo a ex:Class .
-} .
+# } .
 
 # assertions
 {
