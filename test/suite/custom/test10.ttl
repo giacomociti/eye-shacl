@@ -1,0 +1,48 @@
+@prefix list: <http://www.w3.org/2000/10/swap/list#> .
+@prefix log: <http://www.w3.org/2000/10/swap/log#> .
+@prefix ex: <http:/example.org/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix sht: <http://www.w3.org/ns/shacl-test#> .
+
+# shapes 
+ex:shape sh:targetClass ex:Class ;
+    sh:path ex:predicate ;
+    sh:not ex:literalShape .
+
+ex:literalShape sh:nodeKind sh:Literal .
+
+# data 
+ex:valid a ex:Class ; ex:predicate [] .
+ex:invalid a ex:Class ; ex:predicate 5 .
+
+<>
+  rdf:type mf:Manifest ;
+  mf:entries (
+      <test10>
+    ) ;
+.
+<test10>
+  rdf:type sht:Validate ;
+  rdfs:label "Test 10" ;
+  mf:action [
+      sht:dataGraph <> ;
+      sht:shapesGraph <> ;
+    ] ;
+  mf:result [
+      rdf:type sh:ValidationReport ;
+      sh:conforms "false"^^xsd:boolean ;
+      sh:result  
+      [
+            a sh:ValidationResult ;
+            sh:sourceConstraintComponent sh:NotConstraintComponent ;
+            sh:sourceShape ex:shape ;
+            sh:focusNode ex:invalid ;
+            sh:value 5 ;
+        ] ;
+  ] ;
+  mf:status sht:approved ;
+.

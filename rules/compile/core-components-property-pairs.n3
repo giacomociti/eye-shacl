@@ -1,0 +1,289 @@
+# https://www.w3.org/TR/shacl/#core-components-property-pairs
+
+@prefix list: <http://www.w3.org/2000/10/swap/list#> .
+@prefix log: <http://www.w3.org/2000/10/swap/log#> .
+@prefix math: <http://www.w3.org/2000/10/swap/math#> .
+@prefix string: <http://www.w3.org/2000/10/swap/string#> .
+@prefix sh: <http://www.w3.org/ns/shacl#>.
+@prefix this: <http://eye-shacl#> .
+
+# EqualsConstraintComponent
+{ 
+    ?shape sh:equals ?otherPredicate ; sh:path ?path .
+    [] log:notIncludes { ?shape sh:deactivated true } .
+} 
+=> 
+{
+    {
+        ?shape this:focusNode ?focusNode .
+        (?focusNode ?path) this:values ?thisValues .
+        (?focusNode ?otherPredicate) this:values ?otherValues .
+
+        (?thisValues ?otherValues) list:append ?union .
+        (?x { ?x list:in ?thisValues , ?otherValues } ?intersection) log:collectAllIn [] .
+        
+        ?union list:member ?value .
+        ?intersection list:notMember ?value .
+         
+        ?path this:path ?resultPath .
+        this: this:report ?report .
+    }
+    =>
+    {
+        ?report sh:result [
+            a sh:ValidationResult ;
+            sh:sourceConstraintComponent sh:EqualsConstraintComponent ;
+            sh:sourceShape ?shape ;
+            sh:focusNode ?focusNode ;
+            sh:resultPath ?resultPath ;
+            sh:value ?value ;
+        ]
+    } .
+
+}.
+
+
+
+{ 
+    ?shape sh:equals ?otherPredicate ; a sh:NodeShape .
+    [] log:notIncludes { ?shape sh:deactivated true } .
+} 
+=> 
+{
+    {
+        ?shape  this:focusNode ?focusNode .
+        (?focusNode ?otherPredicate) this:values ?otherValues .
+        
+        ((?focusNode) ?otherValues) list:append ?union .
+        (?x { ?x log:equalTo ?focusNode ; sh:in ?otherValues } ?intersection) log:collectAllIn [] .
+        
+        ?union list:member ?value .
+        ?intersection list:notMember ?value .
+
+        this: this:report ?report .
+    }
+    =>
+    {
+        ?report sh:result [
+            a sh:ValidationResult ;
+            sh:sourceConstraintComponent sh:EqualsConstraintComponent ;
+            sh:sourceShape ?shape ;
+            sh:focusNode ?focusNode ;
+            sh:value ?value ;
+        ]
+    } .
+}.
+
+{
+    ?shape sh:equals ?otherPredicate ; sh:path ?path .
+    [] log:notIncludes { ?shape sh:deactivated true } .
+}
+=>
+{
+    {
+        ?node this:violates ?shape .
+    }
+    <=
+    {
+        (?node ?path) this:values ?thisValues .
+        (?node ?otherPredicate) this:values ?otherValues .
+        ?thisValues list:setNotEqualTo ?otherValues .
+    } .
+} .
+
+{
+    ?shape sh:equals ?otherPredicate ; a sh:NodeShape .
+    [] log:notIncludes { ?shape sh:deactivated true } .
+}
+=>
+{
+    {
+        ?node this:violates ?shape .
+    }
+    <=
+    {
+        (?node ?otherPredicate) this:values ?otherValues .
+        ?otherValues list:notMember ?node .
+    } .
+} .
+
+# DisjointConstraintComponent
+{ 
+    ?shape sh:disjoint ?otherPredicate ; sh:path ?path .
+    [] log:notIncludes { ?shape sh:deactivated true } .
+} 
+=> 
+{
+    {
+        ?shape this:focusNode ?focusNode .
+          
+        (?focusNode ?path) this:value ?value .
+        (?focusNode ?otherPredicate) this:value ?value .
+         
+        ?path this:path ?resultPath .
+        this: this:report ?report .
+    }
+    =>
+    {
+        ?report sh:result [
+            a sh:ValidationResult ;
+            sh:sourceConstraintComponent sh:DisjointConstraintComponent ;
+            sh:sourceShape ?shape ;
+            sh:focusNode ?focusNode ;
+            sh:value ?value ;
+            sh:resultPath ?path ;
+        ]
+    } .
+}.
+
+{ 
+    ?shape sh:disjoint ?otherPredicate ; a sh:NodeShape .
+    [] log:notIncludes { ?shape sh:deactivated true } .
+} 
+=> 
+{
+    {
+        ?shape this:focusNode ?focusNode .
+          
+        (?focusNode ?otherPredicate) this:value ?focusNode .
+         
+        this: this:report ?report .
+    }
+    =>
+    {
+        ?report sh:result [
+            a sh:ValidationResult ;
+            sh:sourceConstraintComponent sh:DisjointConstraintComponent ;
+            sh:sourceShape ?shape ;
+            sh:focusNode ?focusNode ;
+            sh:value ?focusNode ;
+        ]
+    } .
+}.
+
+{
+    ?shape sh:disjoint ?otherPredicate ; sh:path ?path .
+    [] log:notIncludes { ?shape sh:deactivated true } .
+}
+=>
+{
+    {
+        ?node this:violates ?shape .
+    }
+    <=
+    {
+        (?node ?path) this:value ?value .
+        (?node ?otherPredicate) this:value ?value .
+    } .
+} .
+
+{
+    ?shape sh:disjoint ?otherPredicate ; a sh:NodeShape .
+    [] log:notIncludes { ?shape sh:deactivated true } .
+}
+=>
+{
+    {
+        ?node this:violates ?shape .
+    }
+    <=
+    {
+        (?node ?otherPredicate) this:value ?node .   
+    } .
+} .
+
+# LessThanConstraintComponent
+{ 
+    ?shape sh:lessThan ?otherPredicate ; sh:path ?path .
+    [] log:notIncludes { ?shape sh:deactivated true } .
+} 
+=> 
+{
+    {
+        ?shape this:focusNode ?focusNode .
+          
+        (?focusNode ?path) this:value ?value .
+        (?focusNode ?otherPredicate) this:value ?otherValue .
+        [] log:notIncludes { ?value this:maxExclusive ?otherValue } .
+         
+        ?path this:path ?resultPath .
+        this: this:report ?report .
+    }
+    =>
+    {
+        ?report sh:result [
+            a sh:ValidationResult ;
+            sh:sourceConstraintComponent sh:LessThanConstraintComponent ;
+            sh:sourceShape ?shape ;
+            sh:focusNode ?focusNode ;
+            sh:value ?value ;
+            sh:resultPath ?path ;
+        ]
+    } .
+}.
+
+
+{
+    ?shape sh:lessThan ?otherPredicate ; sh:path ?path .
+    [] log:notIncludes { ?shape sh:deactivated true } .
+}
+=>
+{
+    {
+        ?node this:violates ?shape .
+    }
+    <=
+    {
+        (?node ?path) this:value ?value .
+        (?node ?otherPredicate) this:value ?otherValue .
+        [] log:notIncludes { ?value this:maxExclusive ?otherValue } .
+    } .
+} .
+
+
+# LessThanOrEqualsConstraintComponent
+{ 
+    ?shape sh:lessThanOrEquals ?otherPredicate ; sh:path ?path .
+    [] log:notIncludes { ?shape sh:deactivated true } .
+} 
+=> 
+{
+    {
+        ?shape this:focusNode ?focusNode .
+          
+        (?focusNode ?path) this:value ?value .
+        (?focusNode ?otherPredicate) this:value ?otherValue .
+        [] log:notIncludes { ?value this:maxInclusive ?otherValue } .
+         
+        ?path this:path ?resultPath .
+        this: this:report ?report .
+    }
+    =>
+    {
+        ?report sh:result [
+            a sh:ValidationResult ;
+            sh:sourceConstraintComponent sh:LessThanOrEqualsConstraintComponent ;
+            sh:sourceShape ?shape ;
+            sh:focusNode ?focusNode ;
+            sh:value ?value ;
+            sh:resultPath ?path ;
+        ]
+    } .
+}.
+
+{
+    ?shape sh:lessThanOrEquals ?otherPredicate ; sh:path ?path .
+    [] log:notIncludes { ?shape sh:deactivated true } .
+}
+=>
+{
+    {
+        ?node this:violates ?shape .
+    }
+    <=
+    {
+        (?node ?path) this:value ?value .
+        (?node ?otherPredicate) this:value ?otherValue .
+        [] log:notIncludes { ?value this:maxInclusive ?otherValue } .
+    } .
+} .

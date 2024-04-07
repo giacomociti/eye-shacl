@@ -1,0 +1,151 @@
+@prefix list: <http://www.w3.org/2000/10/swap/list#> .
+@prefix log: <http://www.w3.org/2000/10/swap/log#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix this: <http://eye-shacl#> .
+
+sh:in this:validator list:in .
+sh:class this:validator this:class .
+sh:nodeKind this:validator this:nodeKind .
+sh:datatype this:validator this:datatype .
+sh:minExclusive this:validator this:minExclusive .
+sh:minInclusive this:validator this:minInclusive .
+sh:maxExclusive this:validator this:maxExclusive .
+sh:maxInclusive this:validator this:maxInclusive .
+sh:minLength this:validator this:minLength .
+sh:maxLength this:validator this:maxLength .
+sh:pattern this:validator this:pattern .
+sh:languageIn this:validator this:languageIn .
+
+
+{
+    ?param this:constraint [] .
+    ?shape ?param [] .
+}
+=> 
+{
+    ?shape a sh:Shape .
+} .
+
+# shapes without path are node shapes
+{
+    ?shape a sh:Shape .
+    [] log:notIncludes { ?shape sh:path [] } .
+}
+=>
+{
+    ?shape a sh:NodeShape .
+} .
+
+
+
+# node shapes with validator
+{
+   ?param this:constraint ?constraint ; this:validator ?validator .
+   ?shape a sh:NodeShape ; ?param ?paramValue .
+   [] log:notIncludes { ?shape sh:deactivated true } .
+}
+=> 
+{
+   {
+       ?shape this:focusNode ?node .
+       [] log:notIncludes { ?node ?validator ?paramValue } .
+       this: this:report ?report .
+   }
+   => 
+   {
+       ?report sh:result [
+           a sh:ValidationResult ;
+           sh:sourceConstraintComponent ?constraint ;
+           sh:sourceShape ?shape ;
+           sh:focusNode ?node ;
+           sh:value ?node ;
+       ] .
+   } .
+} .
+
+{
+   ?param this:constraint ?constraint ; this:validator ?validator .
+   ?shape a sh:NodeShape ; ?param ?paramValue .
+   [] log:notIncludes { ?shape sh:deactivated true } .
+}
+=> 
+{
+   {
+       ?x this:violates ?shape 
+   }
+   <= 
+   {
+       [] log:notIncludes { ?x ?validator ?paramValue }
+   }
+} .
+
+# property shapes with validator
+{
+   ?shape sh:path ?path ; ?param ?paramValue .
+   ?param this:constraint ?constraint ; this:validator ?validator .
+   [] log:notIncludes { ?shape sh:deactivated true } .
+}
+=> 
+{
+   {
+       ?shape this:focusNode ?node .
+       ( ?node ?path ) this:value ?value .
+       [] log:notIncludes { ?value ?validator ?paramValue } .
+       ?path this:path ?resultPath .
+       this: this:report ?report .
+   }
+   => 
+   {
+       ?report sh:result [
+           a sh:ValidationResult ;
+           sh:sourceConstraintComponent ?constraint ;
+           sh:sourceShape ?shape ;
+           sh:focusNode ?node ;
+           sh:resultPath ?resultPath ;
+           sh:value ?value ;
+       ] .
+   } .
+} .
+
+{
+   ?shape sh:path ?path ; ?param ?paramValue .
+   ?param this:constraint ?constraint ; this:validator ?validator .
+   [] log:notIncludes { ?shape sh:deactivated true } .
+}
+=> 
+{
+   {
+       ?x this:violates ?shape .
+   }
+   <= 
+   {
+       ( ?x ?path ) this:value ?value .
+       [] log:notIncludes { ?value ?validator ?paramValue } .
+   } .
+} .
+
+{
+   ?shape sh:message ?message .
+}
+=> 
+{
+   { ?result sh:sourceShape ?shape } => { ?result sh:resultMessage ?message }
+} .
+
+{
+   ?shape sh:severity ?severity .
+}
+=> 
+{
+   { ?result sh:sourceShape ?shape } => { ?result sh:resultSeverity ?severity }
+} .
+
+{
+   ?shape a sh:Shape .
+   [] log:notIncludes { ?shape sh:severity [] } .
+}
+=> 
+{
+   { ?result sh:sourceShape ?shape } => { ?result sh:resultSeverity sh:Violation }
+} .

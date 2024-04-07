@@ -1,34 +1,16 @@
-@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
-@prefix list: <http://www.w3.org/2000/10/swap/list#> .
-@prefix log: <http://www.w3.org/2000/10/swap/log#> .
 @prefix sh: <http://www.w3.org/ns/shacl#>.
-@prefix this: <http://eye-shacl#> .
-@prefix ex: <http://example.org/> .
-
+@prefix list: <http://www.w3.org/2000/10/swap/list#> .
 
 { ?report a sh:ValidationReport ; ?p ?o } => { ?report ?p ?o } .
 
 { 
     ?report sh:result ?result . 
     ?result ?p ?o .
-    ?p list:in (
-        rdf:type 
-        sh:sourceConstraintComponent 
-        sh:sourceShape 
-        sh:resultPath
-        sh:focusNode
-        sh:value
-        sh:resultSeverity
-        sh:resultMessage
-        sh:detail
-    )
 } 
 => 
 { 
     ?result ?p ?o 
 } .
-
-
 
 {
     ?result sh:resultPath ?resultPath .
@@ -44,22 +26,4 @@
 =>
 {
     ?resultPath ?p ?o .
-} .
-
-
-
-{
-    this:report this:includes ?s .
-    ?s ?p ?o .
-    ?p list:in (
-        sh:inversePath
-        sh:alternativePath
-        sh:zeroOrMorePath
-        sh:oneOrMorePath
-        sh:zeroOrOnePath
-    )
-}
-=>
-{
-    ?s ?p ?o .
 } .

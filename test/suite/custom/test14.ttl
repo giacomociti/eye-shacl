@@ -1,0 +1,62 @@
+@prefix list: <http://www.w3.org/2000/10/swap/list#> .
+@prefix log: <http://www.w3.org/2000/10/swap/log#> .
+@prefix ex: <http:/example.org/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix sht: <http://www.w3.org/ns/shacl-test#> .
+
+# shapes 
+ex:shape sh:targetNode ex:valid1 , ex:valid2 , ex:valid3 , ex:invalid1;
+   sh:property ex:nameShape 
+.
+
+ex:nameShape  
+  sh:or (
+            [
+                sh:path ex:name;
+                sh:minCount 1;
+                sh:or ( [ sh:datatype xsd:string ] [ sh:datatype rdf:langString ] ) ;
+            ]
+            [
+                sh:path ex:code;
+                sh:minCount 1;
+            ]
+        );
+      .
+
+# data 
+ex:valid1 ex:name "foo" .
+ex:valid2 ex:name "foo"@en .
+ex:valid3 ex:code 5 .
+ex:invalid1 ex:name 5 .
+
+<>
+  rdf:type mf:Manifest ;
+  mf:entries (
+      <test14>
+    ) ;
+.
+<test14>
+  rdf:type sht:Validate ;
+  rdfs:label "Test 14" ;
+  mf:action [
+      sht:dataGraph <> ;
+      sht:shapesGraph <> ;
+    ] ;
+  mf:result [
+      rdf:type sh:ValidationReport ;
+      sh:conforms "false"^^xsd:boolean ;
+      sh:result  
+      [
+            a sh:ValidationResult ;
+            sh:sourceConstraintComponent sh:OrConstraintComponent ;
+            sh:sourceShape ex:nameShape ;
+            sh:focusNode ex:invalid1 ;
+            sh:value ex:invalid1 ;
+      ] ;
+  ] ;
+  mf:status sht:approved ;
+.

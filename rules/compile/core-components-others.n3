@@ -1,0 +1,119 @@
+
+# https://www.w3.org/TR/shacl/#core-components-others
+
+@prefix list: <http://www.w3.org/2000/10/swap/list#> .
+@prefix log: <http://www.w3.org/2000/10/swap/log#> .
+@prefix sh: <http://www.w3.org/ns/shacl#>.
+@prefix this: <http://eye-shacl#> .
+
+{ ?value this:nodeKind sh:IRI } <= { ?value log:rawType log:Other . ?value log:uri [] }. 
+
+# ClosedConstraintComponent
+{
+    ?shape sh:closed true .
+    (?x { ?shape sh:property [ sh:path ?x ] . ?x this:nodeKind sh:IRI } ?existing) log:collectAllIn [] .
+    (?x { ?shape sh:ignoredProperties [ list:member ?x ]} ?ignored) log:collectAllIn [] .
+    # workaround: this:path is added by rules
+    (?existing ?ignored (this:path)) list:append ?allowed .
+    [] log:notIncludes { ?shape sh:deactivated true } .
+}
+=>
+{
+    {
+        ?shape this:focusNode ?node .
+        ?node ?property ?value .
+        ?allowed list:notMember ?property .
+        this: this:report ?report .
+    }
+    =>
+    {
+        ?report sh:result [
+            a sh:ValidationResult ;
+            sh:sourceConstraintComponent sh:ClosedConstraintComponent;
+            sh:sourceShape ?shape ;
+            sh:focusNode ?node ;
+            sh:value ?value ;
+            sh:resultPath ?property ;
+        ] .
+    } .
+} .
+
+# HasValueConstraintComponent
+{
+    ?shape sh:hasValue ?hasValue ; sh:path ?path .
+    [] log:notIncludes { ?shape sh:deactivated true } .
+} 
+=>
+{
+    {
+        ?shape this:focusNode ?focusNode .
+        (?focusNode ?path) this:values ?values .
+        ?values list:notMember ?hasValue .
+        ?path this:path ?resultPath .
+        this: this:report ?report .
+    }
+    =>
+    {
+        ?report sh:result [
+            a sh:ValidationResult ;
+            sh:sourceConstraintComponent sh:HasValueConstraintComponent ;
+            sh:sourceShape ?shape ;
+            sh:focusNode ?focusNode ;
+            sh:resultPath ?resultPath ;
+        ] .
+    } .
+}.
+
+{
+   ?shape sh:hasValue ?hasValue ; sh:path ?path .
+   [] log:notIncludes { ?shape sh:deactivated true } .
+} 
+=>
+{
+    {
+        ?node this:violates ?shape .
+    }
+    <=
+    {
+        (?node ?path) this:values ?values .
+        ?values list:notMember ?hasValue .
+    } .
+}.
+
+{
+    ?shape sh:hasValue ?hasValue ; a sh:NodeShape .
+    [] log:notIncludes { ?shape sh:deactivated true } .
+} 
+=>
+{
+    {
+        ?shape this:focusNode ?focusNode .
+        ?focusNode log:notEqualTo ?hasValue .
+        this: this:report ?report .
+    }
+    =>
+    {
+        ?report sh:result [
+            a sh:ValidationResult ;
+            sh:sourceConstraintComponent sh:HasValueConstraintComponent ;
+            sh:sourceShape ?shape ;
+            sh:focusNode ?focusNode ;
+            sh:value ?focusNode ;
+        ] .
+    } .
+}.
+
+{
+    ?shape sh:hasValue ?hasValue ; a sh:NodeShape .
+    [] log:notIncludes { ?shape sh:deactivated true } .
+} 
+=>
+{
+    {
+        ?node this:violates ?shape .
+    }
+    <=
+    {
+       ?node log:notEqualTo ?hasValue .
+    } .
+}.

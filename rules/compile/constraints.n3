@@ -1,0 +1,43 @@
+@prefix sh: <http://www.w3.org/ns/shacl#>.
+@prefix this: <http://eye-shacl#> .
+
+# https://www.w3.org/TR/shacl/#core-components-value-type
+sh:class this:constraint sh:ClassConstraintComponent .
+sh:nodeKind this:constraint sh:NodeKindConstraintComponent.
+sh:datatype this:constraint sh:DatatypeConstraintComponent .
+# https://www.w3.org/TR/shacl/#core-components-count
+sh:minCount this:constraint sh:MinCountConstraintComponent .
+sh:maxCount this:constraint sh:MaxCountConstraintComponent .
+# https://www.w3.org/TR/shacl/#core-components-range
+sh:minExclusive this:constraint sh:MinExclusiveConstraintComponent .
+sh:minInclusive this:constraint sh:MinInclusiveConstraintComponent .
+sh:maxExclusive this:constraint sh:MaxExclusiveConstraintComponent .
+sh:maxInclusive this:constraint sh:MaxInclusiveConstraintComponent .
+# https://www.w3.org/TR/shacl/#core-components-string
+sh:minLength this:constraint sh:MinLengthConstraintComponent .
+sh:maxLength this:constraint sh:MaxLengthConstraintComponent .
+sh:pattern this:constraint sh:PatternConstraintComponent .
+sh:languageIn this:constraint sh:LanguageInConstraintComponent .
+sh:uniqueLang this:constraint sh:UniqueLangConstraintComponent .
+# https://www.w3.org/TR/shacl/#core-components-property-pairs
+sh:equals this:constraint sh:EqualsConstraintComponent .
+sh:disjoint this:constraint sh:DisjointConstraintComponent .
+sh:lessThan this:constraint sh:LessThanConstraintComponent .
+sh:lessThanOrEquals this:constraint sh:LessThanOrEqualsConstraintComponent .
+# https://www.w3.org/TR/shacl/#core-components-logical
+sh:not this:constraint sh:NotConstraintComponent .
+sh:and this:constraint sh:AndConstraintComponent .
+sh:or this:constraint sh:OrConstraintComponent .
+sh:xone this:constraint sh:XoneConstraintComponent .
+# https://www.w3.org/TR/shacl/#core-components-shape
+sh:node this:constraint sh:NodeConstraintComponent .
+sh:property this:constraint sh:PropertyConstraintComponent .
+sh:qualifiedValueShape this:constraint sh:QualifiedValueShapeConstraintComponent .
+sh:qualifiedMinCount this:constraint sh:QualifiedMinCountConstraintComponent .
+sh:qualifiedMaxCount this:constraint sh:QualifiedMaxCountConstraintComponent .
+# https://www.w3.org/TR/shacl/#core-components-others
+sh:closed this:constraint sh:ClosedConstraintComponent .
+sh:ignoredProperties this:constraint sh:ClosedConstraintComponent .
+sh:hasValue this:constraint sh:HasValueConstraintComponent .
+sh:in this:constraint sh:InConstraintComponent .
+

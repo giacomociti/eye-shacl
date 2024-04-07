@@ -1,0 +1,60 @@
+# https://www.w3.org/TR/shacl/#core-components-string
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix list: <http://www.w3.org/2000/10/swap/list#> .
+@prefix log: <http://www.w3.org/2000/10/swap/log#> .
+@prefix string: <http://www.w3.org/2000/10/swap/string#> .
+@prefix math: <http://www.w3.org/2000/10/swap/math#> .
+@prefix sh: <http://www.w3.org/ns/shacl#>.
+@prefix this: <http://eye-shacl#> .
+
+
+# UniqueLangConstraintComponent
+{ 
+    ?shape sh:uniqueLang true; sh:path ?path .
+    [] log:notIncludes { ?shape sh:deactivated true } .
+} 
+=> 
+{
+    {
+        ?shape this:focusNode ?focusNode .
+        (?focusNode ?path) this:value ?x, ?y .
+        ?x log:notEqualTo ?y .
+        ([] ?lang) log:langlit ?x .
+        ([] ?lang) log:langlit ?y .
+
+        ("Language \"%s\" has been used more than once" ?lang) string:format ?message .
+        ?path this:path ?resultPath .
+        this: this:report ?report .
+    }
+    =>
+    {
+        ?report sh:result [
+            a sh:ValidationResult ;
+            sh:sourceConstraintComponent sh:UniqueLangConstraintComponent ;
+            sh:sourceShape ?shape ;
+            sh:focusNode ?focusNode ;
+            sh:resultPath ?resultPath ;
+            this:message ?message ; # todo
+        ] .
+    } .
+}.
+
+{ 
+    ?shape sh:uniqueLang true; sh:path ?path .
+    [] log:notIncludes { ?shape sh:deactivated true } .
+} 
+=> 
+{
+    {
+        ?node this:violates ?shape .
+    }
+    <=
+    {
+        (?node ?path) this:value ?x, ?y .
+        ?x log:notEqualTo ?y .
+        ([] ?lang) log:langlit ?x .
+        ([] ?lang) log:langlit ?y .
+    } .
+}.
+
+# todo node shape?

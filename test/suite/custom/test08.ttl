@@ -1,0 +1,70 @@
+@prefix list: <http://www.w3.org/2000/10/swap/list#> .
+@prefix log: <http://www.w3.org/2000/10/swap/log#> .
+@prefix ex: <http:/example.org/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix sht: <http://www.w3.org/ns/shacl-test#> .
+
+# shapes 
+ex:shape sh:targetNode ex:valid ;
+    sh:property [
+        sh:path ex:knows ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] ;
+    sh:property [
+        sh:path (ex:knows ex:knows) ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] ;
+    sh:property [
+        sh:path [ sh:oneOrMorePath ex:knows ] ;
+        sh:minCount 2 ;
+        sh:maxCount 2 ;
+    ] ;
+    sh:property [
+        sh:path [ sh:inversePath ex:knows ] ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] ;
+
+    sh:property [
+        sh:path [ sh:alternativePath (ex:knows ex:loves) ] ;
+        sh:minCount 2 ;
+        sh:maxCount 2 ;
+    ] ;
+
+    sh:property [
+        sh:path [ sh:alternativePath (ex:loves [sh:inversePath ex:knows]) ] ;
+        sh:minCount 2 ;
+        sh:maxCount 2 ;
+    ] ;
+ .
+
+# data 
+ex:valid ex:knows [ ex:knows [] ] .
+ex:valid ex:loves [] .
+[] ex:knows ex:valid .
+
+<>
+  rdf:type mf:Manifest ;
+  mf:entries (
+      <test08>
+    ) ;
+.
+<test08>
+  rdf:type sht:Validate ;
+  rdfs:label "Test 08" ;
+  mf:action [
+      sht:dataGraph <> ;
+      sht:shapesGraph <> ;
+    ] ;
+  mf:result [
+      rdf:type sh:ValidationReport ;
+      sh:conforms "true"^^xsd:boolean ;
+    ] ;
+  mf:status sht:approved ;
+.

@@ -1,0 +1,70 @@
+
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix log: <http://www.w3.org/2000/10/swap/log#> .
+@prefix sh: <http://www.w3.org/ns/shacl#>.
+@prefix this: <http://eye-shacl#> .
+
+{
+    ?shape sh:targetClass ?targetClass .
+    [] log:notIncludes { ?shape sh:deactivated true } .
+}
+=>
+{
+    { ?shape this:focusNode ?x } <= { ?x this:class ?targetClass }
+} .
+
+{
+    ?shape a sh:Shape , rdfs:Class .
+    [] log:notIncludes { ?shape sh:deactivated true } .
+}
+=>
+{
+    { ?shape this:focusNode ?x } <= { ?x this:class ?shape }
+} .
+
+{
+    ?shape sh:targetNode ?targetNode .
+    [] log:notIncludes { ?shape sh:deactivated true } .
+}
+=>
+{
+    { ?shape this:focusNode ?targetNode } <= { this: this:report [] }
+} .
+
+
+
+{
+    ?shape sh:targetObjectsOf ?predicate .
+    [] log:notIncludes { ?shape sh:deactivated true } .
+}
+=>
+{
+    { 
+        ?shape this:focusNode ?x 
+    } 
+    <= 
+    { 
+        # trick to avoid triggering at build time
+        this: this:report [] . 
+        [] ?predicate ?x 
+    }
+} .
+
+
+{
+    ?shape sh:targetSubjectsOf ?predicate .
+    [] log:notIncludes { ?shape sh:deactivated true } .
+}
+=>
+{
+    {
+         ?shape this:focusNode ?x
+    } 
+    <= 
+    { 
+        # trick to avoid triggering at build time
+        this: this:report [] .
+        ?x ?predicate [] 
+    }
+} .
+

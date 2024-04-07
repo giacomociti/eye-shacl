@@ -1,2 +1,2 @@
-#!/bin/sh
-swipl -x eye-shacl.pvm --nope --quiet --query report.n3 "$@" 2>/dev/null
+#!/bin/bash
+./eye-shacl-validate.sh <(./eye-shacl-compile.sh $1) $2

@@ -1,0 +1,219 @@
+
+@prefix log: <http://www.w3.org/2000/10/swap/log#> .
+@prefix list: <http://www.w3.org/2000/10/swap/list#> .
+@prefix sh: <http://www.w3.org/ns/shacl#>.
+@prefix this: <http://eye-shacl#> .
+
+# path
+
+{
+    ?path sh:inversePath ?inversePath .
+}
+=>
+{
+    {
+        (?node ?path) this:value ?value .
+    }
+    <=
+    {
+        (?value ?inversePath) this:value ?node .
+    } .
+} .
+
+{
+    ?path sh:alternativePath ?alternatives .
+    ?alternatives list:member ?alt .
+}
+=>
+{
+    {
+        (?node ?path) this:value ?value .
+    }
+    <=
+    {
+        (?node ?alt) this:value ?value .
+    } .
+} .
+
+{
+    ?path sh:zeroOrMorePath ?zeroOrMorePath .
+}
+=>
+{
+    {
+        (?node ?path) this:value ?value .
+    }
+    <=
+    {
+        ?node log:equalTo ?value .
+    } .
+} .
+
+{
+    ?path sh:zeroOrMorePath ?zeroOrMorePath .
+}
+=>
+{
+    {
+        (?node ?path) this:value ?value .
+    }
+    <=
+    {
+        (?node ?zeroOrMorePath) this:value ?value .
+    } .
+} .
+
+{
+    ?path sh:oneOrMorePath ?oneOrMorePath .
+}
+=>
+{
+    {
+        (?node ?path) this:value ?value .
+    }
+    <=
+    {
+        (?node ?oneOrMorePath) this:value ?value .
+    } .
+} .
+
+{
+    ?path sh:oneOrMorePath ?oneOrMorePath .
+}
+=>
+{
+    {
+        (?node ?path) this:value ?value .
+    }
+    <=
+    {
+        (?node ?oneOrMorePath) this:value ?v .
+        (?v ?oneOrMorePath) this:value ?value .
+    } .
+} .
+
+{
+    ?path sh:zeroOrOnePath ?zeroOrOnePath .
+}
+=>
+{
+    {
+        (?node ?path) this:value ?value .
+    }
+    <=
+    {
+        ?node log:equalTo ?value .
+    } .
+} .
+
+{
+    ?path sh:zeroOrOnePath ?zeroOrOnePath .
+}
+=>
+{
+    {
+        (?node ?path) this:value ?value .
+    }
+    <=
+    {
+        (?node ?zeroOrOnePath) this:value ?value .
+    } .
+} .
+
+
+# path result
+
+# {
+#     [] sh:path ?path .
+#     ?path log:rawType rdf:List .
+# }
+# =>
+# {
+#     {
+#          ?path this:path ?resultPath
+#     }
+#     =>
+#     {
+#         ?path this:path ?resultPath
+#     } .
+    
+# } .
+
+{
+    ?path sh:inversePath ?inversePath .
+}
+=>
+{
+    {
+         ?inversePath this:path ?result
+    }
+    =>
+    {
+        ?path this:path [ sh:inversePath ?result ] .
+    } .
+    
+} .
+
+{
+    ?path sh:alternativePath ?alternatives .
+    ?alternatives list:firstRest (?first ?rest) .
+}
+=>
+{
+    {
+        ?first this:path ?firstPath .
+        ?rest this:path ?restPath .
+        ((?firstPath) ?restPath) list:append ?result .
+    }
+    =>
+    {
+        ?path this:path [ sh:alternativePath ?result ] .
+    } .
+    
+} .
+
+{
+    ?path sh:zeroOrMorePath ?zeroOrMorePath .
+}
+=>
+{
+    {
+         ?zeroOrMorePath this:path ?result
+    }
+    =>
+    {
+        ?path this:path [ sh:zeroOrMorePath ?result ] .
+    } .
+    
+} .
+
+
+{
+    ?path sh:oneOrMorePath ?oneOrMorePath .
+}
+=>
+{
+    {
+         ?oneOrMorePath this:path ?result
+    }
+    =>
+    {
+        ?path this:path [ sh:oneOrMorePath ?result ] .
+    } .
+    
+} .
+
+{
+    ?path sh:zeroOrOnePath ?zeroOrOnePath .
+}
+=>
+{
+    {
+         ?zeroOrOnePath this:path ?result
+    }
+    =>
+    {
+        ?path this:path [ sh:zeroOrOnePath ?result ] .
+    } .
+    
+} .

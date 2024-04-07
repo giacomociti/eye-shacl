@@ -1,0 +1,20 @@
+@prefix sht: <http://www.w3.org/ns/shacl-test#> .
+@prefix e: <http://eulersharp.sourceforge.net/2003/03swap/log-rules#>.
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix this: <http://eye-shacl#>.
+@prefix string: <http://www.w3.org/2000/10/swap/string#> .
+@prefix log: <http://www.w3.org/2000/10/swap/log#> .
+
+{
+    ?validate a sht:Validate ;
+        mf:action [
+            sht:dataGraph [ log:uri ?dataGraph ] ;
+            sht:shapesGraph [ log:uri ?shapesGraph ] ;
+        ] .
+    ("./eye-shacl.sh %s %s > test-actual.ttl" ?shapesGraph ?dataGraph) string:format ?CMD.
+    ?CMD e:exec 0.
+}
+=>
+{
+    # ?CMD this:exec ?exec.
+} .

@@ -1,0 +1,26 @@
+@prefix this: <http://eye-shacl#> .
+@prefix sh: <http://www.w3.org/ns/shacl#>.
+@prefix log: <http://www.w3.org/2000/10/swap/log#> .
+
+this: this:report [] .
+
+{
+    this: this:report ?report .
+    [] log:notIncludes { ?report sh:conforms [] } .
+}
+=>
+{
+    ?report a sh:ValidationReport .
+    ?report sh:conforms true .
+} .
+
+{
+    this: this:report ?report .
+    ?report sh:conforms true ; sh:result [] .
+    { ?report sh:conforms true } log:becomes { ?report sh:conforms false }.
+}
+=>
+{
+ 
+} .
+

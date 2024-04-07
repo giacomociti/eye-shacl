@@ -1,0 +1,58 @@
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix log: <http://www.w3.org/2000/10/swap/log#> .
+@prefix list: <http://www.w3.org/2000/10/swap/list#> .
+@prefix string: <http://www.w3.org/2000/10/swap/string#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix math: <http://www.w3.org/2000/10/swap/math#> .
+@prefix this: <http://eye-shacl#> .
+@prefix pred: <http://www.w3.org/2007/rif-builtin-predicate#>.
+@prefix sh: <http://www.w3.org/ns/shacl#>.
+
+# https://www.w3.org/TR/shacl/#core-components-range
+
+{ ?value this:minExclusive ?minExclusive } <= { ?minExclusive a this:Number . ?value a this:Number ; math:greaterThan ?minExclusive }.
+{ ?value this:minInclusive ?minInclusive } <= { ?minInclusive a this:Number . ?value a this:Number ; math:notLessThan ?minInclusive }.
+{ ?value this:maxExclusive ?maxExclusive } <= { ?maxExclusive a this:Number . ?value a this:Number ; math:lessThan ?maxExclusive }.
+{ ?value this:maxInclusive ?maxInclusive } <= { ?maxInclusive a this:Number . ?value a this:Number ; math:notGreaterThan ?maxInclusive }.
+
+{ ?value this:minExclusive ?minExclusive } <= { ?minExclusive this:datatype xsd:string . ?value this:datatype xsd:string ; string:greaterThan ?minExclusive }.
+{ ?value this:minInclusive ?minInclusive } <= { ?minInclusive this:datatype xsd:string . ?value this:datatype xsd:string ; string:notLessThan ?minInclusive }.
+{ ?value this:maxExclusive ?maxExclusive } <= { ?maxExclusive this:datatype xsd:string . ?value this:datatype xsd:string ; string:lessThan ?maxExclusive }.
+{ ?value this:maxInclusive ?maxInclusive } <= { ?maxInclusive this:datatype xsd:string . ?value this:datatype xsd:string ; string:notGreaterThan ?maxInclusive }.
+
+{ ?value this:minExclusive ?minExclusive } <= { ?value this:datatype xsd:dateTime . (?value ?minExclusive) pred:dateTime-greater-than true }.
+{ ?value this:minInclusive ?minInclusive } <= { ?value this:datatype xsd:dateTime . (?value ?minInclusive) pred:dateTime-greater-than-or-equal true }.
+{ ?value this:maxExclusive ?maxExclusive } <= { ?value this:datatype xsd:dateTime . (?value ?maxExclusive) pred:dateTime-less-than true }.
+{ ?value this:maxInclusive ?maxInclusive } <= { ?value this:datatype xsd:dateTime . (?value ?maxInclusive) pred:dateTime-less-than-or-equal true }.
+
+{ ?value a this:Number } <= { ?value this:datatype [ list:in (xsd:integer xsd:decimal xsd:double xsd:float) ] }.
+
+{ ?value this:minLength ?minLength } <= { (?text []) log:dtlit ?value . ?text string:length [math:notLessThan ?minLength] }.
+{ ?value this:minLength ?minLength } <= { ?value log:rawType log:Other ; log:uri ?text . ?text string:length [math:notLessThan ?minLength] }.
+
+{ ?value this:maxLength ?maxLength } <= { (?text []) log:dtlit ?value . ?text string:length [math:notGreaterThan ?maxLength] }.
+{ ?value this:maxLength ?maxLength } <= { ?value log:rawType log:Other ; log:uri ?text . ?text string:length [math:notGreaterThan ?maxLength] }.
+
+{ ?value this:pattern ?pattern } <= { (?text []) log:dtlit ?value . ?text string:matches ?pattern }. # flags?
+{ ?value this:languageIn ?languageIn } <= { ?languageIn list:member ?lang . ( [] ?lang ) log:langlit ?value }. #sublang?
+
+
+# https://www.w3.org/TR/shacl/#core-components-value-type
+
+{ ?value this:class ?class } <= { ?value a ?class } .
+{ ?value this:class ?class } <= { ?subclass rdfs:subClassOf ?class . ?value this:class ?subclass } .
+
+
+{ ?value this:nodeKind sh:IRI } <= { ?value log:rawType log:Other . ?value log:uri [] }. 
+{ ?value this:nodeKind sh:Literal } <= { ?value log:rawType log:Literal }. 
+{ ?value this:nodeKind sh:BlankNode } <= { ?value log:rawType log:LabeledBlankNode }. 
+{ ?value this:nodeKind sh:BlankNode } <= { ?value log:rawType log:UnlabeledBlankNode }. 
+{ ?value this:nodeKind sh:BlankNodeOrIRI } <= { ?value this:nodeKind sh:BlankNode }. 
+{ ?value this:nodeKind sh:BlankNodeOrIRI } <= { ?value this:nodeKind sh:IRI }. 
+{ ?value this:nodeKind sh:IRIOrLiteral } <= { ?value this:nodeKind sh:IRI }. 
+{ ?value this:nodeKind sh:IRIOrLiteral } <= { ?value this:nodeKind sh:Literal }. 
+{ ?value this:nodeKind sh:BlankNodeOrLiteral } <= { ?value this:nodeKind sh:BlankNode }. 
+{ ?value this:nodeKind sh:BlankNodeOrLiteral } <= { ?value this:nodeKind sh:Literal }. 
+
+# should also check that is not ill-typed
+{ ?value this:datatype ?datatype } <= { ([] ?datatype) log:dtlit ?value }.

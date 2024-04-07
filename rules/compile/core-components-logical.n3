@@ -1,0 +1,353 @@
+# https://www.w3.org/TR/shacl/#core-components-logical
+
+@prefix log: <http://www.w3.org/2000/10/swap/log#> .
+@prefix list: <http://www.w3.org/2000/10/swap/list#> .
+@prefix sh: <http://www.w3.org/ns/shacl#>.
+@prefix this: <http://eye-shacl#> .
+
+# not
+
+{
+    ?shape sh:not ?not ; a sh:NodeShape .
+    [] log:notIncludes { ?shape sh:deactivated true } .
+}
+=>
+{
+    {
+        ?shape this:focusNode ?node .
+        [] log:notIncludes { ?node this:violates ?not } .
+        this: this:report ?report .
+    }
+    =>
+    {
+        ?report sh:result [
+            a sh:ValidationResult ;
+            sh:sourceConstraintComponent sh:NotConstraintComponent;
+            sh:sourceShape ?shape ;
+            sh:focusNode ?node ;
+            sh:value ?node ;
+        ] .
+    } .
+} .
+
+{
+    ?shape sh:not ?not ; sh:path ?path .
+    [] log:notIncludes { ?shape sh:deactivated true } .
+}
+=>
+{
+   {
+        ?shape this:focusNode ?node .
+        (?node ?path) this:value ?value .
+        [] log:notIncludes { ?value this:violates ?not } .
+        ?path this:path ?resultPath .
+        this: this:report ?report .
+    }
+    =>
+    {
+        ?report sh:result [
+            a sh:ValidationResult ;
+            sh:sourceConstraintComponent sh:NotConstraintComponent;
+            sh:sourceShape ?shape ;
+            sh:focusNode ?node ;
+            sh:resultPath ?resultPath ;
+            sh:value ?value ;
+        ] .
+    } .
+} .
+
+{
+    ?shape sh:not ?not ; a sh:NodeShape .
+    [] log:notIncludes { ?shape sh:deactivated true } .
+}
+=>
+{
+    {
+        ?node this:violates ?shape .
+    }
+    <=
+    {
+        [] log:notIncludes { ?node this:violates ?not } .
+    } .
+} .
+
+{
+    ?shape sh:not ?not ; sh:path ?path .
+    [] log:notIncludes { ?shape sh:deactivated true } .
+}
+=>
+{
+    {
+        ?node this:violates ?shape .
+    }
+    <=
+    {
+        (?node ?path) this:value ?value .
+        [] log:notIncludes { ?value this:violates ?not } .
+    } .
+} .
+
+
+# or
+{
+    ?shape sh:or ?or ; a sh:NodeShape .
+    [] log:notIncludes { ?shape sh:deactivated true } .
+}
+=>
+{
+    {
+        ?shape this:focusNode ?node .
+        (
+            { ?or list:member ?alternative  }
+            { ?node this:violates ?alternative }
+        ) log:forAllIn [] .
+        this: this:report ?report .
+    }
+    =>
+    {
+        ?report sh:result [
+            a sh:ValidationResult ;
+            sh:sourceConstraintComponent sh:OrConstraintComponent;
+            sh:sourceShape ?shape ;
+            sh:focusNode ?node ;
+            sh:value ?node ;
+        ] .
+    } .
+} .
+
+{
+    ?shape sh:or ?or ; sh:path ?path . 
+    [] log:notIncludes { ?shape sh:deactivated true } .
+}
+=>
+{
+    {
+        ?shape this:focusNode ?node .
+        (?node ?path) this:value ?value .
+        (
+            { ?or list:member ?alternative  }
+            { ?value this:violates ?alternative }
+        ) log:forAllIn [] .
+        ?path this:path ?resultPath .
+        this: this:report ?report .
+    }
+    =>
+    {
+        ?report sh:result [
+            a sh:ValidationResult ;
+            sh:sourceConstraintComponent sh:OrConstraintComponent;
+            sh:sourceShape ?shape ;
+            sh:focusNode ?node ;
+            sh:resultPath ?resultPath ;
+            sh:value ?value ;
+        ] .
+    } .
+} .
+
+{
+    ?shape sh:or ?or ; a sh:NodeShape .
+    [] log:notIncludes { ?shape sh:deactivated true } .
+}
+=>
+{
+    {
+        ?node this:violates ?shape
+    }
+    <=
+    {
+        (
+            { ?or list:member ?alternative  }
+            { ?node this:violates ?alternative }
+        ) log:forAllIn [] .
+    } .
+} .
+
+{
+    ?shape sh:or ?or ; sh:path ?path .
+    [] log:notIncludes { ?shape sh:deactivated true } .
+}
+=>
+{
+    {
+        ?node this:violates ?shape
+    }
+    <=
+    {
+        (?node ?path) this:value ?value .
+        (
+            { ?or list:member ?alternative  }
+            { ?value this:violates ?alternative }
+        ) log:forAllIn [] .
+    } .
+} .
+
+# and
+{
+    ?shape sh:and ?and ; a sh:NodeShape .
+    [] log:notIncludes { ?shape sh:deactivated true } .
+}
+=>
+{
+    {
+        ?shape this:focusNode ?node .
+        ?and list:member ?member .
+        ?node this:violates ?member .
+        this: this:report ?report .
+    }
+    =>
+    {
+        ?report sh:result [
+            a sh:ValidationResult ;
+            sh:sourceConstraintComponent sh:AndConstraintComponent;
+            sh:sourceShape ?shape ;
+            sh:focusNode ?node ;
+            sh:value ?node ;
+        ] .
+    } .
+} .
+
+{
+    ?shape sh:and ?and ; sh:path ?path .
+    [] log:notIncludes { ?shape sh:deactivated true } .
+}
+=>
+{
+    {
+        ?shape this:focusNode ?node .
+        (?node ?path) this:value ?value .
+        ?and list:member ?member .
+        ?value this:violates ?member .
+        ?path this:path ?resultPath .
+        this: this:report ?report .
+    }
+    =>
+    {
+        ?report sh:result [
+            a sh:ValidationResult ;
+            sh:sourceConstraintComponent sh:AndConstraintComponent;
+            sh:sourceShape ?shape ;
+            sh:focusNode ?node ;
+            sh:resultPath ?resultPath ;
+            sh:value ?value ;
+        ] .
+    } .
+} .
+
+{
+    ?shape sh:and ?and ; a sh:NodeShape .
+    [] log:notIncludes { ?shape sh:deactivated true } .
+}
+=>
+{
+    {
+        ?node this:violates ?shape .        
+    }
+    <=
+    {
+        ?and list:member ?member .
+        ?node this:violates ?member .
+    } .
+} .
+
+{
+    ?shape sh:and ?and ; sh:path ?path .
+    [] log:notIncludes { ?shape sh:deactivated true } .
+}
+=>
+{
+    {
+        ?node this:violates ?shape .
+    }
+    <=
+    {
+        (?node ?path) this:value ?value .
+        ?and list:member ?member .
+        ?value this:violates ?member .
+    } .
+} .
+
+# xone
+{
+    ?shape sh:xone ?xone ; a sh:NodeShape .
+    [] log:notIncludes { ?shape sh:deactivated true } .
+}
+=>
+{
+    {
+        ?shape this:focusNode ?node .
+        (?x { ?x list:in ?xone . ?node this:violates ?x } ?xs) log:collectAllIn [] .
+        ?xs list:length [ log:notEqualTo 1 ] .
+
+        this: this:report ?report .
+    }
+    =>
+    {
+        ?report sh:result [
+            a sh:ValidationResult ;
+            sh:sourceConstraintComponent sh:XoneConstraintComponent;
+            sh:sourceShape ?shape ;
+            sh:focusNode ?node ;
+            sh:value ?node ;
+        ] .
+    } .
+} .
+
+{
+    ?shape sh:xone ?xone ; sh:path ?path .
+    [] log:notIncludes { ?shape sh:deactivated true } .
+}
+=>
+{
+    {
+        ?shape this:focusNode ?node .
+        (?node ?path) this:value ?value .
+
+        (?x { ?x list:in ?xone . ?value this:violates ?x } ?xs) log:collectAllIn [] .
+        ?xs list:length [ log:notEqualTo 1 ] .
+
+        this: this:report ?report .
+    }
+    =>
+    {
+        ?report sh:result [
+            a sh:ValidationResult ;
+            sh:sourceConstraintComponent sh:XoneConstraintComponent;
+            sh:sourceShape ?shape ;
+            sh:focusNode ?node ;
+            sh:value ?value ;
+        ] .
+    } .
+} .
+
+{
+    ?shape sh:xone ?xone ; a sh:NodeShape .
+    [] log:notIncludes { ?shape sh:deactivated true } .
+}
+=>
+{
+    {
+        ?node this:violates ?shape .
+    }
+    <=
+    {
+        (?x { ?x list:in ?xone . ?node this:violates ?x } ?xs) log:collectAllIn [] .
+        ?xs list:length [ log:notEqualTo 1 ] .
+    } .
+} .
+
+{
+    ?shape sh:xone ?xone ; sh:path ?path .
+    [] log:notIncludes { ?shape sh:deactivated true } .
+}
+=>
+{
+    {
+        ?node this:violates ?shape .       
+    }
+    <=
+    {
+        (?node ?path) this:value ?value .
+        (?x { ?x list:in ?xone . ?value this:violates ?x } ?xs) log:collectAllIn [] .
+        ?xs list:length [ log:notEqualTo 1 ] .
+    } .
+} .
