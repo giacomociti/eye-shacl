@@ -276,7 +276,7 @@
     {
         ?shape this:focusNode ?node .
         (?x { ?x list:in ?xone . ?node this:violates ?x } ?xs) log:collectAllIn [] .
-        ?xs list:length [ log:notEqualTo 1 ] .
+        ?xs list:unique [ list:length [ log:notEqualTo 1 ] ] .
 
         this: this:report ?report .
     }
@@ -303,7 +303,7 @@
         (?node ?path) this:value ?value .
 
         (?x { ?x list:in ?xone . ?value this:violates ?x } ?xs) log:collectAllIn [] .
-        ?xs list:length [ log:notEqualTo 1 ] .
+        ?xs list:unique [ list:length [ log:notEqualTo 1 ] ] .
 
         this: this:report ?report .
     }
@@ -331,7 +331,7 @@
     <=
     {
         (?x { ?x list:in ?xone . ?node this:violates ?x } ?xs) log:collectAllIn [] .
-        ?xs list:length [ log:notEqualTo 1 ] .
+        ?xs list:unique [ list:length [ log:notEqualTo 1 ] ] .
     } .
 } .
 
@@ -348,6 +348,6 @@
     {
         (?node ?path) this:value ?value .
         (?x { ?x list:in ?xone . ?value this:violates ?x } ?xs) log:collectAllIn [] .
-        ?xs list:length [ log:notEqualTo 1 ] .
+        ?xs list:unique [ list:length [ log:notEqualTo 1 ] ] .
     } .
 } .
