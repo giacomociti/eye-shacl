@@ -29,6 +29,7 @@ files=(
     "custom/test12.ttl"
     "custom/test13.ttl"
     "custom/test14.ttl"
+    "custom/test15.ttl"
 
     # https://github.com/w3c/data-shapes/tree/gh-pages/data-shapes-test-suite/tests/core
 
@@ -50,7 +51,7 @@ files=(
     "core/node/datatype-001.ttl" # parsing error
     "core/node/datatype-002.ttl"
     "core/node/disjoint-001.ttl"
-    "core/node/equals-001.ttl" # more results
+    "core/node/equals-001.ttl"
     "core/node/hasValue-001.ttl"
     "core/node/in-001.ttl"
     "core/node/languageIn-001.ttl"
@@ -68,10 +69,10 @@ files=(
     "core/node/not-002.ttl"
     "core/node/or-001.ttl"
     "core/node/pattern-001.ttl"
-    "core/node/pattern-002.ttl" # more result
+    "core/node/pattern-002.ttl" ## sh:flags ignored
     "core/node/qualified-001.ttl"
-    "core/node/xone-001.ttl" # more result
-    "core/node/xone-duplicate.ttl"
+    "core/node/xone-001.ttl"
+    "core/node/xone-duplicate.ttl" #
 
     "core/path/path-alternative-001.ttl"
     "core/path/path-complex-001.ttl"
@@ -92,14 +93,14 @@ files=(
     "core/property/datatype-001.ttl"
     "core/property/datatype-002.ttl"
     "core/property/datatype-003.ttl"
-    "core/property/datatype-ill-formed.ttl" # missing results
+    "core/property/datatype-ill-formed.ttl" # parsing issue
     "core/property/disjoint-001.ttl"
     "core/property/equals-001.ttl"
     "core/property/hasValue-001.ttl"
     "core/property/in-001.ttl"
-    "core/property/languageIn-001.ttl" # more result
+    "core/property/languageIn-001.ttl" ## should consider sub-language
     "core/property/lessThan-001.ttl" 
-    "core/property/lessThan-002.ttl" # less results
+    "core/property/lessThan-002.ttl" ## expected duplicates
     "core/property/lessThanOrEquals-001.ttl"
     "core/property/maxCount-001.ttl"
     "core/property/maxCount-002.ttl"
@@ -118,13 +119,13 @@ files=(
     "core/property/or-001.ttl"
     "core/property/or-datatypes-001.ttl" # parsing error
     "core/property/pattern-001.ttl"
-    "core/property/pattern-002.ttl" # flag?
-    "core/property/property-001.ttl" # missing result (dup?)
+    "core/property/pattern-002.ttl" ## ignore sh:flags
+    "core/property/property-001.ttl" ## expected duplicate
     "core/property/qualifiedMinCountDisjoint-001.ttl" # todo
     "core/property/qualifiedValueShape-001.ttl" # todo
     "core/property/qualifiedValueShapesDisjoint-001.ttl" # todo
     "core/property/uniqueLang-001.ttl"
-    "core/property/uniqueLang-002.ttl" # fails
+    "core/property/uniqueLang-002.ttl" ## bool (nitpick)
 
     "core/targets/multipleTargets-001.ttl"
     "core/targets/targetClass-001.ttl"
@@ -134,7 +135,7 @@ files=(
     "core/targets/targetSubjectsOf-001.ttl"
     "core/targets/targetSubjectsOf-002.ttl"
 
-    "core/validation-reports/shared.ttl" #  missing (dup?)
+    "core/validation-reports/shared.ttl" ## expected duplicate
 )
 
 for file in "${files[@]}"

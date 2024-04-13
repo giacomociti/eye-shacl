@@ -1,0 +1,61 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix list: <http://www.w3.org/2000/10/swap/list#> .
+@prefix log: <http://www.w3.org/2000/10/swap/log#> .
+@prefix ex: <http:/example.org/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix sht: <http://www.w3.org/ns/shacl-test#> .
+
+# shapes 
+ex:shape1 sh:targetClass ex:Class ;
+  sh:nodeKind sh:IRI .
+
+ex:shape2 sh:targetClass ex:Class ;
+  sh:property [
+    sh:path ex:name ;
+    sh:minCount 1 ;
+  ] .
+
+[] owl:imports <test15-shapes.ttl> .
+
+# data 
+ex:valid1 a ex:Class ; ex:name "" ; ex:description "" .
+_:valid2 a ex:Class ; ex:name ""; ex:description "" .
+ex:invalid1 a ex:Class ; ex:name "" .
+ex:invalid2 a ex:Class ; ex:description "" .
+
+<>
+  rdf:type mf:Manifest ;
+  mf:entries (
+      <test15>
+    ) ;
+.
+<test15>
+  rdf:type sht:Validate ;
+  rdfs:label "Test 15" ;
+  mf:action [
+      sht:dataGraph <> ;
+      sht:shapesGraph <> ;
+    ] ;
+  mf:result [
+      rdf:type sh:ValidationReport ;
+      sh:conforms "false"^^xsd:boolean ;
+      sh:result  
+      [
+            a sh:ValidationResult ;
+            sh:sourceConstraintComponent sh:MinCountConstraintComponent ;
+            sh:resultPath ex:description ;
+            sh:focusNode ex:invalid1 ;
+      ] ,
+      [
+            a sh:ValidationResult ;
+            sh:sourceConstraintComponent sh:MinCountConstraintComponent ;
+            sh:resultPath ex:name ;
+            sh:focusNode ex:invalid2 ;
+      ] ;
+  ] ;
+  mf:status sht:approved ;
+.

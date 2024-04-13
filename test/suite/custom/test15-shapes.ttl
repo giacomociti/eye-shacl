@@ -1,0 +1,10 @@
+@prefix ex: <http:/example.org/> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+
+ex:shape1 sh:deactivated true .
+
+ex:shape3 sh:targetClass ex:Class ;
+  sh:property [
+    sh:path ex:description ;
+    sh:minCount 1 ;
+  ] .
