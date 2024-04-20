@@ -30,6 +30,7 @@ files=(
     "custom/test13.ttl"
     "custom/test14.ttl"
     "custom/test15.ttl"
+    "custom/test16.ttl"
 
     # https://github.com/w3c/data-shapes/tree/gh-pages/data-shapes-test-suite/tests/core
 
@@ -72,7 +73,7 @@ files=(
     "core/node/pattern-002.ttl" ## sh:flags ignored
     "core/node/qualified-001.ttl"
     "core/node/xone-001.ttl"
-    "core/node/xone-duplicate.ttl" #
+    "core/node/xone-duplicate.ttl"
 
     "core/path/path-alternative-001.ttl"
     "core/path/path-complex-001.ttl"
@@ -119,13 +120,13 @@ files=(
     "core/property/or-001.ttl"
     "core/property/or-datatypes-001.ttl" # parsing error
     "core/property/pattern-001.ttl"
-    "core/property/pattern-002.ttl" ## ignore sh:flags
+    "core/property/pattern-002.ttl" ## sh:flags ignored
     "core/property/property-001.ttl" ## expected duplicate
-    "core/property/qualifiedMinCountDisjoint-001.ttl" # todo
-    "core/property/qualifiedValueShape-001.ttl" # todo
-    "core/property/qualifiedValueShapesDisjoint-001.ttl" # todo
+    "core/property/qualifiedMinCountDisjoint-001.ttl"
+    "core/property/qualifiedValueShape-001.ttl"
+    "core/property/qualifiedValueShapesDisjoint-001.ttl"
     "core/property/uniqueLang-001.ttl"
-    "core/property/uniqueLang-002.ttl" ## bool (nitpick)
+    "core/property/uniqueLang-002.ttl"
 
     "core/targets/multipleTargets-001.ttl"
     "core/targets/targetClass-001.ttl"

@@ -1,4 +1,6 @@
 
+@prefix string: <http://www.w3.org/2000/10/swap/string#> .
+
 # https://www.w3.org/TR/shacl/#core-components-shape
 
 @prefix log: <http://www.w3.org/2000/10/swap/log#> .
@@ -137,4 +139,130 @@
 => 
 {
     { ?node this:violates ?shape } <= { ?node this:violates ?propertyShape }
+} .
+
+# qualifiedValueShape
+ 
+
+{
+    ?shape sh:qualifiedMinCount ?minCount .
+    ?shape sh:qualifiedValueShape ?valueShape ; sh:path ?path .
+}
+=>
+{
+    {
+        ?shape this:focusNode ?node .
+        ?node this:qualifiedCount (?shape ?length) .
+        ?length math:lessThan ?minCount .
+
+        ("%s values passed, expected at least %s" ?length ?minCount) string:format ?message .
+        this: this:report ?report .
+        ?path this:path ?resultPath .
+    }
+    =>
+    {
+        ?report sh:result [
+            a sh:ValidationResult ;
+            sh:sourceConstraintComponent sh:QualifiedMinCountConstraintComponent;
+            sh:sourceShape ?shape ;
+            sh:focusNode ?node ;
+            sh:resultPath ?resultPath ;
+            this:message ?message ;
+        ] .
+    } .
+} .
+
+{
+    ?shape sh:qualifiedMaxCount ?maxCount .
+    ?shape sh:qualifiedValueShape ?valueShape ; sh:path ?path .
+}
+=>
+{
+    {
+        ?shape this:focusNode ?node .
+        ?node this:qualifiedCount (?shape ?length) .
+        ?length math:greaterThan ?maxCount .
+
+        ("%s values passed, expected at most %s" ?length ?maxCount) string:format ?message .
+        this: this:report ?report .
+        ?path this:path ?resultPath .
+    }
+    =>
+    {
+        ?report sh:result [
+            a sh:ValidationResult ;
+            sh:sourceConstraintComponent sh:QualifiedMaxCountConstraintComponent;
+            sh:sourceShape ?shape ;
+            sh:focusNode ?node ;
+            sh:resultPath ?resultPath ;
+            this:message ?message ;
+        ] .
+    } .
+} .
+
+
+{
+    ?shape sh:qualifiedValueShape ?valueShape ; sh:path ?path .
+    [] log:notIncludes { ?shape sh:deactivated true } .
+    (
+        ?x {
+            ?shape sh:qualifiedValueShapesDisjoint true .
+            ?parent sh:property ?shape, ?other .
+            ?shape log:notEqualTo ?other .
+            ?other sh:qualifiedValueShape ?x
+        } ?siblings
+    ) log:collectAllIn [] .
+}
+=>
+{
+    {
+       ?node this:qualifiedCount (?shape ?length)
+    }
+    <=
+    {
+        (?node ?path) this:values ?values .
+        (?x { 
+            ?x list:in ?values . 
+            [] log:notIncludes { ?x this:violates ?valueShape } .
+            (
+                { ?sibling list:in ?siblings }
+                { ?x this:violates ?sibling }
+            ) log:forAllIn [] .
+        } ?xs) log:collectAllIn [] .
+                
+        ?xs list:length ?length .
+    } .
+} .
+
+
+{
+    ?shape sh:qualifiedMinCount ?minCount .
+    ?shape sh:qualifiedValueShape ?valueShape ; sh:path ?path .
+}
+=>
+{
+    {
+       ?node this:violates ?shape
+    }
+    <=
+    {
+        ?node this:qualifiedCount (?shape ?length) .
+        ?length math:lessThan ?minCount .
+    } .
+} .
+
+{
+    ?shape sh:qualifiedMaxCount ?maxCount .
+    ?shape sh:qualifiedValueShape ?valueShape ; sh:path ?path .
+}
+=>
+{
+    {
+       ?node this:violates ?shape
+    }
+    <=
+    {
+        ?node this:qualifiedCount (?shape ?length) .
+        ?length math:greaterThan ?maxCount .
+    } .
 } .
