@@ -1,5 +1,6 @@
 # https://www.w3.org/TR/shacl/#core-components-logical
 
+@prefix string: <http://www.w3.org/2000/10/swap/string#> .
 @prefix log: <http://www.w3.org/2000/10/swap/log#> .
 @prefix list: <http://www.w3.org/2000/10/swap/list#> .
 @prefix sh: <http://www.w3.org/ns/shacl#>.
@@ -275,8 +276,12 @@
 {
     {
         ?shape this:focusNode ?node .
-        (?x { ?x list:in ?xone . ?node this:violates ?x } ?xs) log:collectAllIn [] .
-        ?xs list:unique [ list:length [ log:notEqualTo 1 ] ] .
+        (?x { ?x list:in ?xone . ?node this:violates ?x } ?failed) log:collectAllIn [] .
+        (?x { ?x list:in ?xone . ?failed list:notMember ?x } ?valid) log:collectAllIn [] .
+   
+        ?valid list:length ?length .
+        ?length log:notEqualTo 1 .
+        ("%s shapes passed" ?length) string:format ?message .
 
         this: this:report ?report .
     }
@@ -288,6 +293,7 @@
             sh:sourceShape ?shape ;
             sh:focusNode ?node ;
             sh:value ?node ;
+            this:message ?message ;
         ] .
     } .
 } .
@@ -302,8 +308,11 @@
         ?shape this:focusNode ?node .
         (?node ?path) this:value ?value .
 
-        (?x { ?x list:in ?xone . ?value this:violates ?x } ?xs) log:collectAllIn [] .
-        ?xs list:unique [ list:length [ log:notEqualTo 1 ] ] .
+        (?x { ?x list:in ?xone . ?value this:violates ?x } ?failed) log:collectAllIn [] .
+        (?x { ?x list:in ?xone . ?failed list:notMember ?x } ?valid) log:collectAllIn [] .
+        ?valid list:length ?length .
+        ?length log:notEqualTo 1 .
+        ("%s shapes passed" ?length) string:format ?message .
 
         this: this:report ?report .
     }
@@ -315,6 +324,7 @@
             sh:sourceShape ?shape ;
             sh:focusNode ?node ;
             sh:value ?value ;
+            this:message ?message ;
         ] .
     } .
 } .
@@ -330,8 +340,10 @@
     }
     <=
     {
-        (?x { ?x list:in ?xone . ?node this:violates ?x } ?xs) log:collectAllIn [] .
-        ?xs list:unique [ list:length [ log:notEqualTo 1 ] ] .
+        (?x { ?x list:in ?xone . ?node this:violates ?x } ?failed) log:collectAllIn [] .
+        (?x { ?x list:in ?xone . ?failed list:notMember ?x } ?valid) log:collectAllIn [] .
+        ?valid list:length ?length .
+        ?length log:notEqualTo 1 .
     } .
 } .
 
@@ -347,7 +359,9 @@
     <=
     {
         (?node ?path) this:value ?value .
-        (?x { ?x list:in ?xone . ?value this:violates ?x } ?xs) log:collectAllIn [] .
-        ?xs list:unique [ list:length [ log:notEqualTo 1 ] ] .
+        (?x { ?x list:in ?xone . ?value this:violates ?x } ?failed) log:collectAllIn [] .
+        (?x { ?x list:in ?xone . ?failed list:notMember ?x } ?valid) log:collectAllIn [] .
+        ?valid list:length ?length .
+        ?length log:notEqualTo 1 .
     } .
 } .
