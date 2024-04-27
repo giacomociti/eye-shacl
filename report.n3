@@ -1,6 +1,8 @@
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix sh: <http://www.w3.org/ns/shacl#>.
 @prefix list: <http://www.w3.org/2000/10/swap/list#> .
+@prefix this: <http://eye-shacl#> .
+
 
 { ?report a sh:ValidationReport ; ?p ?o } => { ?report ?p ?o } .
 
@@ -25,7 +27,8 @@
 
 {
     ?result sh:resultPath ?resultPath .
-    ?resultPath ?p ?o .
+    ?resultPath this:has ?node .
+    ?node ?p ?o .
     ?p list:in (
         sh:inversePath
         sh:alternativePath
@@ -36,5 +39,5 @@
 }
 =>
 {
-    ?resultPath ?p ?o .
+    ?node ?p ?o
 } .
