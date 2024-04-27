@@ -46,13 +46,17 @@ ex:invalid2 a ex:Class ; ex:description "" .
       sh:result  
       [
             a sh:ValidationResult ;
+            sh:resultSeverity sh:Violation ;
             sh:sourceConstraintComponent sh:MinCountConstraintComponent ;
+            sh:sourceShape [] ;
             sh:resultPath ex:description ;
             sh:focusNode ex:invalid1 ;
       ] ,
       [
             a sh:ValidationResult ;
+            sh:resultSeverity sh:Violation ;
             sh:sourceConstraintComponent sh:MinCountConstraintComponent ;
+            sh:sourceShape [] ;
             sh:resultPath ex:name ;
             sh:focusNode ex:invalid2 ;
       ] ;

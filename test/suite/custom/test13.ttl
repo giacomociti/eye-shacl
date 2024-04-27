@@ -37,6 +37,7 @@ ex:invalid ex:predicate "a" .
       sh:result  
       [
             a sh:ValidationResult ;
+            sh:resultSeverity sh:Violation ;
             sh:sourceConstraintComponent sh:NotConstraintComponent ;
             sh:sourceShape ex:shape ;
             sh:focusNode ex:invalid ;

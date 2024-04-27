@@ -98,7 +98,6 @@
             sh:sourceConstraintComponent sh:HasValueConstraintComponent ;
             sh:sourceShape ?shape ;
             sh:focusNode ?focusNode ;
-            sh:value ?focusNode ;
         ] .
     } .
 }.

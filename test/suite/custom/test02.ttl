@@ -39,6 +39,7 @@ ex:foo a ex:Class ;
       sh:conforms "false"^^xsd:boolean ;
       sh:result [
         a sh:ValidationResult ;
+        sh:resultSeverity sh:Violation ;
         sh:sourceConstraintComponent sh:DatatypeConstraintComponent ;
         sh:sourceShape [] ;
         sh:focusNode ex:foo ;

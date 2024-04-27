@@ -32,10 +32,11 @@ _:foo a ex:Class .
       sh:conforms "false"^^xsd:boolean ;
       sh:result [
         a sh:ValidationResult ;
+        sh:resultSeverity sh:Violation ;
         sh:sourceConstraintComponent sh:NodeKindConstraintComponent ;
         sh:sourceShape ex:shape ;
-        sh:focusNode [] ; 
-        sh:value [] ;
+        sh:focusNode _:foo ; 
+        sh:value _:foo ;
       ]
     ] ;
   mf:status sht:approved ;

@@ -40,10 +40,12 @@ ex:foo a ex:Class ;
       sh:conforms "false"^^xsd:boolean ;
       sh:result [
         a sh:ValidationResult ;
+        sh:resultSeverity sh:Violation ;
         sh:sourceConstraintComponent sh:NodeConstraintComponent ;
         sh:sourceShape [] ;
         sh:focusNode ex:foo ;
         sh:value 5 ;
+        sh:resultPath ex:name ;
         # sh:detail [
         #     a sh:ValidationResult ;
         #     sh:sourceConstraintComponent sh:DatatypeConstraintComponent ;

@@ -70,16 +70,16 @@ files=(
     "core/node/not-002.ttl"
     "core/node/or-001.ttl"
     "core/node/pattern-001.ttl"
-    "core/node/pattern-002.ttl" ## sh:flags ignored
+    "core/node/pattern-002.ttl" # sh:flags ignored
     "core/node/qualified-001.ttl"
     "core/node/xone-001.ttl"
     "core/node/xone-duplicate.ttl"
 
-    "core/path/path-alternative-001.ttl"
-    "core/path/path-complex-001.ttl"
-    "core/path/path-complex-002.ttl"
-    "core/path/path-inverse-001.ttl"
-    "core/path/path-oneOrMore-001.ttl"
+    "core/path/path-alternative-001.ttl" ## not a real issue (path in report)
+    "core/path/path-complex-001.ttl" ## not a real issue (path in report)
+    "core/path/path-complex-002.ttl" ## not a real issue (path in report)
+    "core/path/path-inverse-001.ttl" ## not a real issue (path in report)
+    "core/path/path-oneOrMore-001.ttl" ## not a real issue (path in report)
     "core/path/path-sequence-001.ttl"
     "core/path/path-sequence-002.ttl"
     "core/path/path-sequence-duplicate-001.ttl" 
@@ -99,9 +99,9 @@ files=(
     "core/property/equals-001.ttl"
     "core/property/hasValue-001.ttl"
     "core/property/in-001.ttl"
-    "core/property/languageIn-001.ttl" ## should consider sub-language
+    "core/property/languageIn-001.ttl" # should consider sub-language
     "core/property/lessThan-001.ttl" 
-    "core/property/lessThan-002.ttl" ## expected duplicates
+    "core/property/lessThan-002.ttl" # expected duplicates
     "core/property/lessThanOrEquals-001.ttl"
     "core/property/maxCount-001.ttl"
     "core/property/maxCount-002.ttl"
@@ -120,8 +120,8 @@ files=(
     "core/property/or-001.ttl"
     "core/property/or-datatypes-001.ttl" # parsing error
     "core/property/pattern-001.ttl"
-    "core/property/pattern-002.ttl" ## sh:flags ignored
-    "core/property/property-001.ttl" ## expected duplicate
+    "core/property/pattern-002.ttl" # sh:flags ignored
+    "core/property/property-001.ttl" # expected duplicate
     "core/property/qualifiedMinCountDisjoint-001.ttl"
     "core/property/qualifiedValueShape-001.ttl"
     "core/property/qualifiedValueShapesDisjoint-001.ttl"
@@ -136,7 +136,7 @@ files=(
     "core/targets/targetSubjectsOf-001.ttl"
     "core/targets/targetSubjectsOf-002.ttl"
 
-    "core/validation-reports/shared.ttl" ## expected duplicate
+    "core/validation-reports/shared.ttl" # expected duplicate
 )
 
 for file in "${files[@]}"

@@ -37,6 +37,7 @@ ex:foo ex:name 5, "a" .
       sh:conforms "false"^^xsd:boolean ;
       sh:result [
         a sh:ValidationResult ;
+        sh:resultSeverity sh:Violation ;
         sh:sourceConstraintComponent sh:OrConstraintComponent ;
         sh:sourceShape ex:shape ;
         sh:focusNode 5 ;

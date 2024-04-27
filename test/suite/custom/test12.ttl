@@ -47,7 +47,9 @@ ex:invalid ex:name "invalid" .
       sh:result  
       [
             a sh:ValidationResult ;
+            sh:resultSeverity sh:Violation ;
             sh:sourceConstraintComponent sh:MinCountConstraintComponent ;
+            sh:sourceShape [] ;
             sh:focusNode ex:invalid ;
             sh:resultPath 
                 [

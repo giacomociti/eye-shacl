@@ -52,6 +52,7 @@ ex:invalid1 ex:name 5 .
       sh:result  
       [
             a sh:ValidationResult ;
+            sh:resultSeverity sh:Violation ;
             sh:sourceConstraintComponent sh:OrConstraintComponent ;
             sh:sourceShape ex:nameShape ;
             sh:focusNode ex:invalid1 ;

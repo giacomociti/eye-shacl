@@ -38,10 +38,12 @@ ex:invalid a ex:Class ; ex:predicate 5 .
       sh:result  
       [
             a sh:ValidationResult ;
+            sh:resultSeverity sh:Violation ;
             sh:sourceConstraintComponent sh:NotConstraintComponent ;
             sh:sourceShape ex:shape ;
             sh:focusNode ex:invalid ;
             sh:value 5 ;
+            sh:resultPath ex:predicate ;
         ] ;
   ] ;
   mf:status sht:approved ;
