@@ -3,6 +3,9 @@
 @prefix list: <http://www.w3.org/2000/10/swap/list#> .
 @prefix this: <http://eye-shacl#> .
 
+# Backward rules to define the predicate this:has 
+# The rules determine the nodes needed to represent a path
+
 { ?node this:has ?node } <= { } .
 
 { ?node this:has ?child } <= { ?node list:member ?child } .

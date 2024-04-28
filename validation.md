@@ -1,6 +1,8 @@
 # Validation
+Using rules to implement RDF validation is endorsed in academic literature, see ["RDF graph validation using rule-based reasoning"](https://www.researchgate.net/publication/347222046_RDF_graph_validation_using_rule-based_reasoning).
+The ideas of leveraging Skolemization and rule-producing rules come from Chapter 6 of the PhD thesis of Dörthe Arndt: [Notation3 as the Unifying Logic for the Semantic Web](https://biblio.ugent.be/publication/8634507).
 
-note: in the following RDF snippets we assume the namespaces:
+Note: in the following RDF snippets we assume the namespaces:
 
 ```turtle
 @prefix ex: <http:/example.org/> .
@@ -83,4 +85,5 @@ For the same constraint, we may also need a backward rule:
 }.
 ```
 
-When the shape is part of a [Shape-based Constraint Components](https://www.w3.org/TR/shacl/#core-components-shape) like `sh:not`, `sh:or`..., the backward rule determines the presence of violations without collecting results.
+When the shape is part of another shape like `sh:not`, `sh:or`..., the backward rule determines the presence of violations without collecting results.
+

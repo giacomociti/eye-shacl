@@ -3,6 +3,11 @@
 @prefix list: <http://www.w3.org/2000/10/swap/list#> .
 @prefix this: <http://eye-shacl#> .
 
+# Rules used as a query to extract the relevant information from a SHACL validation report .
+# Require the definition of predicate this:has (must be in a separate file report-path.n3) .
+
+# SHACL Test Suite definition of full compliance:
+# https://w3c.github.io/data-shapes/data-shapes-test-suite/#Validate
 
 { ?report a sh:ValidationReport ; ?p ?o } => { ?report ?p ?o } .
 
@@ -14,6 +19,7 @@
         sh:focusNode
         sh:resultPath
         sh:resultSeverity
+        sh:sourceConstraint
         sh:sourceConstraintComponent
         sh:sourceShape
         sh:value
@@ -25,6 +31,7 @@
     ?result ?p ?o 
 } .
 
+#  triples needed to correctly represent the sh:resultPath.
 {
     ?result sh:resultPath ?resultPath .
     ?resultPath this:has ?node .
