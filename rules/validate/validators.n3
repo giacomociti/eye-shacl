@@ -56,3 +56,6 @@
 
 # should also check that is not ill-typed
 { ?value this:datatype ?datatype } <= { ([] ?datatype) log:dtlit ?value }.
+
+# workaroud: (eye parses decimal as double)
+{ ?value this:datatype xsd:decimal } <= { ([] xsd:double) log:dtlit ?value }.
