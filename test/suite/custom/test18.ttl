@@ -1,0 +1,37 @@
+@prefix ex: <http:/example.org/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix sht: <http://www.w3.org/ns/shacl-test#> .
+
+# shapes
+ex:shape1 sh:targetNode "2025"^^xsd:gYear;
+  sh:minInclusive "2020"^^xsd:gYear ;
+.
+
+ex:shape2 sh:targetNode "2025"^^xsd:string;
+  sh:minInclusive "2020"^^xsd:string ;
+.
+# data
+
+<>
+  rdf:type mf:Manifest ;
+  mf:entries (
+      <test18>
+    ) ;
+.
+<test18>
+  rdf:type sht:Validate ;
+  rdfs:label "Test 18" ;
+  mf:action [
+      sht:dataGraph <> ;
+      sht:shapesGraph <> ;
+    ] ;
+  mf:result [
+      rdf:type sh:ValidationReport ;
+      sh:conforms "true"^^xsd:boolean ;
+    ] ;
+  mf:status sht:approved ;
+.

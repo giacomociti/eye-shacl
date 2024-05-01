@@ -15,15 +15,32 @@
 { ?value this:maxExclusive ?maxExclusive } <= { ?maxExclusive a this:Number . ?value a this:Number ; math:lessThan ?maxExclusive }.
 { ?value this:maxInclusive ?maxInclusive } <= { ?maxInclusive a this:Number . ?value a this:Number ; math:notGreaterThan ?maxInclusive }.
 
-{ ?value this:minExclusive ?minExclusive } <= { ?minExclusive this:datatype xsd:string . ?value this:datatype xsd:string ; string:greaterThan ?minExclusive }.
-{ ?value this:minInclusive ?minInclusive } <= { ?minInclusive this:datatype xsd:string . ?value this:datatype xsd:string ; string:notLessThan ?minInclusive }.
-{ ?value this:maxExclusive ?maxExclusive } <= { ?maxExclusive this:datatype xsd:string . ?value this:datatype xsd:string ; string:lessThan ?maxExclusive }.
-{ ?value this:maxInclusive ?maxInclusive } <= { ?maxInclusive this:datatype xsd:string . ?value this:datatype xsd:string ; string:notGreaterThan ?maxInclusive }.
+{ ?value this:minExclusive ?minExclusive } <= { ?minExclusive this:datatype xsd:dateTime . (?value ?minExclusive) pred:dateTime-greater-than true }.
+{ ?value this:minInclusive ?minInclusive } <= { ?minInclusive this:datatype xsd:dateTime . (?value ?minInclusive) pred:dateTime-greater-than-or-equal true }.
+{ ?value this:maxExclusive ?maxExclusive } <= { ?maxExclusive this:datatype xsd:dateTime . (?value ?maxExclusive) pred:dateTime-less-than true }.
+{ ?value this:maxInclusive ?maxInclusive } <= { ?maxInclusive this:datatype xsd:dateTime . (?value ?maxInclusive) pred:dateTime-less-than-or-equal true }.
 
-{ ?value this:minExclusive ?minExclusive } <= { ?value this:datatype xsd:dateTime . (?value ?minExclusive) pred:dateTime-greater-than true }.
-{ ?value this:minInclusive ?minInclusive } <= { ?value this:datatype xsd:dateTime . (?value ?minInclusive) pred:dateTime-greater-than-or-equal true }.
-{ ?value this:maxExclusive ?maxExclusive } <= { ?value this:datatype xsd:dateTime . (?value ?maxExclusive) pred:dateTime-less-than true }.
-{ ?value this:maxInclusive ?maxInclusive } <= { ?value this:datatype xsd:dateTime . (?value ?maxInclusive) pred:dateTime-less-than-or-equal true }.
+{ ?value this:minExclusive ?minExclusive } <= { 
+    ?minExclusive this:datatype ?datatype . 
+    ?datatype log:notEqualTo xsd:integer, xsd:decimal, xsd:double, xsd:float, xsd:dateTime .
+    ?value this:datatype ?datatype ; string:greaterThan ?minExclusive 
+} .
+{ ?value this:minInclusive ?minInclusive } <= { 
+    ?minInclusive this:datatype ?datatype . 
+    ?datatype log:notEqualTo xsd:integer, xsd:decimal, xsd:double, xsd:float, xsd:dateTime . 
+    ?value this:datatype ?datatype ; string:notLessThan ?minInclusive 
+} .
+{ ?value this:maxExclusive ?maxExclusive } <= { 
+    ?maxExclusive this:datatype ?datatype . 
+    ?datatype log:notEqualTo xsd:integer, xsd:decimal, xsd:double, xsd:float, xsd:dateTime . 
+    ?value this:datatype ?datatype ; string:lessThan ?maxExclusive 
+} .
+{ ?value this:maxInclusive ?maxInclusive } <= { 
+    ?maxInclusive this:datatype ?datatype . 
+    ?datatype log:notEqualTo xsd:integer, xsd:decimal, xsd:double, xsd:float, xsd:dateTime . 
+    ?value this:datatype ?datatype ; string:notGreaterThan ?maxInclusive 
+} .
+
 
 { ?value a this:Number } <= { ?value this:datatype [ list:in (xsd:integer xsd:decimal xsd:double xsd:float) ] }.
 
