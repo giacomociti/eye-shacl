@@ -11,7 +11,7 @@
             sht:dataGraph [ log:uri ?dataGraph ] ;
             sht:shapesGraph [ log:uri ?shapesGraph ] ;
         ] .
-    ("./eye-shacl.sh %s %s > test-actual.ttl" ?shapesGraph ?dataGraph) string:format ?CMD.
+    ("../dist/eye-shacl.sh %s %s > test-actual.ttl" ?shapesGraph ?dataGraph) string:format ?CMD.
     ?CMD e:exec 0.
 }
 =>

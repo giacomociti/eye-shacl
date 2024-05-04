@@ -7,29 +7,36 @@
 @prefix sht: <http://www.w3.org/ns/shacl-test#> .
 
 # shapes
-ex:shape1 sh:targetNode "42.1"^^xsd:decimal, 43.1;
-  sh:datatype xsd:decimal .
 
-ex:shape2 sh:targetNode "42.1"^^xsd:float;
-  sh:datatype xsd:float .
 # data
+ex:a a ex:Class .
+[] sh:shapesGraph <test15-shapes.ttl> .
 
 <>
   rdf:type mf:Manifest ;
   mf:entries (
-      <test17>
+      <test19>
     ) ;
 .
-<test17>
+<test19>
   rdf:type sht:Validate ;
-  rdfs:label "Test 17" ;
+  rdfs:label "Test 19" ;
   mf:action [
       sht:dataGraph <> ;
       sht:shapesGraph <> ;
     ] ;
   mf:result [
       rdf:type sh:ValidationReport ;
-      sh:conforms "true"^^xsd:boolean ;
+      sh:conforms "false"^^xsd:boolean ;
+      sh:result  
+      [
+            a sh:ValidationResult ;
+            sh:resultSeverity sh:Violation ;
+            sh:sourceConstraintComponent sh:MinCountConstraintComponent ;
+            sh:sourceShape [] ;
+            sh:focusNode ex:a ;
+            sh:resultPath ex:description ;
+      ] ;
     ] ;
   mf:status sht:approved ;
 .

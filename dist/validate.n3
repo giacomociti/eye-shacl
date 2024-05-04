@@ -1,0 +1,294 @@
+@prefix this: <http://eye-shacl#>.
+@prefix log: <http://www.w3.org/2000/10/swap/log#>.
+@prefix sh: <http://www.w3.org/ns/shacl#>.
+@prefix list: <http://www.w3.org/2000/10/swap/list#>.
+@prefix math: <http://www.w3.org/2000/10/swap/math#>.
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+@prefix pred: <http://www.w3.org/2007/rif-builtin-predicate#>.
+@prefix string: <http://www.w3.org/2000/10/swap/string#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+
+() this:path ().
+<http://eye-shacl#> this:report _:bn_6.
+{
+    <http://eye-shacl#> this:report ?U_0.
+    ?U_1 log:notIncludes {
+        ?U_0 sh:conforms ?U_2.
+    }.
+} => {
+    ?U_0 a sh:ValidationReport.
+    ?U_0 sh:conforms true.
+}.
+{
+    <http://eye-shacl#> this:report ?U_3.
+    ?U_3 sh:conforms true.
+    ?U_3 sh:result ?U_4.
+    {
+        ?U_3 sh:conforms true.
+    } log:becomes {
+        ?U_3 sh:conforms false.
+    }.
+} => true.
+{
+    (?U_5 ?U_6) this:values ?U_7.
+} <= {
+    (?U_8 {
+        (?U_5 ?U_6) this:value ?U_8.
+    } ?U_9) log:collectAllIn ?U_10.
+    ?U_9 list:unique ?U_7.
+}.
+{
+    (?U_11 ?U_12) this:value ?U_13.
+} <= {
+    ?U_12 this:nodeKind sh:IRI.
+    ?U_11 ?U_12 ?U_13.
+}.
+{
+    (?U_14 (?U_15)) this:value ?U_16.
+} <= {
+    (?U_14 ?U_15) this:value ?U_16.
+}.
+{
+    (?U_17 ?U_18) this:value ?U_19.
+} <= {
+    ?U_18 list:firstRest (?U_20 ?U_21).
+    (?U_17 ?U_20) this:value ?U_22.
+    (?U_22 ?U_21) this:value ?U_19.
+}.
+{
+    ?U_23 this:path ?U_23.
+} <= {
+    ?U_23 this:nodeKind sh:IRI.
+}.
+{
+    () this:path ().
+} <= true.
+{
+    (?U_24) this:path (?U_25).
+} <= {
+    ?U_24 this:path ?U_25.
+}.
+{
+    ?U_26 this:path ?U_27.
+} <= {
+    ?U_26 list:firstRest (?U_28 ?U_29).
+    ?U_28 this:path ?U_30.
+    ?U_29 this:path ?U_31.
+    ((?U_30) ?U_31) list:append ?U_27.
+}.
+{
+    ?U_32 this:minExclusive ?U_33.
+} <= {
+    ?U_33 a this:Number.
+    ?U_32 a this:Number.
+    ?U_32 math:greaterThan ?U_33.
+}.
+{
+    ?U_34 this:minExclusive ?U_35.
+} <= {
+    ?U_35 this:datatype xsd:dateTime.
+    (?U_34 ?U_35) pred:dateTime-greater-than true.
+}.
+{
+    ?U_36 this:minExclusive ?U_37.
+} <= {
+    ?U_37 this:datatype ?U_38.
+    ?U_38 log:notEqualTo xsd:integer.
+    ?U_38 log:notEqualTo xsd:decimal.
+    ?U_38 log:notEqualTo xsd:double.
+    ?U_38 log:notEqualTo xsd:float.
+    ?U_38 log:notEqualTo xsd:dateTime.
+    ?U_36 this:datatype ?U_38.
+    ?U_36 string:greaterThan ?U_37.
+}.
+{
+    ?U_39 this:minInclusive ?U_40.
+} <= {
+    ?U_40 a this:Number.
+    ?U_39 a this:Number.
+    ?U_39 math:notLessThan ?U_40.
+}.
+{
+    ?U_41 this:minInclusive ?U_42.
+} <= {
+    ?U_42 this:datatype xsd:dateTime.
+    (?U_41 ?U_42) pred:dateTime-greater-than-or-equal true.
+}.
+{
+    ?U_43 this:minInclusive ?U_44.
+} <= {
+    ?U_44 this:datatype ?U_45.
+    ?U_45 log:notEqualTo xsd:integer.
+    ?U_45 log:notEqualTo xsd:decimal.
+    ?U_45 log:notEqualTo xsd:double.
+    ?U_45 log:notEqualTo xsd:float.
+    ?U_45 log:notEqualTo xsd:dateTime.
+    ?U_43 this:datatype ?U_45.
+    ?U_43 string:notLessThan ?U_44.
+}.
+{
+    ?U_46 this:maxExclusive ?U_47.
+} <= {
+    ?U_47 a this:Number.
+    ?U_46 a this:Number.
+    ?U_46 math:lessThan ?U_47.
+}.
+{
+    ?U_48 this:maxExclusive ?U_49.
+} <= {
+    ?U_49 this:datatype xsd:dateTime.
+    (?U_48 ?U_49) pred:dateTime-less-than true.
+}.
+{
+    ?U_50 this:maxExclusive ?U_51.
+} <= {
+    ?U_51 this:datatype ?U_52.
+    ?U_52 log:notEqualTo xsd:integer.
+    ?U_52 log:notEqualTo xsd:decimal.
+    ?U_52 log:notEqualTo xsd:double.
+    ?U_52 log:notEqualTo xsd:float.
+    ?U_52 log:notEqualTo xsd:dateTime.
+    ?U_50 this:datatype ?U_52.
+    ?U_50 string:lessThan ?U_51.
+}.
+{
+    ?U_53 this:maxInclusive ?U_54.
+} <= {
+    ?U_54 a this:Number.
+    ?U_53 a this:Number.
+    ?U_53 math:notGreaterThan ?U_54.
+}.
+{
+    ?U_55 this:maxInclusive ?U_56.
+} <= {
+    ?U_56 this:datatype xsd:dateTime.
+    (?U_55 ?U_56) pred:dateTime-less-than-or-equal true.
+}.
+{
+    ?U_57 this:maxInclusive ?U_58.
+} <= {
+    ?U_58 this:datatype ?U_59.
+    ?U_59 log:notEqualTo xsd:integer.
+    ?U_59 log:notEqualTo xsd:decimal.
+    ?U_59 log:notEqualTo xsd:double.
+    ?U_59 log:notEqualTo xsd:float.
+    ?U_59 log:notEqualTo xsd:dateTime.
+    ?U_57 this:datatype ?U_59.
+    ?U_57 string:notGreaterThan ?U_58.
+}.
+{
+    ?U_60 a this:Number.
+} <= {
+    ?U_60 this:datatype ?U_61.
+    ?U_61 list:in (xsd:integer xsd:decimal xsd:double xsd:float).
+}.
+{
+    ?U_62 this:minLength ?U_63.
+} <= {
+    (?U_64 ?U_65) log:dtlit ?U_62.
+    ?U_64 string:length ?U_66.
+    ?U_66 math:notLessThan ?U_63.
+}.
+{
+    ?U_67 this:minLength ?U_68.
+} <= {
+    ?U_67 log:rawType log:Other.
+    ?U_67 log:uri ?U_69.
+    ?U_69 string:length ?U_70.
+    ?U_70 math:notLessThan ?U_68.
+}.
+{
+    ?U_71 this:maxLength ?U_72.
+} <= {
+    (?U_73 ?U_74) log:dtlit ?U_71.
+    ?U_73 string:length ?U_75.
+    ?U_75 math:notGreaterThan ?U_72.
+}.
+{
+    ?U_76 this:maxLength ?U_77.
+} <= {
+    ?U_76 log:rawType log:Other.
+    ?U_76 log:uri ?U_78.
+    ?U_78 string:length ?U_79.
+    ?U_79 math:notGreaterThan ?U_77.
+}.
+{
+    ?U_80 this:pattern ?U_81.
+} <= {
+    (?U_82 ?U_83) log:dtlit ?U_80.
+    ?U_82 string:matches ?U_81.
+}.
+{
+    ?U_84 this:languageIn ?U_85.
+} <= {
+    (?U_86 ?U_87) log:langlit ?U_84.
+    ?U_87 string:startsWith ?U_88.
+    ?U_88 list:in ?U_85.
+}.
+{
+    ?U_89 this:class ?U_90.
+} <= {
+    ?U_89 a ?U_90.
+}.
+{
+    ?U_91 this:class ?U_92.
+} <= {
+    ?U_93 rdfs:subClassOf ?U_92.
+    ?U_91 this:class ?U_93.
+}.
+{
+    ?U_94 this:nodeKind sh:IRI.
+} <= {
+    ?U_94 log:rawType log:Other.
+    ?U_94 log:uri ?U_95.
+}.
+{
+    ?U_96 this:nodeKind sh:Literal.
+} <= {
+    ?U_96 log:rawType log:Literal.
+}.
+{
+    ?U_97 this:nodeKind sh:BlankNode.
+} <= {
+    ?U_97 log:rawType log:LabeledBlankNode.
+}.
+{
+    ?U_98 this:nodeKind sh:BlankNode.
+} <= {
+    ?U_98 log:rawType log:UnlabeledBlankNode.
+}.
+{
+    ?U_99 this:nodeKind sh:BlankNodeOrIRI.
+} <= {
+    ?U_99 this:nodeKind sh:BlankNode.
+}.
+{
+    ?U_100 this:nodeKind sh:BlankNodeOrIRI.
+} <= {
+    ?U_100 this:nodeKind sh:IRI.
+}.
+{
+    ?U_101 this:nodeKind sh:IRIOrLiteral.
+} <= {
+    ?U_101 this:nodeKind sh:IRI.
+}.
+{
+    ?U_102 this:nodeKind sh:IRIOrLiteral.
+} <= {
+    ?U_102 this:nodeKind sh:Literal.
+}.
+{
+    ?U_103 this:nodeKind sh:BlankNodeOrLiteral.
+} <= {
+    ?U_103 this:nodeKind sh:BlankNode.
+}.
+{
+    ?U_104 this:nodeKind sh:BlankNodeOrLiteral.
+} <= {
+    ?U_104 this:nodeKind sh:Literal.
+}.
+{
+    ?U_105 this:datatype ?U_106.
+} <= {
+    (?U_107 ?U_106) log:dtlit ?U_105.
+}.

@@ -1,0 +1,54 @@
+@prefix ex: <http:/example.org/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix sht: <http://www.w3.org/ns/shacl-test#> .
+
+# shapes
+ex:shapeDecimal sh:targetObjectsOf ex:decimal;
+  sh:datatype xsd:decimal .
+
+ex:shapeFloat sh:targetObjectsOf ex:float;
+  sh:datatype xsd:float .
+
+ex:shapeDouble sh:targetObjectsOf ex:double;
+  sh:datatype xsd:double .
+
+# data
+ex:valid1 ex:decimal "30.1"^^xsd:decimal .
+ex:valid2 ex:float "31.1"^^xsd:float .
+ex:valid3 ex:double "32.1"^^xsd:double .
+ex:valid4 ex:double 4.2E9 .
+ex:valid5 ex:decimal 33.1 .
+ex:invalid1 ex:double 34.1 .
+
+
+<>
+  rdf:type mf:Manifest ;
+  mf:entries (
+      <test17>
+    ) ;
+.
+<test17>
+  rdf:type sht:Validate ;
+  rdfs:label "Test 17" ;
+  mf:action [
+      sht:dataGraph <> ;
+      sht:shapesGraph <> ;
+    ] ;
+  mf:result [
+      rdf:type sh:ValidationReport ;
+      sh:conforms "false"^^xsd:boolean ;
+      sh:result [
+          a sh:ValidationResult ;
+          sh:sourceConstraintComponent sh:DatatypeConstraintComponent ;
+          sh:sourceShape ex:shapeDouble ;
+          sh:focusNode "34.1"^^xsd:decimal ;
+          sh:value "34.1"^^xsd:decimal ;
+          sh:resultSeverity sh:Violation ;
+        ] ;
+    ] ;
+  mf:status sht:approved ;
+.

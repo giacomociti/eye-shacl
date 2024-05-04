@@ -51,7 +51,11 @@
 { ?value this:maxLength ?maxLength } <= { ?value log:rawType log:Other ; log:uri ?text . ?text string:length [math:notGreaterThan ?maxLength] }.
 
 { ?value this:pattern ?pattern } <= { (?text []) log:dtlit ?value . ?text string:matches ?pattern }. # flags?
-{ ?value this:languageIn ?languageIn } <= { ?languageIn list:member ?lang . ( [] ?lang ) log:langlit ?value }. #sublang?
+
+{ ?value this:languageIn ?languageIn } <= { 
+    ( [] ?lang ) log:langlit ?value .
+    ?lang string:startsWith [ list:in ?languageIn ] .
+}.
 
 
 # https://www.w3.org/TR/shacl/#core-components-value-type
@@ -74,5 +78,3 @@
 # should also check that is not ill-typed
 { ?value this:datatype ?datatype } <= { ([] ?datatype) log:dtlit ?value }.
 
-# workaroud: (eye parses decimal as double)
-{ ?value this:datatype xsd:decimal } <= { ([] xsd:double) log:dtlit ?value }.

@@ -33,6 +33,7 @@ files=(
     "custom/test16.ttl"
     "custom/test17.ttl"
     "custom/test18.ttl"
+    "custom/test19.ttl"
 
     # https://github.com/w3c/data-shapes/tree/gh-pages/data-shapes-test-suite/tests/core
 
@@ -101,7 +102,7 @@ files=(
     "core/property/equals-001.ttl"
     "core/property/hasValue-001.ttl"
     "core/property/in-001.ttl"
-    "core/property/languageIn-001.ttl" # should consider sub-language
+    "core/property/languageIn-001.ttl"
     "core/property/lessThan-001.ttl" 
     "core/property/lessThan-002.ttl" # expected duplicates
     "core/property/lessThanOrEquals-001.ttl"
@@ -143,7 +144,7 @@ files=(
 
 for file in "${files[@]}"
 do
-    if [[ $(./testFile.sh "test/suite/${file}") -gt 0 ]]; then
+    if [[ $(./testFile.sh "${file}") -gt 0 ]]; then
         echo -e "${GREEN}OK${NORMAL} ${file}"
         ((OK++))
     else

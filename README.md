@@ -2,6 +2,10 @@
 
 A [SHACL](https://www.w3.org/TR/shacl/) implementation using the [EYE](https://eyereasoner.github.io/eye/) reasoner.
 
+### Installation
+[Install](https://github.com/eyereasoner/eye?tab=readme-ov-file#installation) the eye reasoner, download the [dist](/dist) folder and use the bash scripts like in the following examples.
+
+### Usage
 ```bash
 # validate data.ttl against shapes.ttl
 ./eye-shacl.sh shapes.ttl data.ttl
@@ -25,17 +29,15 @@ https://raw.githubusercontent.com/w3c/data-shapes/gh-pages/data-shapes-test-suit
 https://raw.githubusercontent.com/w3c/data-shapes/gh-pages/data-shapes-test-suite/tests/core/complex/personexample.ttl
 ```
 
+
 ### To do
 - improve tests (clone result path as required by the test suite)
 - add sh:details
 - add sh:resultMessage
 - replace skolem IRIs in sh:sourceShape
-- support linking to shapes graphs (sh:shapesGraph)
 
 ### Known issues
 - RDF list vs. N3 list (see test core/complex/shacl-shacl.ttl)
 - parsing of ill-typed literals (see test core/node/datatype-001.ttl)
-- parsing of numbers (eye parses decimal and float as double?)
 - sh:flags is ignored (see test core/node/pattern-002.ttl)
 - date offset (see test core/node/minInclusive-003.ttl)
-- sub-tags in sh:languageIn (see test core/property/languageIn-001.ttl)
