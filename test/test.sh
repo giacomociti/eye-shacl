@@ -34,6 +34,7 @@ files=(
     "custom/test17.ttl"
     "custom/test18.ttl"
     "custom/test19.ttl"
+    "custom/test20.ttl"
 
     # https://github.com/w3c/data-shapes/tree/gh-pages/data-shapes-test-suite/tests/core
 

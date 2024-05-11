@@ -59,7 +59,8 @@
     }
     <=
     {
-        (?node ?zeroOrMorePath) this:value ?value .
+        (?node ?zeroOrMorePath) this:value ?v .
+        (?v ?path) this:value ?value .
     } .
 } .
 
@@ -88,7 +89,7 @@
     <=
     {
         (?node ?oneOrMorePath) this:value ?v .
-        (?v ?oneOrMorePath) this:value ?value .
+        (?v ?path) this:value ?value .
     } .
 } .
 

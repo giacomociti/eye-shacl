@@ -1,0 +1,53 @@
+@prefix ex: <http:/example.org/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix sht: <http://www.w3.org/ns/shacl-test#> .
+
+# shapes
+ex:shape1
+  sh:targetObjectsOf ex:place ;
+  sh:property [
+      sh:path [ sh:zeroOrMorePath ex:in ]  ;
+      sh:hasValue ex:Europe ;
+    ] ;
+.
+
+
+# data
+ex:Italy ex:in ex:Europe .
+ex:Rome ex:in ex:Italy .
+ex:Colosseum ex:in ex:Rome .
+
+ex:valid ex:place ex:Europe, ex:Italy, ex:Rome, ex:Colosseum .
+ex:invalid ex:place ex:Asia .
+
+<>
+  rdf:type mf:Manifest ;
+  mf:entries (
+      <test20>
+    ) ;
+.
+<test20>
+  rdf:type sht:Validate ;
+  rdfs:label "Test 20" ;
+  mf:action [
+      sht:dataGraph <> ;
+      sht:shapesGraph <> ;
+    ] ;
+  mf:result [
+      rdf:type sh:ValidationReport ;
+      sh:conforms "false"^^xsd:boolean ;
+      sh:result [
+          a sh:ValidationResult ;
+          sh:resultSeverity sh:Violation ;
+          sh:sourceConstraintComponent sh:HasValueConstraintComponent ;
+          sh:focusNode ex:Asia ;
+          sh:resultPath [sh:zeroOrMorePath ex:in];
+          sh:sourceShape [] ;
+        ] ;
+    ] ;
+  mf:status sht:approved ;
+.
