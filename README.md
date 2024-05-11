@@ -37,7 +37,6 @@ https://raw.githubusercontent.com/w3c/data-shapes/gh-pages/data-shapes-test-suit
 - replace skolem IRIs in sh:sourceShape
 
 ### Known issues
-- RDF list vs. N3 list (see test core/complex/shacl-shacl.ttl)
 - parsing of ill-typed literals (see test core/node/datatype-001.ttl)
 - sh:flags is ignored (see test core/node/pattern-002.ttl)
 - date offset (see test core/node/minInclusive-003.ttl)

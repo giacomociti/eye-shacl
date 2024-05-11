@@ -258,37 +258,42 @@
     ?U_98 log:rawType log:UnlabeledBlankNode.
 }.
 {
-    ?U_99 this:nodeKind sh:BlankNodeOrIRI.
-} <= {
     ?U_99 this:nodeKind sh:BlankNode.
+} <= {
+    ?U_99 log:rawType log:SkolemIRI.
 }.
 {
     ?U_100 this:nodeKind sh:BlankNodeOrIRI.
 } <= {
-    ?U_100 this:nodeKind sh:IRI.
+    ?U_100 this:nodeKind sh:BlankNode.
 }.
 {
-    ?U_101 this:nodeKind sh:IRIOrLiteral.
+    ?U_101 this:nodeKind sh:BlankNodeOrIRI.
 } <= {
     ?U_101 this:nodeKind sh:IRI.
 }.
 {
     ?U_102 this:nodeKind sh:IRIOrLiteral.
 } <= {
-    ?U_102 this:nodeKind sh:Literal.
+    ?U_102 this:nodeKind sh:IRI.
 }.
 {
-    ?U_103 this:nodeKind sh:BlankNodeOrLiteral.
+    ?U_103 this:nodeKind sh:IRIOrLiteral.
 } <= {
-    ?U_103 this:nodeKind sh:BlankNode.
+    ?U_103 this:nodeKind sh:Literal.
 }.
 {
     ?U_104 this:nodeKind sh:BlankNodeOrLiteral.
 } <= {
-    ?U_104 this:nodeKind sh:Literal.
+    ?U_104 this:nodeKind sh:BlankNode.
 }.
 {
-    ?U_105 this:datatype ?U_106.
+    ?U_105 this:nodeKind sh:BlankNodeOrLiteral.
 } <= {
-    (?U_107 ?U_106) log:dtlit ?U_105.
+    ?U_105 this:nodeKind sh:Literal.
+}.
+{
+    ?U_106 this:datatype ?U_107.
+} <= {
+    (?U_108 ?U_107) log:dtlit ?U_106.
 }.
