@@ -1,0 +1,55 @@
+@prefix log: <http://www.w3.org/2000/10/swap/log#> .
+@prefix ex: <http:/example.org/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix sht: <http://www.w3.org/ns/shacl-test#> .
+
+# shapes
+ex:shape1
+  sh:targetNode ex:Italy, ex:France ;
+  sh:node ex:shape2.
+
+ex:shape2 sh:property [
+      sh:path ex:in ;
+      sh:property [
+          sh:path rdf:type ;
+          sh:hasValue ex:Place ;
+        ] ;
+    ] ;
+.
+
+# data
+ex:Europe ex:hasPart ex:Italy .
+ex:France ex:in ex:Europe .
+
+
+<>
+  rdf:type mf:Manifest ;
+  mf:entries (
+      <test21>
+    ) ;
+.
+<test21>
+  rdf:type sht:Validate ;
+  rdfs:label "Test 21" ;
+  mf:action [
+      sht:dataGraph <> ;
+      sht:shapesGraph <> ;
+    ] ;
+  mf:result [
+      rdf:type sh:ValidationReport ;
+      sh:conforms "false"^^xsd:boolean ;
+      sh:result [
+          a sh:ValidationResult ;
+          sh:resultSeverity sh:Violation ;
+          sh:sourceConstraintComponent sh:NodeConstraintComponent ;
+          sh:focusNode ex:France ;
+          sh:value ex:France;
+          sh:sourceShape ex:shape1 ;
+        ] ;
+    ] ;
+  mf:status sht:approved ;
+.

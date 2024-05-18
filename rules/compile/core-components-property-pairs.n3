@@ -25,7 +25,6 @@
         ?union list:member ?value .
         ?intersection list:notMember ?value .
          
-        ?path this:path ?resultPath .
         this: this:report ?report .
     }
     =>
@@ -35,7 +34,7 @@
             sh:sourceConstraintComponent sh:EqualsConstraintComponent ;
             sh:sourceShape ?shape ;
             sh:focusNode ?focusNode ;
-            sh:resultPath ?resultPath ;
+            sh:resultPath ?path ;
             sh:value ?value ;
         ]
     } .
@@ -120,7 +119,6 @@
         (?focusNode ?path) this:value ?value .
         (?focusNode ?otherPredicate) this:value ?value .
          
-        ?path this:path ?resultPath .
         this: this:report ?report .
     }
     =>
@@ -206,7 +204,6 @@
         (?focusNode ?otherPredicate) this:value ?otherValue .
         [] log:notIncludes { ?value this:maxExclusive ?otherValue } .
          
-        ?path this:path ?resultPath .
         this: this:report ?report .
     }
     =>
@@ -255,7 +252,6 @@
         (?focusNode ?otherPredicate) this:value ?otherValue .
         [] log:notIncludes { ?value this:maxInclusive ?otherValue } .
          
-        ?path this:path ?resultPath .
         this: this:report ?report .
     }
     =>

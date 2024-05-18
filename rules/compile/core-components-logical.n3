@@ -1,5 +1,6 @@
 # https://www.w3.org/TR/shacl/#core-components-logical
 
+@prefix math: <http://www.w3.org/2000/10/swap/math#> .
 @prefix string: <http://www.w3.org/2000/10/swap/string#> .
 @prefix log: <http://www.w3.org/2000/10/swap/log#> .
 @prefix list: <http://www.w3.org/2000/10/swap/list#> .
@@ -41,7 +42,6 @@
         ?shape this:focusNode ?node .
         (?node ?path) this:value ?value .
         [] log:notIncludes { ?value this:violates ?not } .
-        ?path this:path ?resultPath .
         this: this:report ?report .
     }
     =>
@@ -51,7 +51,7 @@
             sh:sourceConstraintComponent sh:NotConstraintComponent;
             sh:sourceShape ?shape ;
             sh:focusNode ?node ;
-            sh:resultPath ?resultPath ;
+            sh:resultPath ?path ;
             sh:value ?value ;
         ] .
     } .
@@ -93,6 +93,7 @@
 {
     ?shape sh:or ?or ; a sh:NodeShape .
     [] log:notIncludes { ?shape sh:deactivated true } .
+    ("value should have at least a shape of: %s" ?or) string:format ?message .
 }
 =>
 {
@@ -112,6 +113,7 @@
             sh:sourceShape ?shape ;
             sh:focusNode ?node ;
             sh:value ?node ;
+            this:message ?message ;
         ] .
     } .
 } .
@@ -119,6 +121,7 @@
 {
     ?shape sh:or ?or ; sh:path ?path . 
     [] log:notIncludes { ?shape sh:deactivated true } .
+    ("value should have at least a shape of: %s" ?or) string:format ?message .
 }
 =>
 {
@@ -129,7 +132,6 @@
             { ?or list:member ?alternative  }
             { ?value this:violates ?alternative }
         ) log:forAllIn [] .
-        ?path this:path ?resultPath .
         this: this:report ?report .
     }
     =>
@@ -139,8 +141,9 @@
             sh:sourceConstraintComponent sh:OrConstraintComponent;
             sh:sourceShape ?shape ;
             sh:focusNode ?node ;
-            sh:resultPath ?resultPath ;
+            sh:resultPath ?path ;
             sh:value ?value ;
+            this:message ?message ;
         ] .
     } .
 } .
@@ -191,8 +194,10 @@
 {
     {
         ?shape this:focusNode ?node .
-        ?and list:member ?member .
-        ?node this:violates ?member .
+        (?x { ?x list:in ?and . ?node this:violates ?x } ?xs) log:collectAllIn [] .
+        ?xs list:length ?length .
+        ?length math:greaterThan 0 .
+        ("%s shapes violated: %s" ?length ?xs) string:format ?message .
         this: this:report ?report .
     }
     =>
@@ -203,6 +208,7 @@
             sh:sourceShape ?shape ;
             sh:focusNode ?node ;
             sh:value ?node ;
+            this:message ?message ;
         ] .
     } .
 } .
@@ -216,9 +222,10 @@
     {
         ?shape this:focusNode ?node .
         (?node ?path) this:value ?value .
-        ?and list:member ?member .
-        ?value this:violates ?member .
-        ?path this:path ?resultPath .
+        (?x { ?x list:in ?and . ?value this:violates ?x } ?xs) log:collectAllIn [] .
+        ?xs list:length ?length .
+        ?length math:greaterThan 0 .
+        ("%s shapes violated: %s" ?length ?xs) string:format ?message .
         this: this:report ?report .
     }
     =>
@@ -228,8 +235,9 @@
             sh:sourceConstraintComponent sh:AndConstraintComponent;
             sh:sourceShape ?shape ;
             sh:focusNode ?node ;
-            sh:resultPath ?resultPath ;
+            sh:resultPath ?path ;
             sh:value ?value ;
+            this:message ?message ;
         ] .
     } .
 } .
@@ -281,7 +289,7 @@
    
         ?valid list:length ?length .
         ?length log:notEqualTo 1 .
-        ("%s shapes passed" ?length) string:format ?message .
+        ("value has %s shapes: %s. It should have exactly one" ?length ?valid) string:format ?message .
 
         this: this:report ?report .
     }
@@ -312,7 +320,7 @@
         (?x { ?x list:in ?xone . ?failed list:notMember ?x } ?valid) log:collectAllIn [] .
         ?valid list:length ?length .
         ?length log:notEqualTo 1 .
-        ("%s shapes passed" ?length) string:format ?message .
+        ("value has %s shapes: %s. It should have exactly one" ?length ?valid) string:format ?message .
 
         this: this:report ?report .
     }
@@ -325,6 +333,7 @@
             sh:focusNode ?node ;
             sh:value ?value ;
             this:message ?message ;
+            sh:resultPath ?path ;
         ] .
     } .
 } .

@@ -3,13 +3,12 @@
 @prefix list: <http://www.w3.org/2000/10/swap/list#> .
 @prefix this: <http://eye-shacl#> .
 
-# Rules used as a query to extract the relevant information to compare SHACL validation reports.
+# Rules used as a query to extract only the relevant information for SHACL validation reports.
 
-# SHACL Test Suite definition of full compliance:
-# https://w3c.github.io/data-shapes/data-shapes-test-suite/#Validate
 
 { 
-    ?report a sh:ValidationReport ; ?p ?o .
+    this: this:report ?report .
+    ?report ?p ?o .
     ?p list:in (rdf:type sh:conforms sh:result)
 } 
 => 
@@ -18,6 +17,7 @@
 } .
 
 { 
+    this: this:report ?report .
     ?report sh:result ?result . 
     ?result ?p ?o .
     ?p list:in (
@@ -29,7 +29,7 @@
         sh:sourceConstraintComponent
         sh:sourceShape
         sh:value
-        #sh:resultMessage
+        sh:resultMessage
     )
 } 
 => 
@@ -37,3 +37,10 @@
     ?result ?p ?o 
 } .
 
+{
+    this: this:report ?report .
+    ?report sh:result ?result . 
+    ?result sh:sourceShape ?shape .
+    ?graph this:describeShape ?shape .
+}
+=> ?graph .

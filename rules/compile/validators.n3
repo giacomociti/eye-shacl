@@ -1,21 +1,22 @@
+@prefix string: <http://www.w3.org/2000/10/swap/string#> .
 @prefix list: <http://www.w3.org/2000/10/swap/list#> .
 @prefix log: <http://www.w3.org/2000/10/swap/log#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix sh: <http://www.w3.org/ns/shacl#> .
 @prefix this: <http://eye-shacl#> .
 
-sh:in this:validator list:in .
-sh:class this:validator this:class .
-sh:nodeKind this:validator this:nodeKind .
-sh:datatype this:validator this:datatype .
-sh:minExclusive this:validator this:minExclusive .
-sh:minInclusive this:validator this:minInclusive .
-sh:maxExclusive this:validator this:maxExclusive .
-sh:maxInclusive this:validator this:maxInclusive .
-sh:minLength this:validator this:minLength .
-sh:maxLength this:validator this:maxLength .
-sh:pattern this:validator this:pattern .
-sh:languageIn this:validator this:languageIn .
+sh:in this:validator list:in ; this:messageFormat "value should be one of: %s".
+sh:class this:validator this:class ; this:messageFormat "value should be instance of %s".
+sh:nodeKind this:validator this:nodeKind ; this:messageFormat "value should have node kind %s".
+sh:datatype this:validator this:datatype ; this:messageFormat "value should have datatype %s".
+sh:minExclusive this:validator this:minExclusive ; this:messageFormat "value should be greater than %s".
+sh:minInclusive this:validator this:minInclusive ; this:messageFormat "value should be greater than or equal to %s".
+sh:maxExclusive this:validator this:maxExclusive ; this:messageFormat "value should be less than %s".
+sh:maxInclusive this:validator this:maxInclusive ; this:messageFormat "value should be less than or equal to %s".
+sh:minLength this:validator this:minLength ; this:messageFormat "value should have at least %s characters".
+sh:maxLength this:validator this:maxLength ; this:messageFormat "value should have at most %s characters".
+sh:pattern this:validator this:pattern ; this:messageFormat "value should match pattern %s".
+sh:languageIn this:validator this:languageIn ; this:messageFormat "value should have one of the language tags: %s".
 
 
 {
@@ -41,9 +42,10 @@ sh:languageIn this:validator this:languageIn .
 
 # node shapes with validator
 {
-   ?param this:constraint ?constraint ; this:validator ?validator .
+   ?param this:constraint ?constraint ; this:validator ?validator ; this:messageFormat ?messageFormat .
    ?shape a sh:NodeShape ; ?param ?paramValue .
    [] log:notIncludes { ?shape sh:deactivated true } .
+   (?messageFormat ?paramValue) string:format ?message .
 }
 => 
 {
@@ -60,6 +62,7 @@ sh:languageIn this:validator this:languageIn .
            sh:sourceShape ?shape ;
            sh:focusNode ?node ;
            sh:value ?node ;
+           this:message ?message ;
        ] .
    } .
 } .
@@ -83,8 +86,9 @@ sh:languageIn this:validator this:languageIn .
 # property shapes with validator
 {
    ?shape sh:path ?path ; ?param ?paramValue .
-   ?param this:constraint ?constraint ; this:validator ?validator .
+   ?param this:constraint ?constraint ; this:validator ?validator ; this:messageFormat ?messageFormat .
    [] log:notIncludes { ?shape sh:deactivated true } .
+   (?messageFormat ?paramValue) string:format ?message .
 }
 => 
 {
@@ -92,7 +96,6 @@ sh:languageIn this:validator this:languageIn .
        ?shape this:focusNode ?node .
        ( ?node ?path ) this:value ?value .
        [] log:notIncludes { ?value ?validator ?paramValue } .
-       ?path this:path ?resultPath .
        this: this:report ?report .
    }
    => 
@@ -102,8 +105,9 @@ sh:languageIn this:validator this:languageIn .
            sh:sourceConstraintComponent ?constraint ;
            sh:sourceShape ?shape ;
            sh:focusNode ?node ;
-           sh:resultPath ?resultPath ;
+           sh:resultPath ?path ;
            sh:value ?value ;
+           this:message ?message ;
        ] .
    } .
 } .

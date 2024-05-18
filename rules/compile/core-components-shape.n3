@@ -1,9 +1,8 @@
 
-@prefix string: <http://www.w3.org/2000/10/swap/string#> .
-
 # https://www.w3.org/TR/shacl/#core-components-shape
 
 @prefix log: <http://www.w3.org/2000/10/swap/log#> .
+@prefix string: <http://www.w3.org/2000/10/swap/string#> .
 @prefix math: <http://www.w3.org/2000/10/swap/math#> .
 @prefix list: <http://www.w3.org/2000/10/swap/list#> .
 @prefix sh: <http://www.w3.org/ns/shacl#>.
@@ -13,6 +12,7 @@
 {
     ?shape sh:node ?nodeShape ; sh:path ?path .
     [] log:notIncludes { ?shape sh:deactivated true } .
+    ("value should have shape: %s" ?nodeShape) string:format ?message .
 }
 =>
 {
@@ -24,7 +24,6 @@
 
         ?value this:violates ?nodeShape .
 
-        ?path this:path ?resultPath .
     }
     =>
     {
@@ -34,7 +33,8 @@
             sh:sourceShape ?shape ;
             sh:focusNode ?node ;
             sh:value ?value ;
-            sh:resultPath ?resultPath ;
+            sh:resultPath ?path ;
+            this:message ?message ;
         ] .
     } .
 } .
@@ -59,6 +59,7 @@
 {
     ?shape sh:node ?nodeShape ; a sh:NodeShape .
     [] log:notIncludes { ?shape sh:deactivated true } .
+    ("value should have shape: %s" ?nodeShape) string:format ?message .
 }
 =>
 {
@@ -75,6 +76,7 @@
             sh:sourceShape ?shape ;
             sh:focusNode ?node ;
             sh:value ?node ;
+            this:message ?message ;
         ] .
     } .
 } .
@@ -138,7 +140,14 @@
 }
 => 
 {
-    { ?node this:violates ?shape } <= { ?node this:violates ?propertyShape }
+    { 
+        ?node this:violates ?shape 
+    } 
+    <=
+    { 
+        (?node ?path) this:value ?value .
+        ?value this:violates ?propertyShape 
+    }
 } .
 
 # qualifiedValueShape
@@ -157,7 +166,6 @@
 
         ("%s values passed, expected at least %s" ?length ?minCount) string:format ?message .
         this: this:report ?report .
-        ?path this:path ?resultPath .
     }
     =>
     {
@@ -166,7 +174,7 @@
             sh:sourceConstraintComponent sh:QualifiedMinCountConstraintComponent;
             sh:sourceShape ?shape ;
             sh:focusNode ?node ;
-            sh:resultPath ?resultPath ;
+            sh:resultPath ?path ;
             this:message ?message ;
         ] .
     } .
@@ -185,7 +193,6 @@
 
         ("%s values passed, expected at most %s" ?length ?maxCount) string:format ?message .
         this: this:report ?report .
-        ?path this:path ?resultPath .
     }
     =>
     {
@@ -194,7 +201,7 @@
             sh:sourceConstraintComponent sh:QualifiedMaxCountConstraintComponent;
             sh:sourceShape ?shape ;
             sh:focusNode ?node ;
-            sh:resultPath ?resultPath ;
+            sh:resultPath ?path ;
             this:message ?message ;
         ] .
     } .

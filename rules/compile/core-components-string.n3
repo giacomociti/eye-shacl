@@ -23,7 +23,6 @@
         ([] ?lang) log:langlit ?y .
 
         ("Language \"%s\" has been used more than once" ?lang) string:format ?message .
-        ?path this:path ?resultPath .
         this: this:report ?report .
     }
     =>
@@ -33,7 +32,7 @@
             sh:sourceConstraintComponent sh:UniqueLangConstraintComponent ;
             sh:sourceShape ?shape ;
             sh:focusNode ?focusNode ;
-            sh:resultPath ?resultPath ;
+            sh:resultPath ?path ;
             this:message ?message ; # todo
         ] .
     } .

@@ -1,7 +1,7 @@
-
 # https://www.w3.org/TR/shacl/#core-components-count
 
 @prefix log: <http://www.w3.org/2000/10/swap/log#> .
+@prefix string: <http://www.w3.org/2000/10/swap/string#> .
 @prefix math: <http://www.w3.org/2000/10/swap/math#> .
 @prefix list: <http://www.w3.org/2000/10/swap/list#> .
 @prefix sh: <http://www.w3.org/ns/shacl#>.
@@ -17,9 +17,10 @@
     {
         ?shape this:focusNode ?node .
         (?node ?path) this:values ?values .
-        ?values list:length [ math:lessThan ?minCount ].
-        ?path this:path ?resultPath .
+        ?values list:length ?length .
+        ?length math:lessThan ?minCount .
         this: this:report ?report .
+        ("at least %s values expected, but found %s" ?minCount ?length) string:format ?message .
     }
     =>
     {
@@ -28,7 +29,8 @@
             sh:sourceConstraintComponent sh:MinCountConstraintComponent;
             sh:sourceShape ?shape ;
             sh:focusNode ?node ;
-            sh:resultPath ?resultPath ;
+            sh:resultPath ?path ;
+            this:message ?message ;
         ] .
     } .
 } .
@@ -60,9 +62,10 @@
     {
         ?shape this:focusNode ?node .
         (?node ?path) this:values ?values .
-        ?values list:length [ math:greaterThan ?maxCount ].
-        ?path this:path ?resultPath .
+        ?values list:length ?length .
+        ?length math:greaterThan ?maxCount .
         this: this:report ?report .
+        ("at most %s values expected, but found %s" ?maxCount ?length) string:format ?message .
     }
     =>
     {
@@ -71,7 +74,8 @@
             sh:sourceConstraintComponent sh:MaxCountConstraintComponent;
             sh:sourceShape ?shape ;
             sh:focusNode ?node ;
-            sh:resultPath ?resultPath ;
+            sh:resultPath ?path ;
+            this:message ?message ;
         ] .
     } .
 } .

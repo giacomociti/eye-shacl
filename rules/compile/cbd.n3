@@ -1,0 +1,49 @@
+@prefix list: <http://www.w3.org/2000/10/swap/list#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix log: <http://www.w3.org/2000/10/swap/log#> .
+@prefix this: <http://eye-shacl#> .
+@prefix ex: <http://example.org/> .
+
+{ ?value this:nodeKind sh:BlankNode } <= { ?value log:rawType log:LabeledBlankNode }. 
+{ ?value this:nodeKind sh:BlankNode } <= { ?value log:rawType log:UnlabeledBlankNode }.
+{ ?value this:nodeKind sh:BlankNode } <= { ?value log:rawType log:SkolemIRI }.
+
+
+{
+    ?s this:cbd { ?s ?p ?o }
+}
+<=
+{
+    ?s ?p ?o . ?p log:notEqualTo this:cbd .
+} .
+
+{
+    ?x this:cbd { ?s ?p ?o }
+}
+<=
+{
+    ?x [] ?y .
+    ?y this:nodeKind sh:BlankNode .
+    ?y this:cbd {?s ?p ?o}   
+} .
+
+{
+    ?x this:cbd { ?s ?p ?o }
+}
+<=
+{
+    ?x [] [ list:member ?s ] .
+    ?s this:nodeKind sh:BlankNode .
+    ?s ?p ?o .    
+} .
+
+
+{
+    ?shape a sh:Shape .
+    (?triple {?shape this:cbd ?triple } ?triples) log:collectAllIn [] .
+    ?triples log:conjunction ?graph.
+}
+=>
+{
+    ?graph this:describeShape ?shape .
+} .
