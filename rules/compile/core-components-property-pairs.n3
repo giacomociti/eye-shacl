@@ -11,6 +11,8 @@
 { 
     ?shape sh:equals ?otherPredicate ; sh:path ?path .
     [] log:notIncludes { ?shape sh:deactivated true } .
+    ?otherPredicate log:localN3String ?otherPredicateString .
+    ("Must have same values as %s" ?otherPredicateString) string:format ?message .
 } 
 => 
 {
@@ -24,7 +26,7 @@
         
         ?union list:member ?value .
         ?intersection list:notMember ?value .
-         
+
         this: this:report ?report .
     }
     =>
@@ -36,6 +38,7 @@
             sh:focusNode ?focusNode ;
             sh:resultPath ?path ;
             sh:value ?value ;
+            this:message ?message ;
         ]
     } .
 
@@ -46,6 +49,8 @@
 { 
     ?shape sh:equals ?otherPredicate ; a sh:NodeShape .
     [] log:notIncludes { ?shape sh:deactivated true } .
+    ?otherPredicate log:localN3String ?otherPredicateString .
+    ("Must be value of %s" ?otherPredicateString) string:format ?message .
 } 
 => 
 {
@@ -69,6 +74,7 @@
             sh:sourceShape ?shape ;
             sh:focusNode ?focusNode ;
             sh:value ?value ;
+            this:message ?message ;
         ]
     } .
 }.
@@ -110,6 +116,8 @@
 { 
     ?shape sh:disjoint ?otherPredicate ; sh:path ?path .
     [] log:notIncludes { ?shape sh:deactivated true } .
+    ?otherPredicate log:localN3String ?otherPredicateString .
+    ("Must have different values than %s" ?otherPredicateString) string:format ?message .
 } 
 => 
 {
@@ -130,6 +138,7 @@
             sh:focusNode ?focusNode ;
             sh:value ?value ;
             sh:resultPath ?path ;
+            this:message ?message ;
         ]
     } .
 }.
@@ -137,6 +146,8 @@
 { 
     ?shape sh:disjoint ?otherPredicate ; a sh:NodeShape .
     [] log:notIncludes { ?shape sh:deactivated true } .
+    ?otherPredicate log:localN3String ?otherPredicateString .
+    ("Must not be a value of %s" ?otherPredicateString) string:format ?message .
 } 
 => 
 {
@@ -155,6 +166,7 @@
             sh:sourceShape ?shape ;
             sh:focusNode ?focusNode ;
             sh:value ?focusNode ;
+            this:message ?message ;
         ]
     } .
 }.
@@ -194,6 +206,8 @@
 { 
     ?shape sh:lessThan ?otherPredicate ; sh:path ?path .
     [] log:notIncludes { ?shape sh:deactivated true } .
+    ?otherPredicate log:localN3String ?otherPredicateString .
+    ("Value is not less than value of %s" ?otherPredicateString) string:format ?message .
 } 
 => 
 {
@@ -215,6 +229,7 @@
             sh:focusNode ?focusNode ;
             sh:value ?value ;
             sh:resultPath ?path ;
+            this:message ?message ;
         ]
     } .
 }.
@@ -242,6 +257,8 @@
 { 
     ?shape sh:lessThanOrEquals ?otherPredicate ; sh:path ?path .
     [] log:notIncludes { ?shape sh:deactivated true } .
+     ?otherPredicate log:localN3String ?otherPredicateString .
+    ("Value is not less than or equal to value of %s" ?otherPredicateString) string:format ?message .
 } 
 => 
 {
@@ -263,6 +280,7 @@
             sh:focusNode ?focusNode ;
             sh:value ?value ;
             sh:resultPath ?path ;
+            this:message ?message ;
         ]
     } .
 }.

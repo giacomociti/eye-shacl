@@ -12,6 +12,8 @@
 {
     ?shape sh:not ?not ; a sh:NodeShape .
     [] log:notIncludes { ?shape sh:deactivated true } .
+    ?not log:localN3String ?notText .
+    ("value should not have shape: %s" ?notText) string:format ?message .
 }
 =>
 {
@@ -28,6 +30,7 @@
             sh:sourceShape ?shape ;
             sh:focusNode ?node ;
             sh:value ?node ;
+            this:message ?message ;
         ] .
     } .
 } .
@@ -35,6 +38,8 @@
 {
     ?shape sh:not ?not ; sh:path ?path .
     [] log:notIncludes { ?shape sh:deactivated true } .
+    ?not log:localN3String ?notText .
+    ("value should not have shape: %s" ?notText) string:format ?message .
 }
 =>
 {
@@ -53,6 +58,7 @@
             sh:focusNode ?node ;
             sh:resultPath ?path ;
             sh:value ?value ;
+            this:message ?message ;
         ] .
     } .
 } .
@@ -93,7 +99,8 @@
 {
     ?shape sh:or ?or ; a sh:NodeShape .
     [] log:notIncludes { ?shape sh:deactivated true } .
-    ("value should have at least a shape of: %s" ?or) string:format ?message .
+    ?or log:localN3String ?orText .
+    ("value should have at least a shape of: %s" ?orText) string:format ?message .
 }
 =>
 {
@@ -121,7 +128,8 @@
 {
     ?shape sh:or ?or ; sh:path ?path . 
     [] log:notIncludes { ?shape sh:deactivated true } .
-    ("value should have at least a shape of: %s" ?or) string:format ?message .
+    ?or log:localN3String ?orText .
+    ("value should have at least a shape of: %s" ?orText) string:format ?message .
 }
 =>
 {
@@ -197,7 +205,8 @@
         (?x { ?x list:in ?and . ?node this:violates ?x } ?xs) log:collectAllIn [] .
         ?xs list:length ?length .
         ?length math:greaterThan 0 .
-        ("%s shapes violated: %s" ?length ?xs) string:format ?message .
+        ?xs log:localN3String ?listText .
+        ("%s shapes violated: %s" ?length ?listText) string:format ?message .
         this: this:report ?report .
     }
     =>
@@ -225,7 +234,8 @@
         (?x { ?x list:in ?and . ?value this:violates ?x } ?xs) log:collectAllIn [] .
         ?xs list:length ?length .
         ?length math:greaterThan 0 .
-        ("%s shapes violated: %s" ?length ?xs) string:format ?message .
+        ?xs log:localN3String ?listText .
+        ("%s shapes violated: %s" ?length ?listText) string:format ?message .
         this: this:report ?report .
     }
     =>
@@ -289,8 +299,8 @@
    
         ?valid list:length ?length .
         ?length log:notEqualTo 1 .
-        ("value has %s shapes: %s. It should have exactly one" ?length ?valid) string:format ?message .
-
+        ?valid log:localN3String ?validText .
+        ("value has %s shapes: %s. It should have exactly one" ?length ?validText) string:format ?message .
         this: this:report ?report .
     }
     =>
@@ -320,8 +330,8 @@
         (?x { ?x list:in ?xone . ?failed list:notMember ?x } ?valid) log:collectAllIn [] .
         ?valid list:length ?length .
         ?length log:notEqualTo 1 .
-        ("value has %s shapes: %s. It should have exactly one" ?length ?valid) string:format ?message .
-
+        ?valid log:localN3String ?validText .
+        ("value has %s shapes: %s. It should have exactly one" ?length ?validText) string:format ?message .
         this: this:report ?report .
     }
     =>

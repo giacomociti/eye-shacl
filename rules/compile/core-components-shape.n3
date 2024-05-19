@@ -12,7 +12,8 @@
 {
     ?shape sh:node ?nodeShape ; sh:path ?path .
     [] log:notIncludes { ?shape sh:deactivated true } .
-    ("value should have shape: %s" ?nodeShape) string:format ?message .
+    ?nodeShape log:localN3String ?nodeShapeString .
+    ("value should have shape: %s" ?nodeShapeString) string:format ?message .
 }
 =>
 {
@@ -59,7 +60,8 @@
 {
     ?shape sh:node ?nodeShape ; a sh:NodeShape .
     [] log:notIncludes { ?shape sh:deactivated true } .
-    ("value should have shape: %s" ?nodeShape) string:format ?message .
+    ?nodeShape log:localN3String ?nodeShapeString .
+    ("value should have shape: %s" ?nodeShapeString) string:format ?message .
 }
 =>
 {

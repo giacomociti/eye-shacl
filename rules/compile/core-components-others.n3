@@ -15,7 +15,8 @@
     (?x { ?shape sh:ignoredProperties [ list:member ?x ]} ?ignored) log:collectAllIn [] .
     (?existing ?ignored) list:append ?allowed .
     [] log:notIncludes { ?shape sh:deactivated true } .
-    ("allowed properties are only: %s" ?allowed) string:format ?message .
+    ?allowed log:localN3String ?allowedString .
+    ("allowed properties are only: %s" ?allowedString) string:format ?message .
 }
 =>
 {

@@ -45,7 +45,8 @@ sh:languageIn this:validator this:languageIn ; this:messageFormat "value should 
    ?param this:constraint ?constraint ; this:validator ?validator ; this:messageFormat ?messageFormat .
    ?shape a sh:NodeShape ; ?param ?paramValue .
    [] log:notIncludes { ?shape sh:deactivated true } .
-   (?messageFormat ?paramValue) string:format ?message .
+   ?paramValue log:localN3String ?paramValueString .
+   (?messageFormat ?paramValueString) string:format ?message .
 }
 => 
 {
@@ -88,7 +89,8 @@ sh:languageIn this:validator this:languageIn ; this:messageFormat "value should 
    ?shape sh:path ?path ; ?param ?paramValue .
    ?param this:constraint ?constraint ; this:validator ?validator ; this:messageFormat ?messageFormat .
    [] log:notIncludes { ?shape sh:deactivated true } .
-   (?messageFormat ?paramValue) string:format ?message .
+   ?paramValue log:localN3String ?paramValueString .
+   (?messageFormat ?paramValueString) string:format ?message .
 }
 => 
 {
