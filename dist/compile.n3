@@ -78,20 +78,20 @@ sh:languageIn this:messageFormat "value should have one of the language tags: %s
     }.
 } => {
     {
-        ?U_5 this:focusNode ?U_443.
-        (?U_443 ?U_7) this:values ?U_444.
-        ?U_444 list:length ?U_445.
-        ?U_445 math:lessThan ?U_6.
-        <http://eye-shacl#> this:report ?U_446.
-        ("at least %s values expected, but found %s" ?U_6 ?U_445) string:format ?U_447.
+        ?U_5 this:focusNode ?U_446.
+        (?U_446 ?U_7) this:values ?U_447.
+        ?U_447 list:length ?U_448.
+        ?U_448 math:lessThan ?U_6.
+        <http://eye-shacl#> this:report ?U_449.
+        ("at least %s values expected, but found %s" ?U_6 ?U_448) string:format ?U_450.
     } => {
-        ?U_446 sh:result ?U_448.
-        ?U_448 a sh:ValidationResult.
-        ?U_448 sh:sourceConstraintComponent sh:MinCountConstraintComponent.
-        ?U_448 sh:sourceShape ?U_5.
-        ?U_448 sh:focusNode ?U_443.
-        ?U_448 sh:resultPath ?U_7.
-        ?U_448 this:message ?U_447.
+        ?U_449 sh:result ?U_451.
+        ?U_451 a sh:ValidationResult.
+        ?U_451 sh:sourceConstraintComponent sh:MinCountConstraintComponent.
+        ?U_451 sh:sourceShape ?U_5.
+        ?U_451 sh:focusNode ?U_446.
+        ?U_451 sh:resultPath ?U_7.
+        ?U_451 this:message ?U_450.
     }.
 }.
 {
@@ -114,20 +114,20 @@ sh:languageIn this:messageFormat "value should have one of the language tags: %s
     }.
 } => {
     {
-        ?U_15 this:focusNode ?U_449.
-        (?U_449 ?U_17) this:values ?U_450.
-        ?U_450 list:length ?U_451.
-        ?U_451 math:greaterThan ?U_16.
-        <http://eye-shacl#> this:report ?U_452.
-        ("at most %s values expected, but found %s" ?U_16 ?U_451) string:format ?U_453.
+        ?U_15 this:focusNode ?U_452.
+        (?U_452 ?U_17) this:values ?U_453.
+        ?U_453 list:length ?U_454.
+        ?U_454 math:greaterThan ?U_16.
+        <http://eye-shacl#> this:report ?U_455.
+        ("at most %s values expected, but found %s" ?U_16 ?U_454) string:format ?U_456.
     } => {
-        ?U_452 sh:result ?U_454.
-        ?U_454 a sh:ValidationResult.
-        ?U_454 sh:sourceConstraintComponent sh:MaxCountConstraintComponent.
-        ?U_454 sh:sourceShape ?U_15.
-        ?U_454 sh:focusNode ?U_449.
-        ?U_454 sh:resultPath ?U_17.
-        ?U_454 this:message ?U_453.
+        ?U_455 sh:result ?U_457.
+        ?U_457 a sh:ValidationResult.
+        ?U_457 sh:sourceConstraintComponent sh:MaxCountConstraintComponent.
+        ?U_457 sh:sourceShape ?U_15.
+        ?U_457 sh:focusNode ?U_452.
+        ?U_457 sh:resultPath ?U_17.
+        ?U_457 this:message ?U_456.
     }.
 }.
 {
@@ -152,19 +152,19 @@ sh:languageIn this:messageFormat "value should have one of the language tags: %s
     ("value should not have shape: %s" ?U_28) string:format ?U_29.
 } => {
     {
-        ?U_25 this:focusNode ?U_455.
-        ?U_456 log:notIncludes {
-            ?U_455 this:violates ?U_26.
+        ?U_25 this:focusNode ?U_458.
+        ?U_459 log:notIncludes {
+            ?U_458 this:violates ?U_26.
         }.
-        <http://eye-shacl#> this:report ?U_457.
+        <http://eye-shacl#> this:report ?U_460.
     } => {
-        ?U_457 sh:result ?U_458.
-        ?U_458 a sh:ValidationResult.
-        ?U_458 sh:sourceConstraintComponent sh:NotConstraintComponent.
-        ?U_458 sh:sourceShape ?U_25.
-        ?U_458 sh:focusNode ?U_455.
-        ?U_458 sh:value ?U_455.
-        ?U_458 this:message ?U_29.
+        ?U_460 sh:result ?U_461.
+        ?U_461 a sh:ValidationResult.
+        ?U_461 sh:sourceConstraintComponent sh:NotConstraintComponent.
+        ?U_461 sh:sourceShape ?U_25.
+        ?U_461 sh:focusNode ?U_458.
+        ?U_461 sh:value ?U_458.
+        ?U_461 this:message ?U_29.
     }.
 }.
 {
@@ -177,21 +177,21 @@ sh:languageIn this:messageFormat "value should have one of the language tags: %s
     ("value should not have shape: %s" ?U_34) string:format ?U_35.
 } => {
     {
-        ?U_30 this:focusNode ?U_459.
-        (?U_459 ?U_32) this:value ?U_460.
-        ?U_461 log:notIncludes {
-            ?U_460 this:violates ?U_31.
+        ?U_30 this:focusNode ?U_462.
+        (?U_462 ?U_32) this:value ?U_463.
+        ?U_464 log:notIncludes {
+            ?U_463 this:violates ?U_31.
         }.
-        <http://eye-shacl#> this:report ?U_462.
+        <http://eye-shacl#> this:report ?U_465.
     } => {
-        ?U_462 sh:result ?U_463.
-        ?U_463 a sh:ValidationResult.
-        ?U_463 sh:sourceConstraintComponent sh:NotConstraintComponent.
-        ?U_463 sh:sourceShape ?U_30.
-        ?U_463 sh:focusNode ?U_459.
-        ?U_463 sh:resultPath ?U_32.
-        ?U_463 sh:value ?U_460.
-        ?U_463 this:message ?U_35.
+        ?U_465 sh:result ?U_466.
+        ?U_466 a sh:ValidationResult.
+        ?U_466 sh:sourceConstraintComponent sh:NotConstraintComponent.
+        ?U_466 sh:sourceShape ?U_30.
+        ?U_466 sh:focusNode ?U_462.
+        ?U_466 sh:resultPath ?U_32.
+        ?U_466 sh:value ?U_463.
+        ?U_466 this:message ?U_35.
     }.
 }.
 {
@@ -235,21 +235,21 @@ sh:languageIn this:messageFormat "value should have one of the language tags: %s
     ("value should have at least a shape of: %s" ?U_51) string:format ?U_52.
 } => {
     {
-        ?U_48 this:focusNode ?U_464.
+        ?U_48 this:focusNode ?U_467.
         ({
-            ?U_49 list:member ?U_465.
+            ?U_49 list:member ?U_468.
         } {
-            ?U_464 this:violates ?U_465.
-        }) log:forAllIn ?U_466.
-        <http://eye-shacl#> this:report ?U_467.
+            ?U_467 this:violates ?U_468.
+        }) log:forAllIn ?U_469.
+        <http://eye-shacl#> this:report ?U_470.
     } => {
-        ?U_467 sh:result ?U_468.
-        ?U_468 a sh:ValidationResult.
-        ?U_468 sh:sourceConstraintComponent sh:OrConstraintComponent.
-        ?U_468 sh:sourceShape ?U_48.
-        ?U_468 sh:focusNode ?U_464.
-        ?U_468 sh:value ?U_464.
-        ?U_468 this:message ?U_52.
+        ?U_470 sh:result ?U_471.
+        ?U_471 a sh:ValidationResult.
+        ?U_471 sh:sourceConstraintComponent sh:OrConstraintComponent.
+        ?U_471 sh:sourceShape ?U_48.
+        ?U_471 sh:focusNode ?U_467.
+        ?U_471 sh:value ?U_467.
+        ?U_471 this:message ?U_52.
     }.
 }.
 {
@@ -262,23 +262,23 @@ sh:languageIn this:messageFormat "value should have one of the language tags: %s
     ("value should have at least a shape of: %s" ?U_57) string:format ?U_58.
 } => {
     {
-        ?U_53 this:focusNode ?U_469.
-        (?U_469 ?U_55) this:value ?U_470.
+        ?U_53 this:focusNode ?U_472.
+        (?U_472 ?U_55) this:value ?U_473.
         ({
-            ?U_54 list:member ?U_471.
+            ?U_54 list:member ?U_474.
         } {
-            ?U_470 this:violates ?U_471.
-        }) log:forAllIn ?U_472.
-        <http://eye-shacl#> this:report ?U_473.
+            ?U_473 this:violates ?U_474.
+        }) log:forAllIn ?U_475.
+        <http://eye-shacl#> this:report ?U_476.
     } => {
-        ?U_473 sh:result ?U_474.
-        ?U_474 a sh:ValidationResult.
-        ?U_474 sh:sourceConstraintComponent sh:OrConstraintComponent.
-        ?U_474 sh:sourceShape ?U_53.
-        ?U_474 sh:focusNode ?U_469.
-        ?U_474 sh:resultPath ?U_55.
-        ?U_474 sh:value ?U_470.
-        ?U_474 this:message ?U_58.
+        ?U_476 sh:result ?U_477.
+        ?U_477 a sh:ValidationResult.
+        ?U_477 sh:sourceConstraintComponent sh:OrConstraintComponent.
+        ?U_477 sh:sourceShape ?U_53.
+        ?U_477 sh:focusNode ?U_472.
+        ?U_477 sh:resultPath ?U_55.
+        ?U_477 sh:value ?U_473.
+        ?U_477 this:message ?U_58.
     }.
 }.
 {
@@ -324,24 +324,24 @@ sh:languageIn this:messageFormat "value should have one of the language tags: %s
     }.
 } => {
     {
-        ?U_73 this:focusNode ?U_475.
-        (?U_476 {
-            ?U_476 list:in ?U_74.
-            ?U_475 this:violates ?U_476.
-        } ?U_477) log:collectAllIn ?U_478.
-        ?U_477 list:length ?U_479.
-        ?U_479 math:greaterThan 0 .
-        ?U_477 log:localN3String ?U_480.
-        ("%s shapes violated: %s" ?U_479 ?U_480) string:format ?U_481.
-        <http://eye-shacl#> this:report ?U_482.
+        ?U_73 this:focusNode ?U_478.
+        (?U_479 {
+            ?U_479 list:in ?U_74.
+            ?U_478 this:violates ?U_479.
+        } ?U_480) log:collectAllIn ?U_481.
+        ?U_480 list:length ?U_482.
+        ?U_482 math:greaterThan 0 .
+        ?U_480 log:localN3String ?U_483.
+        ("%s shapes violated: %s" ?U_482 ?U_483) string:format ?U_484.
+        <http://eye-shacl#> this:report ?U_485.
     } => {
-        ?U_482 sh:result ?U_483.
-        ?U_483 a sh:ValidationResult.
-        ?U_483 sh:sourceConstraintComponent sh:AndConstraintComponent.
-        ?U_483 sh:sourceShape ?U_73.
-        ?U_483 sh:focusNode ?U_475.
-        ?U_483 sh:value ?U_475.
-        ?U_483 this:message ?U_481.
+        ?U_485 sh:result ?U_486.
+        ?U_486 a sh:ValidationResult.
+        ?U_486 sh:sourceConstraintComponent sh:AndConstraintComponent.
+        ?U_486 sh:sourceShape ?U_73.
+        ?U_486 sh:focusNode ?U_478.
+        ?U_486 sh:value ?U_478.
+        ?U_486 this:message ?U_484.
     }.
 }.
 {
@@ -352,26 +352,26 @@ sh:languageIn this:messageFormat "value should have one of the language tags: %s
     }.
 } => {
     {
-        ?U_76 this:focusNode ?U_484.
-        (?U_484 ?U_78) this:value ?U_485.
-        (?U_486 {
-            ?U_486 list:in ?U_77.
-            ?U_485 this:violates ?U_486.
-        } ?U_487) log:collectAllIn ?U_488.
-        ?U_487 list:length ?U_489.
-        ?U_489 math:greaterThan 0 .
-        ?U_487 log:localN3String ?U_490.
-        ("%s shapes violated: %s" ?U_489 ?U_490) string:format ?U_491.
-        <http://eye-shacl#> this:report ?U_492.
+        ?U_76 this:focusNode ?U_487.
+        (?U_487 ?U_78) this:value ?U_488.
+        (?U_489 {
+            ?U_489 list:in ?U_77.
+            ?U_488 this:violates ?U_489.
+        } ?U_490) log:collectAllIn ?U_491.
+        ?U_490 list:length ?U_492.
+        ?U_492 math:greaterThan 0 .
+        ?U_490 log:localN3String ?U_493.
+        ("%s shapes violated: %s" ?U_492 ?U_493) string:format ?U_494.
+        <http://eye-shacl#> this:report ?U_495.
     } => {
-        ?U_492 sh:result ?U_493.
-        ?U_493 a sh:ValidationResult.
-        ?U_493 sh:sourceConstraintComponent sh:AndConstraintComponent.
-        ?U_493 sh:sourceShape ?U_76.
-        ?U_493 sh:focusNode ?U_484.
-        ?U_493 sh:resultPath ?U_78.
-        ?U_493 sh:value ?U_485.
-        ?U_493 this:message ?U_491.
+        ?U_495 sh:result ?U_496.
+        ?U_496 a sh:ValidationResult.
+        ?U_496 sh:sourceConstraintComponent sh:AndConstraintComponent.
+        ?U_496 sh:sourceShape ?U_76.
+        ?U_496 sh:focusNode ?U_487.
+        ?U_496 sh:resultPath ?U_78.
+        ?U_496 sh:value ?U_488.
+        ?U_496 this:message ?U_494.
     }.
 }.
 {
@@ -411,28 +411,28 @@ sh:languageIn this:messageFormat "value should have one of the language tags: %s
     }.
 } => {
     {
-        ?U_92 this:focusNode ?U_494.
-        (?U_495 {
-            ?U_495 list:in ?U_93.
-            ?U_494 this:violates ?U_495.
-        } ?U_496) log:collectAllIn ?U_497.
-        (?U_495 {
-            ?U_495 list:in ?U_93.
-            ?U_496 list:notMember ?U_495.
-        } ?U_498) log:collectAllIn ?U_499.
-        ?U_498 list:length ?U_500.
-        ?U_500 log:notEqualTo 1 .
-        ?U_498 log:localN3String ?U_501.
-        ("value has %s shapes: %s. It should have exactly one" ?U_500 ?U_501) string:format ?U_502.
-        <http://eye-shacl#> this:report ?U_503.
+        ?U_92 this:focusNode ?U_497.
+        (?U_498 {
+            ?U_498 list:in ?U_93.
+            ?U_497 this:violates ?U_498.
+        } ?U_499) log:collectAllIn ?U_500.
+        (?U_498 {
+            ?U_498 list:in ?U_93.
+            ?U_499 list:notMember ?U_498.
+        } ?U_501) log:collectAllIn ?U_502.
+        ?U_501 list:length ?U_503.
+        ?U_503 log:notEqualTo 1 .
+        ?U_501 log:localN3String ?U_504.
+        ("value has %s shapes: %s. It should have exactly one" ?U_503 ?U_504) string:format ?U_505.
+        <http://eye-shacl#> this:report ?U_506.
     } => {
-        ?U_503 sh:result ?U_504.
-        ?U_504 a sh:ValidationResult.
-        ?U_504 sh:sourceConstraintComponent sh:XoneConstraintComponent.
-        ?U_504 sh:sourceShape ?U_92.
-        ?U_504 sh:focusNode ?U_494.
-        ?U_504 sh:value ?U_494.
-        ?U_504 this:message ?U_502.
+        ?U_506 sh:result ?U_507.
+        ?U_507 a sh:ValidationResult.
+        ?U_507 sh:sourceConstraintComponent sh:XoneConstraintComponent.
+        ?U_507 sh:sourceShape ?U_92.
+        ?U_507 sh:focusNode ?U_497.
+        ?U_507 sh:value ?U_497.
+        ?U_507 this:message ?U_505.
     }.
 }.
 {
@@ -443,30 +443,30 @@ sh:languageIn this:messageFormat "value should have one of the language tags: %s
     }.
 } => {
     {
-        ?U_95 this:focusNode ?U_505.
-        (?U_505 ?U_97) this:value ?U_506.
-        (?U_507 {
-            ?U_507 list:in ?U_96.
-            ?U_506 this:violates ?U_507.
-        } ?U_508) log:collectAllIn ?U_509.
-        (?U_507 {
-            ?U_507 list:in ?U_96.
-            ?U_508 list:notMember ?U_507.
-        } ?U_510) log:collectAllIn ?U_511.
-        ?U_510 list:length ?U_512.
-        ?U_512 log:notEqualTo 1 .
-        ?U_510 log:localN3String ?U_513.
-        ("value has %s shapes: %s. It should have exactly one" ?U_512 ?U_513) string:format ?U_514.
-        <http://eye-shacl#> this:report ?U_515.
+        ?U_95 this:focusNode ?U_508.
+        (?U_508 ?U_97) this:value ?U_509.
+        (?U_510 {
+            ?U_510 list:in ?U_96.
+            ?U_509 this:violates ?U_510.
+        } ?U_511) log:collectAllIn ?U_512.
+        (?U_510 {
+            ?U_510 list:in ?U_96.
+            ?U_511 list:notMember ?U_510.
+        } ?U_513) log:collectAllIn ?U_514.
+        ?U_513 list:length ?U_515.
+        ?U_515 log:notEqualTo 1 .
+        ?U_513 log:localN3String ?U_516.
+        ("value has %s shapes: %s. It should have exactly one" ?U_515 ?U_516) string:format ?U_517.
+        <http://eye-shacl#> this:report ?U_518.
     } => {
-        ?U_515 sh:result ?U_516.
-        ?U_516 a sh:ValidationResult.
-        ?U_516 sh:sourceConstraintComponent sh:XoneConstraintComponent.
-        ?U_516 sh:sourceShape ?U_95.
-        ?U_516 sh:focusNode ?U_505.
-        ?U_516 sh:value ?U_506.
-        ?U_516 this:message ?U_514.
-        ?U_516 sh:resultPath ?U_97.
+        ?U_518 sh:result ?U_519.
+        ?U_519 a sh:ValidationResult.
+        ?U_519 sh:sourceConstraintComponent sh:XoneConstraintComponent.
+        ?U_519 sh:sourceShape ?U_95.
+        ?U_519 sh:focusNode ?U_508.
+        ?U_519 sh:value ?U_509.
+        ?U_519 this:message ?U_517.
+        ?U_519 sh:resultPath ?U_97.
     }.
 }.
 {
@@ -533,19 +533,19 @@ sh:languageIn this:messageFormat "value should have one of the language tags: %s
     ("allowed properties are only: %s" ?U_131) string:format ?U_132.
 } => {
     {
-        ?U_121 this:focusNode ?U_517.
-        ?U_517 ?U_518 ?U_519.
-        ?U_129 list:notMember ?U_518.
-        <http://eye-shacl#> this:report ?U_520.
+        ?U_121 this:focusNode ?U_520.
+        ?U_520 ?U_521 ?U_522.
+        ?U_129 list:notMember ?U_521.
+        <http://eye-shacl#> this:report ?U_523.
     } => {
-        ?U_520 sh:result ?U_521.
-        ?U_521 a sh:ValidationResult.
-        ?U_521 sh:sourceConstraintComponent sh:ClosedConstraintComponent.
-        ?U_521 sh:sourceShape ?U_121.
-        ?U_521 sh:focusNode ?U_517.
-        ?U_521 sh:value ?U_519.
-        ?U_521 sh:resultPath ?U_518.
-        ?U_521 this:message ?U_132.
+        ?U_523 sh:result ?U_524.
+        ?U_524 a sh:ValidationResult.
+        ?U_524 sh:sourceConstraintComponent sh:ClosedConstraintComponent.
+        ?U_524 sh:sourceShape ?U_121.
+        ?U_524 sh:focusNode ?U_520.
+        ?U_524 sh:value ?U_522.
+        ?U_524 sh:resultPath ?U_521.
+        ?U_524 this:message ?U_132.
     }.
 }.
 {
@@ -557,18 +557,18 @@ sh:languageIn this:messageFormat "value should have one of the language tags: %s
     ("missing expected value: %s" ?U_134) string:format ?U_137.
 } => {
     {
-        ?U_133 this:focusNode ?U_522.
-        (?U_522 ?U_135) this:values ?U_523.
-        ?U_523 list:notMember ?U_134.
-        <http://eye-shacl#> this:report ?U_524.
+        ?U_133 this:focusNode ?U_525.
+        (?U_525 ?U_135) this:values ?U_526.
+        ?U_526 list:notMember ?U_134.
+        <http://eye-shacl#> this:report ?U_527.
     } => {
-        ?U_524 sh:result ?U_525.
-        ?U_525 a sh:ValidationResult.
-        ?U_525 sh:sourceConstraintComponent sh:HasValueConstraintComponent.
-        ?U_525 sh:sourceShape ?U_133.
-        ?U_525 sh:focusNode ?U_522.
-        ?U_525 sh:resultPath ?U_135.
-        ?U_525 this:message ?U_137.
+        ?U_527 sh:result ?U_528.
+        ?U_528 a sh:ValidationResult.
+        ?U_528 sh:sourceConstraintComponent sh:HasValueConstraintComponent.
+        ?U_528 sh:sourceShape ?U_133.
+        ?U_528 sh:focusNode ?U_525.
+        ?U_528 sh:resultPath ?U_135.
+        ?U_528 this:message ?U_137.
     }.
 }.
 {
@@ -594,16 +594,16 @@ sh:languageIn this:messageFormat "value should have one of the language tags: %s
     ("missing expected value: %s" ?U_145) string:format ?U_147.
 } => {
     {
-        ?U_144 this:focusNode ?U_526.
-        ?U_526 log:notEqualTo ?U_145.
-        <http://eye-shacl#> this:report ?U_527.
+        ?U_144 this:focusNode ?U_529.
+        ?U_529 log:notEqualTo ?U_145.
+        <http://eye-shacl#> this:report ?U_530.
     } => {
-        ?U_527 sh:result ?U_528.
-        ?U_528 a sh:ValidationResult.
-        ?U_528 sh:sourceConstraintComponent sh:HasValueConstraintComponent.
-        ?U_528 sh:sourceShape ?U_144.
-        ?U_528 sh:focusNode ?U_526.
-        ?U_528 this:message ?U_147.
+        ?U_530 sh:result ?U_531.
+        ?U_531 a sh:ValidationResult.
+        ?U_531 sh:sourceConstraintComponent sh:HasValueConstraintComponent.
+        ?U_531 sh:sourceShape ?U_144.
+        ?U_531 sh:focusNode ?U_529.
+        ?U_531 this:message ?U_147.
     }.
 }.
 {
@@ -629,26 +629,26 @@ sh:languageIn this:messageFormat "value should have one of the language tags: %s
     ("Must have same values as %s" ?U_156) string:format ?U_157.
 } => {
     {
-        ?U_152 this:focusNode ?U_529.
-        (?U_529 ?U_154) this:values ?U_530.
-        (?U_529 ?U_153) this:values ?U_531.
-        (?U_530 ?U_531) list:append ?U_532.
-        (?U_533 {
-            ?U_533 list:in ?U_530.
-            ?U_533 list:in ?U_531.
-        } ?U_534) log:collectAllIn ?U_535.
-        ?U_532 list:member ?U_536.
-        ?U_534 list:notMember ?U_536.
-        <http://eye-shacl#> this:report ?U_537.
+        ?U_152 this:focusNode ?U_532.
+        (?U_532 ?U_154) this:values ?U_533.
+        (?U_532 ?U_153) this:values ?U_534.
+        (?U_533 ?U_534) list:append ?U_535.
+        (?U_536 {
+            ?U_536 list:in ?U_533.
+            ?U_536 list:in ?U_534.
+        } ?U_537) log:collectAllIn ?U_538.
+        ?U_535 list:member ?U_539.
+        ?U_537 list:notMember ?U_539.
+        <http://eye-shacl#> this:report ?U_540.
     } => {
-        ?U_537 sh:result ?U_538.
-        ?U_538 a sh:ValidationResult.
-        ?U_538 sh:sourceConstraintComponent sh:EqualsConstraintComponent.
-        ?U_538 sh:sourceShape ?U_152.
-        ?U_538 sh:focusNode ?U_529.
-        ?U_538 sh:resultPath ?U_154.
-        ?U_538 sh:value ?U_536.
-        ?U_538 this:message ?U_157.
+        ?U_540 sh:result ?U_541.
+        ?U_541 a sh:ValidationResult.
+        ?U_541 sh:sourceConstraintComponent sh:EqualsConstraintComponent.
+        ?U_541 sh:sourceShape ?U_152.
+        ?U_541 sh:focusNode ?U_532.
+        ?U_541 sh:resultPath ?U_154.
+        ?U_541 sh:value ?U_539.
+        ?U_541 this:message ?U_157.
     }.
 }.
 {
@@ -661,24 +661,24 @@ sh:languageIn this:messageFormat "value should have one of the language tags: %s
     ("Must be value of %s" ?U_161) string:format ?U_162.
 } => {
     {
-        ?U_158 this:focusNode ?U_539.
-        (?U_539 ?U_159) this:values ?U_540.
-        ((?U_539) ?U_540) list:append ?U_541.
-        (?U_542 {
-            ?U_542 log:equalTo ?U_539.
-            ?U_542 list:in ?U_540.
-        } ?U_543) log:collectAllIn ?U_544.
-        ?U_541 list:member ?U_545.
-        ?U_543 list:notMember ?U_545.
-        <http://eye-shacl#> this:report ?U_546.
+        ?U_158 this:focusNode ?U_542.
+        (?U_542 ?U_159) this:values ?U_543.
+        ((?U_542) ?U_543) list:append ?U_544.
+        (?U_545 {
+            ?U_545 log:equalTo ?U_542.
+            ?U_545 list:in ?U_543.
+        } ?U_546) log:collectAllIn ?U_547.
+        ?U_544 list:member ?U_548.
+        ?U_546 list:notMember ?U_548.
+        <http://eye-shacl#> this:report ?U_549.
     } => {
-        ?U_546 sh:result ?U_547.
-        ?U_547 a sh:ValidationResult.
-        ?U_547 sh:sourceConstraintComponent sh:EqualsConstraintComponent.
-        ?U_547 sh:sourceShape ?U_158.
-        ?U_547 sh:focusNode ?U_539.
-        ?U_547 sh:value ?U_545.
-        ?U_547 this:message ?U_162.
+        ?U_549 sh:result ?U_550.
+        ?U_550 a sh:ValidationResult.
+        ?U_550 sh:sourceConstraintComponent sh:EqualsConstraintComponent.
+        ?U_550 sh:sourceShape ?U_158.
+        ?U_550 sh:focusNode ?U_542.
+        ?U_550 sh:value ?U_548.
+        ?U_550 this:message ?U_162.
     }.
 }.
 {
@@ -720,19 +720,19 @@ sh:languageIn this:messageFormat "value should have one of the language tags: %s
     ("Must have different values than %s" ?U_179) string:format ?U_180.
 } => {
     {
-        ?U_175 this:focusNode ?U_548.
-        (?U_548 ?U_177) this:value ?U_549.
-        (?U_548 ?U_176) this:value ?U_549.
-        <http://eye-shacl#> this:report ?U_550.
+        ?U_175 this:focusNode ?U_551.
+        (?U_551 ?U_177) this:value ?U_552.
+        (?U_551 ?U_176) this:value ?U_552.
+        <http://eye-shacl#> this:report ?U_553.
     } => {
-        ?U_550 sh:result ?U_551.
-        ?U_551 a sh:ValidationResult.
-        ?U_551 sh:sourceConstraintComponent sh:DisjointConstraintComponent.
-        ?U_551 sh:sourceShape ?U_175.
-        ?U_551 sh:focusNode ?U_548.
-        ?U_551 sh:value ?U_549.
-        ?U_551 sh:resultPath ?U_177.
-        ?U_551 this:message ?U_180.
+        ?U_553 sh:result ?U_554.
+        ?U_554 a sh:ValidationResult.
+        ?U_554 sh:sourceConstraintComponent sh:DisjointConstraintComponent.
+        ?U_554 sh:sourceShape ?U_175.
+        ?U_554 sh:focusNode ?U_551.
+        ?U_554 sh:value ?U_552.
+        ?U_554 sh:resultPath ?U_177.
+        ?U_554 this:message ?U_180.
     }.
 }.
 {
@@ -745,17 +745,17 @@ sh:languageIn this:messageFormat "value should have one of the language tags: %s
     ("Must not be a value of %s" ?U_184) string:format ?U_185.
 } => {
     {
-        ?U_181 this:focusNode ?U_552.
-        (?U_552 ?U_182) this:value ?U_552.
-        <http://eye-shacl#> this:report ?U_553.
+        ?U_181 this:focusNode ?U_555.
+        (?U_555 ?U_182) this:value ?U_555.
+        <http://eye-shacl#> this:report ?U_556.
     } => {
-        ?U_553 sh:result ?U_554.
-        ?U_554 a sh:ValidationResult.
-        ?U_554 sh:sourceConstraintComponent sh:DisjointConstraintComponent.
-        ?U_554 sh:sourceShape ?U_181.
-        ?U_554 sh:focusNode ?U_552.
-        ?U_554 sh:value ?U_552.
-        ?U_554 this:message ?U_185.
+        ?U_556 sh:result ?U_557.
+        ?U_557 a sh:ValidationResult.
+        ?U_557 sh:sourceConstraintComponent sh:DisjointConstraintComponent.
+        ?U_557 sh:sourceShape ?U_181.
+        ?U_557 sh:focusNode ?U_555.
+        ?U_557 sh:value ?U_555.
+        ?U_557 this:message ?U_185.
     }.
 }.
 {
@@ -795,22 +795,22 @@ sh:languageIn this:messageFormat "value should have one of the language tags: %s
     ("Value is not less than value of %s" ?U_200) string:format ?U_201.
 } => {
     {
-        ?U_196 this:focusNode ?U_555.
-        (?U_555 ?U_198) this:value ?U_556.
-        (?U_555 ?U_197) this:value ?U_557.
-        ?U_558 log:notIncludes {
-            ?U_556 this:maxExclusive ?U_557.
+        ?U_196 this:focusNode ?U_558.
+        (?U_558 ?U_198) this:value ?U_559.
+        (?U_558 ?U_197) this:value ?U_560.
+        ?U_561 log:notIncludes {
+            ?U_559 this:maxExclusive ?U_560.
         }.
-        <http://eye-shacl#> this:report ?U_559.
+        <http://eye-shacl#> this:report ?U_562.
     } => {
-        ?U_559 sh:result ?U_560.
-        ?U_560 a sh:ValidationResult.
-        ?U_560 sh:sourceConstraintComponent sh:LessThanConstraintComponent.
-        ?U_560 sh:sourceShape ?U_196.
-        ?U_560 sh:focusNode ?U_555.
-        ?U_560 sh:value ?U_556.
-        ?U_560 sh:resultPath ?U_198.
-        ?U_560 this:message ?U_201.
+        ?U_562 sh:result ?U_563.
+        ?U_563 a sh:ValidationResult.
+        ?U_563 sh:sourceConstraintComponent sh:LessThanConstraintComponent.
+        ?U_563 sh:sourceShape ?U_196.
+        ?U_563 sh:focusNode ?U_558.
+        ?U_563 sh:value ?U_559.
+        ?U_563 sh:resultPath ?U_198.
+        ?U_563 this:message ?U_201.
     }.
 }.
 {
@@ -840,22 +840,22 @@ sh:languageIn this:messageFormat "value should have one of the language tags: %s
     ("Value is not less than or equal to value of %s" ?U_214) string:format ?U_215.
 } => {
     {
-        ?U_210 this:focusNode ?U_561.
-        (?U_561 ?U_212) this:value ?U_562.
-        (?U_561 ?U_211) this:value ?U_563.
-        ?U_564 log:notIncludes {
-            ?U_562 this:maxInclusive ?U_563.
+        ?U_210 this:focusNode ?U_564.
+        (?U_564 ?U_212) this:value ?U_565.
+        (?U_564 ?U_211) this:value ?U_566.
+        ?U_567 log:notIncludes {
+            ?U_565 this:maxInclusive ?U_566.
         }.
-        <http://eye-shacl#> this:report ?U_565.
+        <http://eye-shacl#> this:report ?U_568.
     } => {
-        ?U_565 sh:result ?U_566.
-        ?U_566 a sh:ValidationResult.
-        ?U_566 sh:sourceConstraintComponent sh:LessThanOrEqualsConstraintComponent.
-        ?U_566 sh:sourceShape ?U_210.
-        ?U_566 sh:focusNode ?U_561.
-        ?U_566 sh:value ?U_562.
-        ?U_566 sh:resultPath ?U_212.
-        ?U_566 this:message ?U_215.
+        ?U_568 sh:result ?U_569.
+        ?U_569 a sh:ValidationResult.
+        ?U_569 sh:sourceConstraintComponent sh:LessThanOrEqualsConstraintComponent.
+        ?U_569 sh:sourceShape ?U_210.
+        ?U_569 sh:focusNode ?U_564.
+        ?U_569 sh:value ?U_565.
+        ?U_569 sh:resultPath ?U_212.
+        ?U_569 this:message ?U_215.
     }.
 }.
 {
@@ -885,19 +885,19 @@ sh:languageIn this:messageFormat "value should have one of the language tags: %s
     ("value should have shape: %s" ?U_228) string:format ?U_229.
 } => {
     {
-        <http://eye-shacl#> this:report ?U_567.
-        ?U_224 this:focusNode ?U_568.
-        (?U_568 ?U_226) this:value ?U_569.
-        ?U_569 this:violates ?U_225.
+        <http://eye-shacl#> this:report ?U_570.
+        ?U_224 this:focusNode ?U_571.
+        (?U_571 ?U_226) this:value ?U_572.
+        ?U_572 this:violates ?U_225.
     } => {
-        ?U_567 sh:result ?U_570.
-        ?U_570 a sh:ValidationResult.
-        ?U_570 sh:sourceConstraintComponent sh:NodeConstraintComponent.
-        ?U_570 sh:sourceShape ?U_224.
-        ?U_570 sh:focusNode ?U_568.
-        ?U_570 sh:value ?U_569.
-        ?U_570 sh:resultPath ?U_226.
-        ?U_570 this:message ?U_229.
+        ?U_570 sh:result ?U_573.
+        ?U_573 a sh:ValidationResult.
+        ?U_573 sh:sourceConstraintComponent sh:NodeConstraintComponent.
+        ?U_573 sh:sourceShape ?U_224.
+        ?U_573 sh:focusNode ?U_571.
+        ?U_573 sh:value ?U_572.
+        ?U_573 sh:resultPath ?U_226.
+        ?U_573 this:message ?U_229.
     }.
 }.
 {
@@ -924,17 +924,17 @@ sh:languageIn this:messageFormat "value should have one of the language tags: %s
     ("value should have shape: %s" ?U_239) string:format ?U_240.
 } => {
     {
-        <http://eye-shacl#> this:report ?U_571.
-        ?U_236 this:focusNode ?U_572.
-        ?U_572 this:violates ?U_237.
+        <http://eye-shacl#> this:report ?U_574.
+        ?U_236 this:focusNode ?U_575.
+        ?U_575 this:violates ?U_237.
     } => {
-        ?U_571 sh:result ?U_573.
-        ?U_573 a sh:ValidationResult.
-        ?U_573 sh:sourceConstraintComponent sh:NodeConstraintComponent.
-        ?U_573 sh:sourceShape ?U_236.
-        ?U_573 sh:focusNode ?U_572.
-        ?U_573 sh:value ?U_572.
-        ?U_573 this:message ?U_240.
+        ?U_574 sh:result ?U_576.
+        ?U_576 a sh:ValidationResult.
+        ?U_576 sh:sourceConstraintComponent sh:NodeConstraintComponent.
+        ?U_576 sh:sourceShape ?U_236.
+        ?U_576 sh:focusNode ?U_575.
+        ?U_576 sh:value ?U_575.
+        ?U_576 this:message ?U_240.
     }.
 }.
 {
@@ -1010,19 +1010,19 @@ sh:languageIn this:messageFormat "value should have one of the language tags: %s
     ?U_265 sh:path ?U_268.
 } => {
     {
-        ?U_265 this:focusNode ?U_574.
-        ?U_574 this:qualifiedCount (?U_265 ?U_575).
-        ?U_575 math:lessThan ?U_266.
-        ("%s values passed, expected at least %s" ?U_575 ?U_266) string:format ?U_576.
-        <http://eye-shacl#> this:report ?U_577.
+        ?U_265 this:focusNode ?U_577.
+        ?U_577 this:qualifiedCount (?U_265 ?U_578).
+        ?U_578 math:lessThan ?U_266.
+        ("%s values passed, expected at least %s" ?U_578 ?U_266) string:format ?U_579.
+        <http://eye-shacl#> this:report ?U_580.
     } => {
-        ?U_577 sh:result ?U_578.
-        ?U_578 a sh:ValidationResult.
-        ?U_578 sh:sourceConstraintComponent sh:QualifiedMinCountConstraintComponent.
-        ?U_578 sh:sourceShape ?U_265.
-        ?U_578 sh:focusNode ?U_574.
-        ?U_578 sh:resultPath ?U_268.
-        ?U_578 this:message ?U_576.
+        ?U_580 sh:result ?U_581.
+        ?U_581 a sh:ValidationResult.
+        ?U_581 sh:sourceConstraintComponent sh:QualifiedMinCountConstraintComponent.
+        ?U_581 sh:sourceShape ?U_265.
+        ?U_581 sh:focusNode ?U_577.
+        ?U_581 sh:resultPath ?U_268.
+        ?U_581 this:message ?U_579.
     }.
 }.
 {
@@ -1031,19 +1031,19 @@ sh:languageIn this:messageFormat "value should have one of the language tags: %s
     ?U_269 sh:path ?U_272.
 } => {
     {
-        ?U_269 this:focusNode ?U_579.
-        ?U_579 this:qualifiedCount (?U_269 ?U_580).
-        ?U_580 math:greaterThan ?U_270.
-        ("%s values passed, expected at most %s" ?U_580 ?U_270) string:format ?U_581.
-        <http://eye-shacl#> this:report ?U_582.
+        ?U_269 this:focusNode ?U_582.
+        ?U_582 this:qualifiedCount (?U_269 ?U_583).
+        ?U_583 math:greaterThan ?U_270.
+        ("%s values passed, expected at most %s" ?U_583 ?U_270) string:format ?U_584.
+        <http://eye-shacl#> this:report ?U_585.
     } => {
-        ?U_582 sh:result ?U_583.
-        ?U_583 a sh:ValidationResult.
-        ?U_583 sh:sourceConstraintComponent sh:QualifiedMaxCountConstraintComponent.
-        ?U_583 sh:sourceShape ?U_269.
-        ?U_583 sh:focusNode ?U_579.
-        ?U_583 sh:resultPath ?U_272.
-        ?U_583 this:message ?U_581.
+        ?U_585 sh:result ?U_586.
+        ?U_586 a sh:ValidationResult.
+        ?U_586 sh:sourceConstraintComponent sh:QualifiedMaxCountConstraintComponent.
+        ?U_586 sh:sourceShape ?U_269.
+        ?U_586 sh:focusNode ?U_582.
+        ?U_586 sh:resultPath ?U_272.
+        ?U_586 this:message ?U_584.
     }.
 }.
 {
@@ -1110,22 +1110,22 @@ sh:languageIn this:messageFormat "value should have one of the language tags: %s
     }.
 } => {
     {
-        ?U_302 this:focusNode ?U_584.
-        (?U_584 ?U_303) this:value ?U_585.
-        (?U_584 ?U_303) this:value ?U_586.
-        ?U_585 log:notEqualTo ?U_586.
-        (?U_587 ?U_588) log:langlit ?U_585.
-        (?U_589 ?U_588) log:langlit ?U_586.
-        ("Language \"%s\" has been used more than once" ?U_588) string:format ?U_590.
-        <http://eye-shacl#> this:report ?U_591.
+        ?U_302 this:focusNode ?U_587.
+        (?U_587 ?U_303) this:value ?U_588.
+        (?U_587 ?U_303) this:value ?U_589.
+        ?U_588 log:notEqualTo ?U_589.
+        (?U_590 ?U_591) log:langlit ?U_588.
+        (?U_592 ?U_591) log:langlit ?U_589.
+        ("Language \"%s\" has been used more than once" ?U_591) string:format ?U_593.
+        <http://eye-shacl#> this:report ?U_594.
     } => {
-        ?U_591 sh:result ?U_592.
-        ?U_592 a sh:ValidationResult.
-        ?U_592 sh:sourceConstraintComponent sh:UniqueLangConstraintComponent.
-        ?U_592 sh:sourceShape ?U_302.
-        ?U_592 sh:focusNode ?U_584.
-        ?U_592 sh:resultPath ?U_303.
-        ?U_592 this:message ?U_590.
+        ?U_594 sh:result ?U_595.
+        ?U_595 a sh:ValidationResult.
+        ?U_595 sh:sourceConstraintComponent sh:UniqueLangConstraintComponent.
+        ?U_595 sh:sourceShape ?U_302.
+        ?U_595 sh:focusNode ?U_587.
+        ?U_595 sh:resultPath ?U_303.
+        ?U_595 this:message ?U_593.
     }.
 }.
 {
@@ -1310,19 +1310,19 @@ sh:languageIn this:messageFormat "value should have one of the language tags: %s
     (?U_382 ?U_386) string:format ?U_387.
 } => {
     {
-        ?U_383 this:focusNode ?U_593.
-        ?U_594 log:notIncludes {
-            ?U_593 ?U_381 ?U_384.
+        ?U_383 this:focusNode ?U_596.
+        ?U_597 log:notIncludes {
+            ?U_596 ?U_381 ?U_384.
         }.
-        <http://eye-shacl#> this:report ?U_595.
+        <http://eye-shacl#> this:report ?U_598.
     } => {
-        ?U_595 sh:result ?U_596.
-        ?U_596 a sh:ValidationResult.
-        ?U_596 sh:sourceConstraintComponent ?U_380.
-        ?U_596 sh:sourceShape ?U_383.
-        ?U_596 sh:focusNode ?U_593.
-        ?U_596 sh:value ?U_593.
-        ?U_596 this:message ?U_387.
+        ?U_598 sh:result ?U_599.
+        ?U_599 a sh:ValidationResult.
+        ?U_599 sh:sourceConstraintComponent ?U_380.
+        ?U_599 sh:sourceShape ?U_383.
+        ?U_599 sh:focusNode ?U_596.
+        ?U_599 sh:value ?U_596.
+        ?U_599 this:message ?U_387.
     }.
 }.
 {
@@ -1355,21 +1355,21 @@ sh:languageIn this:messageFormat "value should have one of the language tags: %s
     (?U_402 ?U_404) string:format ?U_405.
 } => {
     {
-        ?U_396 this:focusNode ?U_597.
-        (?U_597 ?U_397) this:value ?U_598.
-        ?U_599 log:notIncludes {
-            ?U_598 ?U_401 ?U_399.
+        ?U_396 this:focusNode ?U_600.
+        (?U_600 ?U_397) this:value ?U_601.
+        ?U_602 log:notIncludes {
+            ?U_601 ?U_401 ?U_399.
         }.
-        <http://eye-shacl#> this:report ?U_600.
+        <http://eye-shacl#> this:report ?U_603.
     } => {
-        ?U_600 sh:result ?U_601.
-        ?U_601 a sh:ValidationResult.
-        ?U_601 sh:sourceConstraintComponent ?U_400.
-        ?U_601 sh:sourceShape ?U_396.
-        ?U_601 sh:focusNode ?U_597.
-        ?U_601 sh:resultPath ?U_397.
-        ?U_601 sh:value ?U_598.
-        ?U_601 this:message ?U_405.
+        ?U_603 sh:result ?U_604.
+        ?U_604 a sh:ValidationResult.
+        ?U_604 sh:sourceConstraintComponent ?U_400.
+        ?U_604 sh:sourceShape ?U_396.
+        ?U_604 sh:focusNode ?U_600.
+        ?U_604 sh:resultPath ?U_397.
+        ?U_604 sh:value ?U_601.
+        ?U_604 this:message ?U_405.
     }.
 }.
 {
@@ -1394,79 +1394,92 @@ sh:languageIn this:messageFormat "value should have one of the language tags: %s
     ?U_416 sh:message ?U_417.
 } => {
     {
-        ?U_602 sh:sourceShape ?U_416.
+        ?U_605 sh:sourceShape ?U_416.
     } => {
-        ?U_602 sh:resultMessage ?U_417.
+        ?U_605 sh:resultMessage ?U_417.
     }.
 }.
 {
-    ?U_418 sh:severity ?U_419.
-} => {
-    {
-        ?U_603 sh:sourceShape ?U_418.
-    } => {
-        ?U_603 sh:resultSeverity ?U_419.
-    }.
-}.
-{
-    ?U_420 a sh:Shape.
-    ?U_421 log:notIncludes {
-        ?U_420 sh:severity ?U_422.
+    ?U_418 a sh:Shape.
+    ?U_419 log:notIncludes {
+        ?U_418 sh:message ?U_420.
     }.
 } => {
     {
-        ?U_604 sh:sourceShape ?U_420.
+        ?U_606 sh:sourceShape ?U_418.
+        ?U_606 this:message ?U_607.
     } => {
-        ?U_604 sh:resultSeverity sh:Violation.
+        ?U_606 sh:resultMessage ?U_607.
     }.
 }.
 {
-    ?U_423 this:nodeKind sh:BlankNode.
-} <= {
-    ?U_423 log:rawType log:LabeledBlankNode.
-}.
-{
-    ?U_424 this:nodeKind sh:BlankNode.
-} <= {
-    ?U_424 log:rawType log:UnlabeledBlankNode.
-}.
-{
-    ?U_425 this:nodeKind sh:BlankNode.
-} <= {
-    ?U_425 log:rawType log:SkolemIRI.
-}.
-{
-    ?U_426 this:nodeKind sh:IRI.
-} <= {
-    ?U_426 log:rawType log:Other.
-    ?U_426 log:uri ?U_427.
-}.
-{
-    ?U_428 this:cbd {
-        ?U_428 ?U_429 ?U_430.
+    ?U_421 sh:severity ?U_422.
+} => {
+    {
+        ?U_608 sh:sourceShape ?U_421.
+    } => {
+        ?U_608 sh:resultSeverity ?U_422.
     }.
+}.
+{
+    ?U_423 a sh:Shape.
+    ?U_424 log:notIncludes {
+        ?U_423 sh:severity ?U_425.
+    }.
+} => {
+    {
+        ?U_609 sh:sourceShape ?U_423.
+    } => {
+        ?U_609 sh:resultSeverity sh:Violation.
+    }.
+}.
+{
+    ?U_426 this:nodeKind sh:BlankNode.
 } <= {
-    ?U_428 ?U_429 ?U_430.
-    ?U_429 log:notEqualTo this:cbd.
+    ?U_426 log:rawType log:LabeledBlankNode.
+}.
+{
+    ?U_427 this:nodeKind sh:BlankNode.
+} <= {
+    ?U_427 log:rawType log:UnlabeledBlankNode.
+}.
+{
+    ?U_428 this:nodeKind sh:BlankNode.
+} <= {
+    ?U_428 log:rawType log:SkolemIRI.
+}.
+{
+    ?U_429 this:nodeKind sh:IRI.
+} <= {
+    ?U_429 log:rawType log:Other.
+    ?U_429 log:uri ?U_430.
 }.
 {
     ?U_431 this:cbd {
-        ?U_433 ?U_432 ?U_434.
+        ?U_431 ?U_432 ?U_433.
     }.
 } <= {
-    ?U_431 ?U_435 ?U_436.
-    ?U_436 this:nodeKind sh:BlankNode.
-    ?U_436 this:cbd {
-        ?U_433 ?U_432 ?U_434.
+    ?U_431 ?U_432 ?U_433.
+    ?U_432 log:notEqualTo this:cbd.
+}.
+{
+    ?U_434 this:cbd {
+        ?U_436 ?U_435 ?U_437.
+    }.
+} <= {
+    ?U_434 ?U_438 ?U_439.
+    ?U_439 this:nodeKind sh:BlankNode.
+    ?U_439 this:cbd {
+        ?U_436 ?U_435 ?U_437.
     }.
 }.
 {
-    ?U_437 this:cbd {
-        ?U_439 ?U_438 ?U_440.
+    ?U_440 this:cbd {
+        ?U_442 ?U_441 ?U_443.
     }.
 } <= {
-    ?U_437 ?U_441 ?U_442.
-    ?U_442 list:member ?U_439.
-    ?U_439 this:nodeKind sh:BlankNode.
-    ?U_439 ?U_438 ?U_440.
+    ?U_440 ?U_444 ?U_445.
+    ?U_445 list:member ?U_442.
+    ?U_442 this:nodeKind sh:BlankNode.
+    ?U_442 ?U_441 ?U_443.
 }.

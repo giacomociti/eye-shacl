@@ -33,7 +33,6 @@ https://raw.githubusercontent.com/w3c/data-shapes/gh-pages/data-shapes-test-suit
 ### To do
 - improve tests (clone result path as required by the test suite)
 - add sh:details
-- add sh:resultMessage
 - replace skolem IRIs in sh:sourceShape
 
 ### Known issues
