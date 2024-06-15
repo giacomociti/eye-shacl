@@ -19,7 +19,6 @@
 } 
 <= 
 { 
-    ?path this:nodeKind sh:IRI . 
     ?focusNode ?path ?value
 } .
 

@@ -39,7 +39,6 @@
 {
     (?U_11 ?U_12) this:value ?U_13.
 } <= {
-    ?U_12 this:nodeKind sh:IRI.
     ?U_11 ?U_12 ?U_13.
 }.
 {
