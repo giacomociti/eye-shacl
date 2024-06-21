@@ -8,6 +8,14 @@
 @prefix pred: <http://www.w3.org/2007/rif-builtin-predicate#>.
 @prefix sh: <http://www.w3.org/ns/shacl#>.
 
+{
+    ?value this:node ?node .
+}
+<=
+{
+    [] log:notIncludes { ?value this:violates ?node }
+} .
+
 # https://www.w3.org/TR/shacl/#core-components-logical
 {
     ?value this:and ?and .

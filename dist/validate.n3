@@ -54,259 +54,266 @@
     (?U_22 ?U_21) this:value ?U_19.
 }.
 {
-    ?U_23 this:and ?U_24.
+    ?U_23 this:node ?U_24.
 } <= {
-    (?U_25 {
-        ?U_25 list:in ?U_24.
-        ?U_23 this:violates ?U_25.
-    } ()) log:collectAllIn ?U_26.
+    ?U_25 log:notIncludes {
+        ?U_23 this:violates ?U_24.
+    }.
 }.
 {
-    ?U_27 this:or ?U_28.
+    ?U_26 this:and ?U_27.
 } <= {
-    (?U_29 {
-        ?U_29 list:in ?U_28.
-        ?U_27 this:violates ?U_29.
-    } ?U_30) log:collectAllIn ?U_31.
-    ?U_30 list:length ?U_32.
-    ?U_28 list:length ?U_33.
-    ?U_33 math:greaterThan ?U_32.
+    (?U_28 {
+        ?U_28 list:in ?U_27.
+        ?U_26 this:violates ?U_28.
+    } ()) log:collectAllIn ?U_29.
 }.
 {
-    ?U_34 this:not ?U_35.
+    ?U_30 this:or ?U_31.
 } <= {
-    ?U_34 this:violates ?U_35.
+    (?U_32 {
+        ?U_32 list:in ?U_31.
+        ?U_30 this:violates ?U_32.
+    } ?U_33) log:collectAllIn ?U_34.
+    ?U_33 list:length ?U_35.
+    ?U_31 list:length ?U_36.
+    ?U_36 math:greaterThan ?U_35.
 }.
 {
-    ?U_36 this:xone ?U_37.
+    ?U_37 this:not ?U_38.
 } <= {
-    (?U_38 {
-        ?U_38 list:in ?U_37.
-        ?U_36 this:violates ?U_38.
-    } ?U_39) log:collectAllIn ?U_40.
-    (?U_38 {
-        ?U_38 list:in ?U_37.
-        ?U_39 list:notMember ?U_38.
-    } (?U_41)) log:collectAllIn ?U_42.
+    ?U_37 this:violates ?U_38.
 }.
 {
-    ?U_43 this:minExclusive ?U_44.
+    ?U_39 this:xone ?U_40.
 } <= {
-    ?U_44 a this:Number.
-    ?U_43 a this:Number.
-    ?U_43 math:greaterThan ?U_44.
+    (?U_41 {
+        ?U_41 list:in ?U_40.
+        ?U_39 this:violates ?U_41.
+    } ?U_42) log:collectAllIn ?U_43.
+    (?U_41 {
+        ?U_41 list:in ?U_40.
+        ?U_42 list:notMember ?U_41.
+    } (?U_44)) log:collectAllIn ?U_45.
 }.
 {
-    ?U_45 this:minExclusive ?U_46.
+    ?U_46 this:minExclusive ?U_47.
 } <= {
-    ?U_46 this:datatype xsd:dateTime.
-    (?U_45 ?U_46) pred:dateTime-greater-than true.
+    ?U_47 a this:Number.
+    ?U_46 a this:Number.
+    ?U_46 math:greaterThan ?U_47.
 }.
 {
-    ?U_47 this:minExclusive ?U_48.
+    ?U_48 this:minExclusive ?U_49.
 } <= {
-    ?U_48 this:datatype ?U_49.
-    ?U_49 log:notEqualTo xsd:integer.
-    ?U_49 log:notEqualTo xsd:decimal.
-    ?U_49 log:notEqualTo xsd:double.
-    ?U_49 log:notEqualTo xsd:float.
-    ?U_49 log:notEqualTo xsd:dateTime.
-    ?U_47 this:datatype ?U_49.
-    ?U_47 string:greaterThan ?U_48.
+    ?U_49 this:datatype xsd:dateTime.
+    (?U_48 ?U_49) pred:dateTime-greater-than true.
 }.
 {
-    ?U_50 this:minInclusive ?U_51.
+    ?U_50 this:minExclusive ?U_51.
 } <= {
-    ?U_51 a this:Number.
-    ?U_50 a this:Number.
-    ?U_50 math:notLessThan ?U_51.
+    ?U_51 this:datatype ?U_52.
+    ?U_52 log:notEqualTo xsd:integer.
+    ?U_52 log:notEqualTo xsd:decimal.
+    ?U_52 log:notEqualTo xsd:double.
+    ?U_52 log:notEqualTo xsd:float.
+    ?U_52 log:notEqualTo xsd:dateTime.
+    ?U_50 this:datatype ?U_52.
+    ?U_50 string:greaterThan ?U_51.
 }.
 {
-    ?U_52 this:minInclusive ?U_53.
+    ?U_53 this:minInclusive ?U_54.
 } <= {
-    ?U_53 this:datatype xsd:dateTime.
-    (?U_52 ?U_53) pred:dateTime-greater-than-or-equal true.
+    ?U_54 a this:Number.
+    ?U_53 a this:Number.
+    ?U_53 math:notLessThan ?U_54.
 }.
 {
-    ?U_54 this:minInclusive ?U_55.
+    ?U_55 this:minInclusive ?U_56.
 } <= {
-    ?U_55 this:datatype ?U_56.
-    ?U_56 log:notEqualTo xsd:integer.
-    ?U_56 log:notEqualTo xsd:decimal.
-    ?U_56 log:notEqualTo xsd:double.
-    ?U_56 log:notEqualTo xsd:float.
-    ?U_56 log:notEqualTo xsd:dateTime.
-    ?U_54 this:datatype ?U_56.
-    ?U_54 string:notLessThan ?U_55.
+    ?U_56 this:datatype xsd:dateTime.
+    (?U_55 ?U_56) pred:dateTime-greater-than-or-equal true.
 }.
 {
-    ?U_57 this:maxExclusive ?U_58.
+    ?U_57 this:minInclusive ?U_58.
 } <= {
-    ?U_58 a this:Number.
-    ?U_57 a this:Number.
-    ?U_57 math:lessThan ?U_58.
+    ?U_58 this:datatype ?U_59.
+    ?U_59 log:notEqualTo xsd:integer.
+    ?U_59 log:notEqualTo xsd:decimal.
+    ?U_59 log:notEqualTo xsd:double.
+    ?U_59 log:notEqualTo xsd:float.
+    ?U_59 log:notEqualTo xsd:dateTime.
+    ?U_57 this:datatype ?U_59.
+    ?U_57 string:notLessThan ?U_58.
 }.
 {
-    ?U_59 this:maxExclusive ?U_60.
+    ?U_60 this:maxExclusive ?U_61.
 } <= {
-    ?U_60 this:datatype xsd:dateTime.
-    (?U_59 ?U_60) pred:dateTime-less-than true.
+    ?U_61 a this:Number.
+    ?U_60 a this:Number.
+    ?U_60 math:lessThan ?U_61.
 }.
 {
-    ?U_61 this:maxExclusive ?U_62.
+    ?U_62 this:maxExclusive ?U_63.
 } <= {
-    ?U_62 this:datatype ?U_63.
-    ?U_63 log:notEqualTo xsd:integer.
-    ?U_63 log:notEqualTo xsd:decimal.
-    ?U_63 log:notEqualTo xsd:double.
-    ?U_63 log:notEqualTo xsd:float.
-    ?U_63 log:notEqualTo xsd:dateTime.
-    ?U_61 this:datatype ?U_63.
-    ?U_61 string:lessThan ?U_62.
+    ?U_63 this:datatype xsd:dateTime.
+    (?U_62 ?U_63) pred:dateTime-less-than true.
 }.
 {
-    ?U_64 this:maxInclusive ?U_65.
+    ?U_64 this:maxExclusive ?U_65.
 } <= {
-    ?U_65 a this:Number.
-    ?U_64 a this:Number.
-    ?U_64 math:notGreaterThan ?U_65.
+    ?U_65 this:datatype ?U_66.
+    ?U_66 log:notEqualTo xsd:integer.
+    ?U_66 log:notEqualTo xsd:decimal.
+    ?U_66 log:notEqualTo xsd:double.
+    ?U_66 log:notEqualTo xsd:float.
+    ?U_66 log:notEqualTo xsd:dateTime.
+    ?U_64 this:datatype ?U_66.
+    ?U_64 string:lessThan ?U_65.
 }.
 {
-    ?U_66 this:maxInclusive ?U_67.
+    ?U_67 this:maxInclusive ?U_68.
 } <= {
-    ?U_67 this:datatype xsd:dateTime.
-    (?U_66 ?U_67) pred:dateTime-less-than-or-equal true.
+    ?U_68 a this:Number.
+    ?U_67 a this:Number.
+    ?U_67 math:notGreaterThan ?U_68.
 }.
 {
-    ?U_68 this:maxInclusive ?U_69.
+    ?U_69 this:maxInclusive ?U_70.
 } <= {
-    ?U_69 this:datatype ?U_70.
-    ?U_70 log:notEqualTo xsd:integer.
-    ?U_70 log:notEqualTo xsd:decimal.
-    ?U_70 log:notEqualTo xsd:double.
-    ?U_70 log:notEqualTo xsd:float.
-    ?U_70 log:notEqualTo xsd:dateTime.
-    ?U_68 this:datatype ?U_70.
-    ?U_68 string:notGreaterThan ?U_69.
+    ?U_70 this:datatype xsd:dateTime.
+    (?U_69 ?U_70) pred:dateTime-less-than-or-equal true.
 }.
 {
-    ?U_71 a this:Number.
+    ?U_71 this:maxInclusive ?U_72.
 } <= {
-    ?U_71 this:datatype ?U_72.
-    ?U_72 list:in (xsd:integer xsd:decimal xsd:double xsd:float).
+    ?U_72 this:datatype ?U_73.
+    ?U_73 log:notEqualTo xsd:integer.
+    ?U_73 log:notEqualTo xsd:decimal.
+    ?U_73 log:notEqualTo xsd:double.
+    ?U_73 log:notEqualTo xsd:float.
+    ?U_73 log:notEqualTo xsd:dateTime.
+    ?U_71 this:datatype ?U_73.
+    ?U_71 string:notGreaterThan ?U_72.
 }.
 {
-    ?U_73 this:minLength ?U_74.
+    ?U_74 a this:Number.
 } <= {
-    (?U_75 ?U_76) log:dtlit ?U_73.
-    ?U_75 string:length ?U_77.
-    ?U_77 math:notLessThan ?U_74.
+    ?U_74 this:datatype ?U_75.
+    ?U_75 list:in (xsd:integer xsd:decimal xsd:double xsd:float).
 }.
 {
-    ?U_78 this:minLength ?U_79.
+    ?U_76 this:minLength ?U_77.
 } <= {
-    ?U_78 log:rawType log:Other.
-    ?U_78 log:uri ?U_80.
-    ?U_80 string:length ?U_81.
-    ?U_81 math:notLessThan ?U_79.
+    (?U_78 ?U_79) log:dtlit ?U_76.
+    ?U_78 string:length ?U_80.
+    ?U_80 math:notLessThan ?U_77.
 }.
 {
-    ?U_82 this:maxLength ?U_83.
+    ?U_81 this:minLength ?U_82.
 } <= {
-    (?U_84 ?U_85) log:dtlit ?U_82.
-    ?U_84 string:length ?U_86.
-    ?U_86 math:notGreaterThan ?U_83.
+    ?U_81 log:rawType log:Other.
+    ?U_81 log:uri ?U_83.
+    ?U_83 string:length ?U_84.
+    ?U_84 math:notLessThan ?U_82.
 }.
 {
-    ?U_87 this:maxLength ?U_88.
+    ?U_85 this:maxLength ?U_86.
 } <= {
-    ?U_87 log:rawType log:Other.
-    ?U_87 log:uri ?U_89.
-    ?U_89 string:length ?U_90.
-    ?U_90 math:notGreaterThan ?U_88.
+    (?U_87 ?U_88) log:dtlit ?U_85.
+    ?U_87 string:length ?U_89.
+    ?U_89 math:notGreaterThan ?U_86.
 }.
 {
-    ?U_91 this:pattern ?U_92.
+    ?U_90 this:maxLength ?U_91.
 } <= {
-    (?U_93 ?U_94) log:dtlit ?U_91.
-    ?U_93 string:matches ?U_92.
+    ?U_90 log:rawType log:Other.
+    ?U_90 log:uri ?U_92.
+    ?U_92 string:length ?U_93.
+    ?U_93 math:notGreaterThan ?U_91.
 }.
 {
-    ?U_95 this:languageIn ?U_96.
+    ?U_94 this:pattern ?U_95.
 } <= {
-    (?U_97 ?U_98) log:langlit ?U_95.
-    ?U_98 string:startsWith ?U_99.
-    ?U_99 list:in ?U_96.
+    (?U_96 ?U_97) log:dtlit ?U_94.
+    ?U_96 string:matches ?U_95.
 }.
 {
-    ?U_100 this:class ?U_101.
+    ?U_98 this:languageIn ?U_99.
 } <= {
-    ?U_100 a ?U_101.
+    (?U_100 ?U_101) log:langlit ?U_98.
+    ?U_101 string:startsWith ?U_102.
+    ?U_102 list:in ?U_99.
 }.
 {
-    ?U_102 this:class ?U_103.
+    ?U_103 this:class ?U_104.
 } <= {
-    ?U_104 rdfs:subClassOf ?U_103.
-    ?U_102 this:class ?U_104.
+    ?U_103 a ?U_104.
 }.
 {
-    ?U_105 this:nodeKind sh:IRI.
+    ?U_105 this:class ?U_106.
 } <= {
-    ?U_105 log:rawType log:Other.
-    ?U_105 log:uri ?U_106.
+    ?U_107 rdfs:subClassOf ?U_106.
+    ?U_105 this:class ?U_107.
 }.
 {
-    ?U_107 this:nodeKind sh:Literal.
+    ?U_108 this:nodeKind sh:IRI.
 } <= {
-    ?U_107 log:rawType log:Literal.
+    ?U_108 log:rawType log:Other.
+    ?U_108 log:uri ?U_109.
 }.
 {
-    ?U_108 this:nodeKind sh:BlankNode.
+    ?U_110 this:nodeKind sh:Literal.
 } <= {
-    ?U_108 log:rawType log:LabeledBlankNode.
+    ?U_110 log:rawType log:Literal.
 }.
 {
-    ?U_109 this:nodeKind sh:BlankNode.
-} <= {
-    ?U_109 log:rawType log:UnlabeledBlankNode.
-}.
-{
-    ?U_110 this:nodeKind sh:BlankNode.
-} <= {
-    ?U_110 log:rawType log:SkolemIRI.
-}.
-{
-    ?U_111 this:nodeKind sh:BlankNodeOrIRI.
-} <= {
     ?U_111 this:nodeKind sh:BlankNode.
+} <= {
+    ?U_111 log:rawType log:LabeledBlankNode.
 }.
 {
-    ?U_112 this:nodeKind sh:BlankNodeOrIRI.
+    ?U_112 this:nodeKind sh:BlankNode.
 } <= {
-    ?U_112 this:nodeKind sh:IRI.
+    ?U_112 log:rawType log:UnlabeledBlankNode.
 }.
 {
-    ?U_113 this:nodeKind sh:IRIOrLiteral.
+    ?U_113 this:nodeKind sh:BlankNode.
 } <= {
-    ?U_113 this:nodeKind sh:IRI.
+    ?U_113 log:rawType log:SkolemIRI.
 }.
 {
-    ?U_114 this:nodeKind sh:IRIOrLiteral.
+    ?U_114 this:nodeKind sh:BlankNodeOrIRI.
 } <= {
-    ?U_114 this:nodeKind sh:Literal.
+    ?U_114 this:nodeKind sh:BlankNode.
 }.
 {
-    ?U_115 this:nodeKind sh:BlankNodeOrLiteral.
+    ?U_115 this:nodeKind sh:BlankNodeOrIRI.
 } <= {
-    ?U_115 this:nodeKind sh:BlankNode.
+    ?U_115 this:nodeKind sh:IRI.
 }.
 {
-    ?U_116 this:nodeKind sh:BlankNodeOrLiteral.
+    ?U_116 this:nodeKind sh:IRIOrLiteral.
 } <= {
-    ?U_116 this:nodeKind sh:Literal.
+    ?U_116 this:nodeKind sh:IRI.
 }.
 {
-    ?U_117 this:datatype ?U_118.
+    ?U_117 this:nodeKind sh:IRIOrLiteral.
 } <= {
-    (?U_119 ?U_118) log:dtlit ?U_117.
+    ?U_117 this:nodeKind sh:Literal.
+}.
+{
+    ?U_118 this:nodeKind sh:BlankNodeOrLiteral.
+} <= {
+    ?U_118 this:nodeKind sh:BlankNode.
+}.
+{
+    ?U_119 this:nodeKind sh:BlankNodeOrLiteral.
+} <= {
+    ?U_119 this:nodeKind sh:Literal.
+}.
+{
+    ?U_120 this:datatype ?U_121.
+} <= {
+    (?U_122 ?U_121) log:dtlit ?U_120.
 }.
