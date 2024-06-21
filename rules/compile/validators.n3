@@ -5,6 +5,10 @@
 @prefix sh: <http://www.w3.org/ns/shacl#> .
 @prefix this: <http://eye-shacl#> .
 
+sh:and this:validator this:and ; this:messageFormat "value should satisfy all of the following constraints: %s".
+sh:or this:validator this:or ; this:messageFormat "value should satisfy at least one of the following constraints: %s".
+sh:not this:validator this:not ; this:messageFormat "value should not satisfy the following constraint: %s".
+sh:xone this:validator this:xone ; this:messageFormat "value should satisfy exactly one of the following constraints: %s".
 sh:in this:validator list:in ; this:messageFormat "value should be one of: %s".
 sh:class this:validator this:class ; this:messageFormat "value should be instance of %s".
 sh:nodeKind this:validator this:nodeKind ; this:messageFormat "value should have node kind %s".

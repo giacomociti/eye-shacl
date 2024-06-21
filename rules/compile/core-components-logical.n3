@@ -1,386 +1,386 @@
-# https://www.w3.org/TR/shacl/#core-components-logical
+# # https://www.w3.org/TR/shacl/#core-components-logical
 
-@prefix math: <http://www.w3.org/2000/10/swap/math#> .
-@prefix string: <http://www.w3.org/2000/10/swap/string#> .
-@prefix log: <http://www.w3.org/2000/10/swap/log#> .
-@prefix list: <http://www.w3.org/2000/10/swap/list#> .
-@prefix sh: <http://www.w3.org/ns/shacl#>.
-@prefix this: <http://eye-shacl#> .
+# @prefix math: <http://www.w3.org/2000/10/swap/math#> .
+# @prefix string: <http://www.w3.org/2000/10/swap/string#> .
+# @prefix log: <http://www.w3.org/2000/10/swap/log#> .
+# @prefix list: <http://www.w3.org/2000/10/swap/list#> .
+# @prefix sh: <http://www.w3.org/ns/shacl#>.
+# @prefix this: <http://eye-shacl#> .
 
-# not
+# # not
 
-{
-    ?shape sh:not ?not ; a sh:NodeShape .
-    [] log:notIncludes { ?shape sh:deactivated true } .
-    ?not log:localN3String ?notText .
-    ("value should not have shape: %s" ?notText) string:format ?message .
-}
-=>
-{
-    {
-        ?shape this:focusNode ?node .
-        [] log:notIncludes { ?node this:violates ?not } .
-        this: this:report ?report .
-    }
-    =>
-    {
-        ?report sh:result [
-            a sh:ValidationResult ;
-            sh:sourceConstraintComponent sh:NotConstraintComponent;
-            sh:sourceShape ?shape ;
-            sh:focusNode ?node ;
-            sh:value ?node ;
-            this:message ?message ;
-        ] .
-    } .
-} .
+# {
+#     ?shape sh:not ?not ; a sh:NodeShape .
+#     [] log:notIncludes { ?shape sh:deactivated true } .
+#     ?not log:localN3String ?notText .
+#     ("value should not have shape: %s" ?notText) string:format ?message .
+# }
+# =>
+# {
+#     {
+#         ?shape this:focusNode ?node .
+#         [] log:notIncludes { ?node this:violates ?not } .
+#         this: this:report ?report .
+#     }
+#     =>
+#     {
+#         ?report sh:result [
+#             a sh:ValidationResult ;
+#             sh:sourceConstraintComponent sh:NotConstraintComponent;
+#             sh:sourceShape ?shape ;
+#             sh:focusNode ?node ;
+#             sh:value ?node ;
+#             this:message ?message ;
+#         ] .
+#     } .
+# } .
 
-{
-    ?shape sh:not ?not ; sh:path ?path .
-    [] log:notIncludes { ?shape sh:deactivated true } .
-    ?not log:localN3String ?notText .
-    ("value should not have shape: %s" ?notText) string:format ?message .
-}
-=>
-{
-   {
-        ?shape this:focusNode ?node .
-        (?node ?path) this:value ?value .
-        [] log:notIncludes { ?value this:violates ?not } .
-        this: this:report ?report .
-    }
-    =>
-    {
-        ?report sh:result [
-            a sh:ValidationResult ;
-            sh:sourceConstraintComponent sh:NotConstraintComponent;
-            sh:sourceShape ?shape ;
-            sh:focusNode ?node ;
-            sh:resultPath ?path ;
-            sh:value ?value ;
-            this:message ?message ;
-        ] .
-    } .
-} .
+# {
+#     ?shape sh:not ?not ; sh:path ?path .
+#     [] log:notIncludes { ?shape sh:deactivated true } .
+#     ?not log:localN3String ?notText .
+#     ("value should not have shape: %s" ?notText) string:format ?message .
+# }
+# =>
+# {
+#    {
+#         ?shape this:focusNode ?node .
+#         (?node ?path) this:value ?value .
+#         [] log:notIncludes { ?value this:violates ?not } .
+#         this: this:report ?report .
+#     }
+#     =>
+#     {
+#         ?report sh:result [
+#             a sh:ValidationResult ;
+#             sh:sourceConstraintComponent sh:NotConstraintComponent;
+#             sh:sourceShape ?shape ;
+#             sh:focusNode ?node ;
+#             sh:resultPath ?path ;
+#             sh:value ?value ;
+#             this:message ?message ;
+#         ] .
+#     } .
+# } .
 
-{
-    ?shape sh:not ?not ; a sh:NodeShape .
-    [] log:notIncludes { ?shape sh:deactivated true } .
-}
-=>
-{
-    {
-        ?node this:violates ?shape .
-    }
-    <=
-    {
-        [] log:notIncludes { ?node this:violates ?not } .
-    } .
-} .
+# {
+#     ?shape sh:not ?not ; a sh:NodeShape .
+#     [] log:notIncludes { ?shape sh:deactivated true } .
+# }
+# =>
+# {
+#     {
+#         ?node this:violates ?shape .
+#     }
+#     <=
+#     {
+#         [] log:notIncludes { ?node this:violates ?not } .
+#     } .
+# } .
 
-{
-    ?shape sh:not ?not ; sh:path ?path .
-    [] log:notIncludes { ?shape sh:deactivated true } .
-}
-=>
-{
-    {
-        ?node this:violates ?shape .
-    }
-    <=
-    {
-        (?node ?path) this:value ?value .
-        [] log:notIncludes { ?value this:violates ?not } .
-    } .
-} .
+# {
+#     ?shape sh:not ?not ; sh:path ?path .
+#     [] log:notIncludes { ?shape sh:deactivated true } .
+# }
+# =>
+# {
+#     {
+#         ?node this:violates ?shape .
+#     }
+#     <=
+#     {
+#         (?node ?path) this:value ?value .
+#         [] log:notIncludes { ?value this:violates ?not } .
+#     } .
+# } .
 
 
-# or
-{
-    ?shape sh:or ?or ; a sh:NodeShape .
-    [] log:notIncludes { ?shape sh:deactivated true } .
-    ?or log:localN3String ?orText .
-    ("value should have at least a shape of: %s" ?orText) string:format ?message .
-}
-=>
-{
-    {
-        ?shape this:focusNode ?node .
-        (
-            { ?or list:member ?alternative  }
-            { ?node this:violates ?alternative }
-        ) log:forAllIn [] .
-        this: this:report ?report .
-    }
-    =>
-    {
-        ?report sh:result [
-            a sh:ValidationResult ;
-            sh:sourceConstraintComponent sh:OrConstraintComponent;
-            sh:sourceShape ?shape ;
-            sh:focusNode ?node ;
-            sh:value ?node ;
-            this:message ?message ;
-        ] .
-    } .
-} .
+# # or
+# {
+#     ?shape sh:or ?or ; a sh:NodeShape .
+#     [] log:notIncludes { ?shape sh:deactivated true } .
+#     ?or log:localN3String ?orText .
+#     ("value should have at least a shape of: %s" ?orText) string:format ?message .
+# }
+# =>
+# {
+#     {
+#         ?shape this:focusNode ?node .
+#         (
+#             { ?or list:member ?alternative  }
+#             { ?node this:violates ?alternative }
+#         ) log:forAllIn [] .
+#         this: this:report ?report .
+#     }
+#     =>
+#     {
+#         ?report sh:result [
+#             a sh:ValidationResult ;
+#             sh:sourceConstraintComponent sh:OrConstraintComponent;
+#             sh:sourceShape ?shape ;
+#             sh:focusNode ?node ;
+#             sh:value ?node ;
+#             this:message ?message ;
+#         ] .
+#     } .
+# } .
 
-{
-    ?shape sh:or ?or ; sh:path ?path . 
-    [] log:notIncludes { ?shape sh:deactivated true } .
-    ?or log:localN3String ?orText .
-    ("value should have at least a shape of: %s" ?orText) string:format ?message .
-}
-=>
-{
-    {
-        ?shape this:focusNode ?node .
-        (?node ?path) this:value ?value .
-        (
-            { ?or list:member ?alternative  }
-            { ?value this:violates ?alternative }
-        ) log:forAllIn [] .
-        this: this:report ?report .
-    }
-    =>
-    {
-        ?report sh:result [
-            a sh:ValidationResult ;
-            sh:sourceConstraintComponent sh:OrConstraintComponent;
-            sh:sourceShape ?shape ;
-            sh:focusNode ?node ;
-            sh:resultPath ?path ;
-            sh:value ?value ;
-            this:message ?message ;
-        ] .
-    } .
-} .
+# {
+#     ?shape sh:or ?or ; sh:path ?path . 
+#     [] log:notIncludes { ?shape sh:deactivated true } .
+#     ?or log:localN3String ?orText .
+#     ("value should have at least a shape of: %s" ?orText) string:format ?message .
+# }
+# =>
+# {
+#     {
+#         ?shape this:focusNode ?node .
+#         (?node ?path) this:value ?value .
+#         (
+#             { ?or list:member ?alternative  }
+#             { ?value this:violates ?alternative }
+#         ) log:forAllIn [] .
+#         this: this:report ?report .
+#     }
+#     =>
+#     {
+#         ?report sh:result [
+#             a sh:ValidationResult ;
+#             sh:sourceConstraintComponent sh:OrConstraintComponent;
+#             sh:sourceShape ?shape ;
+#             sh:focusNode ?node ;
+#             sh:resultPath ?path ;
+#             sh:value ?value ;
+#             this:message ?message ;
+#         ] .
+#     } .
+# } .
 
-{
-    ?shape sh:or ?or ; a sh:NodeShape .
-    [] log:notIncludes { ?shape sh:deactivated true } .
-}
-=>
-{
-    {
-        ?node this:violates ?shape
-    }
-    <=
-    {
-        (
-            { ?or list:member ?alternative  }
-            { ?node this:violates ?alternative }
-        ) log:forAllIn [] .
-    } .
-} .
+# {
+#     ?shape sh:or ?or ; a sh:NodeShape .
+#     [] log:notIncludes { ?shape sh:deactivated true } .
+# }
+# =>
+# {
+#     {
+#         ?node this:violates ?shape
+#     }
+#     <=
+#     {
+#         (
+#             { ?or list:member ?alternative  }
+#             { ?node this:violates ?alternative }
+#         ) log:forAllIn [] .
+#     } .
+# } .
 
-{
-    ?shape sh:or ?or ; sh:path ?path .
-    [] log:notIncludes { ?shape sh:deactivated true } .
-}
-=>
-{
-    {
-        ?node this:violates ?shape
-    }
-    <=
-    {
-        (?node ?path) this:value ?value .
-        (
-            { ?or list:member ?alternative  }
-            { ?value this:violates ?alternative }
-        ) log:forAllIn [] .
-    } .
-} .
+# {
+#     ?shape sh:or ?or ; sh:path ?path .
+#     [] log:notIncludes { ?shape sh:deactivated true } .
+# }
+# =>
+# {
+#     {
+#         ?node this:violates ?shape
+#     }
+#     <=
+#     {
+#         (?node ?path) this:value ?value .
+#         (
+#             { ?or list:member ?alternative  }
+#             { ?value this:violates ?alternative }
+#         ) log:forAllIn [] .
+#     } .
+# } .
 
-# and
-{
-    ?shape sh:and ?and ; a sh:NodeShape .
-    [] log:notIncludes { ?shape sh:deactivated true } .
-}
-=>
-{
-    {
-        ?shape this:focusNode ?node .
-        (?x { ?x list:in ?and . ?node this:violates ?x } ?xs) log:collectAllIn [] .
-        ?xs list:length ?length .
-        ?length math:greaterThan 0 .
-        ?xs log:localN3String ?listText .
-        ("%s shapes violated: %s" ?length ?listText) string:format ?message .
-        this: this:report ?report .
-    }
-    =>
-    {
-        ?report sh:result [
-            a sh:ValidationResult ;
-            sh:sourceConstraintComponent sh:AndConstraintComponent;
-            sh:sourceShape ?shape ;
-            sh:focusNode ?node ;
-            sh:value ?node ;
-            this:message ?message ;
-        ] .
-    } .
-} .
+# # and
+# {
+#     ?shape sh:and ?and ; a sh:NodeShape .
+#     [] log:notIncludes { ?shape sh:deactivated true } .
+# }
+# =>
+# {
+#     {
+#         ?shape this:focusNode ?node .
+#         (?x { ?x list:in ?and . ?node this:violates ?x } ?xs) log:collectAllIn [] .
+#         ?xs list:length ?length .
+#         ?length math:greaterThan 0 .
+#         ?xs log:localN3String ?listText .
+#         ("%s shapes violated: %s" ?length ?listText) string:format ?message .
+#         this: this:report ?report .
+#     }
+#     =>
+#     {
+#         ?report sh:result [
+#             a sh:ValidationResult ;
+#             sh:sourceConstraintComponent sh:AndConstraintComponent;
+#             sh:sourceShape ?shape ;
+#             sh:focusNode ?node ;
+#             sh:value ?node ;
+#             this:message ?message ;
+#         ] .
+#     } .
+# } .
 
-{
-    ?shape sh:and ?and ; sh:path ?path .
-    [] log:notIncludes { ?shape sh:deactivated true } .
-}
-=>
-{
-    {
-        ?shape this:focusNode ?node .
-        (?node ?path) this:value ?value .
-        (?x { ?x list:in ?and . ?value this:violates ?x } ?xs) log:collectAllIn [] .
-        ?xs list:length ?length .
-        ?length math:greaterThan 0 .
-        ?xs log:localN3String ?listText .
-        ("%s shapes violated: %s" ?length ?listText) string:format ?message .
-        this: this:report ?report .
-    }
-    =>
-    {
-        ?report sh:result [
-            a sh:ValidationResult ;
-            sh:sourceConstraintComponent sh:AndConstraintComponent;
-            sh:sourceShape ?shape ;
-            sh:focusNode ?node ;
-            sh:resultPath ?path ;
-            sh:value ?value ;
-            this:message ?message ;
-        ] .
-    } .
-} .
+# {
+#     ?shape sh:and ?and ; sh:path ?path .
+#     [] log:notIncludes { ?shape sh:deactivated true } .
+# }
+# =>
+# {
+#     {
+#         ?shape this:focusNode ?node .
+#         (?node ?path) this:value ?value .
+#         (?x { ?x list:in ?and . ?value this:violates ?x } ?xs) log:collectAllIn [] .
+#         ?xs list:length ?length .
+#         ?length math:greaterThan 0 .
+#         ?xs log:localN3String ?listText .
+#         ("%s shapes violated: %s" ?length ?listText) string:format ?message .
+#         this: this:report ?report .
+#     }
+#     =>
+#     {
+#         ?report sh:result [
+#             a sh:ValidationResult ;
+#             sh:sourceConstraintComponent sh:AndConstraintComponent;
+#             sh:sourceShape ?shape ;
+#             sh:focusNode ?node ;
+#             sh:resultPath ?path ;
+#             sh:value ?value ;
+#             this:message ?message ;
+#         ] .
+#     } .
+# } .
 
-{
-    ?shape sh:and ?and ; a sh:NodeShape .
-    [] log:notIncludes { ?shape sh:deactivated true } .
-}
-=>
-{
-    {
-        ?node this:violates ?shape .        
-    }
-    <=
-    {
-        ?and list:member ?member .
-        ?node this:violates ?member .
-    } .
-} .
+# {
+#     ?shape sh:and ?and ; a sh:NodeShape .
+#     [] log:notIncludes { ?shape sh:deactivated true } .
+# }
+# =>
+# {
+#     {
+#         ?node this:violates ?shape .        
+#     }
+#     <=
+#     {
+#         ?and list:member ?member .
+#         ?node this:violates ?member .
+#     } .
+# } .
 
-{
-    ?shape sh:and ?and ; sh:path ?path .
-    [] log:notIncludes { ?shape sh:deactivated true } .
-}
-=>
-{
-    {
-        ?node this:violates ?shape .
-    }
-    <=
-    {
-        (?node ?path) this:value ?value .
-        ?and list:member ?member .
-        ?value this:violates ?member .
-    } .
-} .
+# {
+#     ?shape sh:and ?and ; sh:path ?path .
+#     [] log:notIncludes { ?shape sh:deactivated true } .
+# }
+# =>
+# {
+#     {
+#         ?node this:violates ?shape .
+#     }
+#     <=
+#     {
+#         (?node ?path) this:value ?value .
+#         ?and list:member ?member .
+#         ?value this:violates ?member .
+#     } .
+# } .
 
-# xone
-{
-    ?shape sh:xone ?xone ; a sh:NodeShape .
-    [] log:notIncludes { ?shape sh:deactivated true } .
-}
-=>
-{
-    {
-        ?shape this:focusNode ?node .
-        (?x { ?x list:in ?xone . ?node this:violates ?x } ?failed) log:collectAllIn [] .
-        (?x { ?x list:in ?xone . ?failed list:notMember ?x } ?valid) log:collectAllIn [] .
+# # xone
+# {
+#     ?shape sh:xone ?xone ; a sh:NodeShape .
+#     [] log:notIncludes { ?shape sh:deactivated true } .
+# }
+# =>
+# {
+#     {
+#         ?shape this:focusNode ?node .
+#         (?x { ?x list:in ?xone . ?node this:violates ?x } ?failed) log:collectAllIn [] .
+#         (?x { ?x list:in ?xone . ?failed list:notMember ?x } ?valid) log:collectAllIn [] .
    
-        ?valid list:length ?length .
-        ?length log:notEqualTo 1 .
-        ?valid log:localN3String ?validText .
-        ("value has %s shapes: %s. It should have exactly one" ?length ?validText) string:format ?message .
-        this: this:report ?report .
-    }
-    =>
-    {
-        ?report sh:result [
-            a sh:ValidationResult ;
-            sh:sourceConstraintComponent sh:XoneConstraintComponent;
-            sh:sourceShape ?shape ;
-            sh:focusNode ?node ;
-            sh:value ?node ;
-            this:message ?message ;
-        ] .
-    } .
-} .
+#         ?valid list:length ?length .
+#         ?length log:notEqualTo 1 .
+#         ?valid log:localN3String ?validText .
+#         ("value has %s shapes: %s. It should have exactly one" ?length ?validText) string:format ?message .
+#         this: this:report ?report .
+#     }
+#     =>
+#     {
+#         ?report sh:result [
+#             a sh:ValidationResult ;
+#             sh:sourceConstraintComponent sh:XoneConstraintComponent;
+#             sh:sourceShape ?shape ;
+#             sh:focusNode ?node ;
+#             sh:value ?node ;
+#             this:message ?message ;
+#         ] .
+#     } .
+# } .
 
-{
-    ?shape sh:xone ?xone ; sh:path ?path .
-    [] log:notIncludes { ?shape sh:deactivated true } .
-}
-=>
-{
-    {
-        ?shape this:focusNode ?node .
-        (?node ?path) this:value ?value .
+# {
+#     ?shape sh:xone ?xone ; sh:path ?path .
+#     [] log:notIncludes { ?shape sh:deactivated true } .
+# }
+# =>
+# {
+#     {
+#         ?shape this:focusNode ?node .
+#         (?node ?path) this:value ?value .
 
-        (?x { ?x list:in ?xone . ?value this:violates ?x } ?failed) log:collectAllIn [] .
-        (?x { ?x list:in ?xone . ?failed list:notMember ?x } ?valid) log:collectAllIn [] .
-        ?valid list:length ?length .
-        ?length log:notEqualTo 1 .
-        ?valid log:localN3String ?validText .
-        ("value has %s shapes: %s. It should have exactly one" ?length ?validText) string:format ?message .
-        this: this:report ?report .
-    }
-    =>
-    {
-        ?report sh:result [
-            a sh:ValidationResult ;
-            sh:sourceConstraintComponent sh:XoneConstraintComponent;
-            sh:sourceShape ?shape ;
-            sh:focusNode ?node ;
-            sh:value ?value ;
-            this:message ?message ;
-            sh:resultPath ?path ;
-        ] .
-    } .
-} .
+#         (?x { ?x list:in ?xone . ?value this:violates ?x } ?failed) log:collectAllIn [] .
+#         (?x { ?x list:in ?xone . ?failed list:notMember ?x } ?valid) log:collectAllIn [] .
+#         ?valid list:length ?length .
+#         ?length log:notEqualTo 1 .
+#         ?valid log:localN3String ?validText .
+#         ("value has %s shapes: %s. It should have exactly one" ?length ?validText) string:format ?message .
+#         this: this:report ?report .
+#     }
+#     =>
+#     {
+#         ?report sh:result [
+#             a sh:ValidationResult ;
+#             sh:sourceConstraintComponent sh:XoneConstraintComponent;
+#             sh:sourceShape ?shape ;
+#             sh:focusNode ?node ;
+#             sh:value ?value ;
+#             this:message ?message ;
+#             sh:resultPath ?path ;
+#         ] .
+#     } .
+# } .
 
-{
-    ?shape sh:xone ?xone ; a sh:NodeShape .
-    [] log:notIncludes { ?shape sh:deactivated true } .
-}
-=>
-{
-    {
-        ?node this:violates ?shape .
-    }
-    <=
-    {
-        (?x { ?x list:in ?xone . ?node this:violates ?x } ?failed) log:collectAllIn [] .
-        (?x { ?x list:in ?xone . ?failed list:notMember ?x } ?valid) log:collectAllIn [] .
-        ?valid list:length ?length .
-        ?length log:notEqualTo 1 .
-    } .
-} .
+# {
+#     ?shape sh:xone ?xone ; a sh:NodeShape .
+#     [] log:notIncludes { ?shape sh:deactivated true } .
+# }
+# =>
+# {
+#     {
+#         ?node this:violates ?shape .
+#     }
+#     <=
+#     {
+#         (?x { ?x list:in ?xone . ?node this:violates ?x } ?failed) log:collectAllIn [] .
+#         (?x { ?x list:in ?xone . ?failed list:notMember ?x } ?valid) log:collectAllIn [] .
+#         ?valid list:length ?length .
+#         ?length log:notEqualTo 1 .
+#     } .
+# } .
 
-{
-    ?shape sh:xone ?xone ; sh:path ?path .
-    [] log:notIncludes { ?shape sh:deactivated true } .
-}
-=>
-{
-    {
-        ?node this:violates ?shape .       
-    }
-    <=
-    {
-        (?node ?path) this:value ?value .
-        (?x { ?x list:in ?xone . ?value this:violates ?x } ?failed) log:collectAllIn [] .
-        (?x { ?x list:in ?xone . ?failed list:notMember ?x } ?valid) log:collectAllIn [] .
-        ?valid list:length ?length .
-        ?length log:notEqualTo 1 .
-    } .
-} .
+# {
+#     ?shape sh:xone ?xone ; sh:path ?path .
+#     [] log:notIncludes { ?shape sh:deactivated true } .
+# }
+# =>
+# {
+#     {
+#         ?node this:violates ?shape .       
+#     }
+#     <=
+#     {
+#         (?node ?path) this:value ?value .
+#         (?x { ?x list:in ?xone . ?value this:violates ?x } ?failed) log:collectAllIn [] .
+#         (?x { ?x list:in ?xone . ?failed list:notMember ?x } ?valid) log:collectAllIn [] .
+#         ?valid list:length ?length .
+#         ?length log:notEqualTo 1 .
+#     } .
+# } .

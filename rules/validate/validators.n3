@@ -8,6 +8,44 @@
 @prefix pred: <http://www.w3.org/2007/rif-builtin-predicate#>.
 @prefix sh: <http://www.w3.org/ns/shacl#>.
 
+# https://www.w3.org/TR/shacl/#core-components-logical
+{
+    ?value this:and ?and .
+}
+<=
+{
+    (?x { ?x list:in ?and . ?value this:violates ?x } ()) log:collectAllIn [] .
+} .
+
+{
+    ?value this:or ?or .
+}
+<=
+{
+    (?x { ?x list:in ?or . ?value this:violates ?x } ?xs) log:collectAllIn [] .
+    ?xs list:length ?violations .
+    ?or list:length [ math:greaterThan ?violations ] .
+} .
+
+{
+    ?value this:not ?not .
+}
+<=
+{
+    ?value this:violates ?not .
+} .
+
+{
+    ?value this:xone ?xone .
+}
+<=
+{
+    (?x { ?x list:in ?xone . ?value this:violates ?x } ?failed) log:collectAllIn [] .
+    (?x { ?x list:in ?xone . ?failed list:notMember ?x } (?valid)) log:collectAllIn [] .
+} .
+
+
+
 # https://www.w3.org/TR/shacl/#core-components-range
 
 { ?value this:minExclusive ?minExclusive } <= { ?minExclusive a this:Number . ?value a this:Number ; math:greaterThan ?minExclusive }.
