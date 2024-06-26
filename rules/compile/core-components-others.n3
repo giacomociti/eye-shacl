@@ -5,6 +5,7 @@
 @prefix log: <http://www.w3.org/2000/10/swap/log#> .
 @prefix sh: <http://www.w3.org/ns/shacl#>.
 @prefix this: <http://eye-shacl#> .
+@prefix func: <http://www.w3.org/2007/rif-builtin-function#>.
 
 { ?value this:nodeKind sh:IRI } <= { ?value log:rawType log:Other . ?value log:uri [] }. 
 
@@ -119,5 +120,90 @@
     <=
     {
        ?node log:notEqualTo ?hasValue .
+    } .
+}.
+
+# InConstraintComponent
+{
+    ?shape sh:in ?in ; sh:path ?path .
+    [] log:notIncludes { ?shape sh:deactivated true } .
+} 
+=>
+{
+    {
+        ?shape this:focusNode ?focusNode .
+
+        (?focusNode ?path) this:values ?values .
+        (?values ?in) func:except ?except . # checking all values at once improves performance
+        ?except list:member ?value .
+        
+        this: this:report ?report .
+    }
+    =>
+    {
+        ?report sh:result [
+            a sh:ValidationResult ;
+            sh:sourceConstraintComponent sh:InConstraintComponent ;
+            sh:sourceShape ?shape ;
+            sh:focusNode ?focusNode ;
+            sh:value ?value ;
+            sh:resultPath ?path ;
+            this:message "value is not in the list of allowed values" ;
+        ] .
+    } .
+}.
+
+{
+   ?shape sh:in ?in ; sh:path ?path .
+   [] log:notIncludes { ?shape sh:deactivated true } .
+} 
+=>
+{
+    {
+        ?node this:violates ?shape .
+    }
+    <=
+    {
+        (?node ?path) this:value ?value .
+        ?in list:notMember ?value .
+    } .
+}.
+
+{
+    ?shape sh:in ?in ; a sh:NodeShape .
+    [] log:notIncludes { ?shape sh:deactivated true } .
+} 
+=>
+{
+    {
+        ?shape this:focusNode ?focusNode .
+        ?in list:notMember ?focusNode .
+        this: this:report ?report .
+    }
+    =>
+    {
+        ?report sh:result [
+            a sh:ValidationResult ;
+            sh:sourceConstraintComponent sh:InConstraintComponent ;
+            sh:sourceShape ?shape ;
+            sh:focusNode ?focusNode ;
+            sh:value ?focusNode ;
+            this:message "value is not in the list of allowed values" ;
+        ] .
+    } .
+}.
+
+{
+   ?shape sh:in ?in ; a sh:NodeShape .
+   [] log:notIncludes { ?shape sh:deactivated true } .
+} 
+=>
+{
+    {
+        ?node this:violates ?shape .
+    }
+    <=
+    {
+        ?in list:notMember ?node .
     } .
 }.
