@@ -125,3 +125,14 @@
 # should also check that is not ill-typed
 { ?value this:datatype ?datatype } <= { ([] ?datatype) log:dtlit ?value }.
 
+
+{
+    (?node ?path) this:hasDuplicateLanguage ?lang .
+}
+<=
+{
+    (?node ?path) this:value ?x, ?y .
+    ?x log:notEqualTo ?y .
+    ([] ?lang) log:langlit ?x .
+    ([] ?lang) log:langlit ?y .
+} .

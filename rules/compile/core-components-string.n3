@@ -1,10 +1,7 @@
 # https://www.w3.org/TR/shacl/#core-components-string
-@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-@prefix list: <http://www.w3.org/2000/10/swap/list#> .
-@prefix log: <http://www.w3.org/2000/10/swap/log#> .
 @prefix string: <http://www.w3.org/2000/10/swap/string#> .
-@prefix math: <http://www.w3.org/2000/10/swap/math#> .
-@prefix sh: <http://www.w3.org/ns/shacl#>.
+@prefix log: <http://www.w3.org/2000/10/swap/log#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
 @prefix this: <http://eye-shacl#> .
 
 
@@ -17,11 +14,7 @@
 {
     {
         ?shape this:focusNode ?focusNode .
-        (?focusNode ?path) this:value ?x, ?y .
-        ?x log:notEqualTo ?y .
-        ([] ?lang) log:langlit ?x .
-        ([] ?lang) log:langlit ?y .
-
+        (?focusNode ?path) this:hasDuplicateLanguage ?lang .
         ("Language \"%s\" has been used more than once" ?lang) string:format ?message .
         this: this:report ?report .
     }
@@ -33,7 +26,7 @@
             sh:sourceShape ?shape ;
             sh:focusNode ?focusNode ;
             sh:resultPath ?path ;
-            this:message ?message ; # todo
+            this:message ?message ;
         ] .
     } .
 }.
@@ -44,16 +37,6 @@
 } 
 => 
 {
-    {
-        ?node this:violates ?shape .
-    }
-    <=
-    {
-        (?node ?path) this:value ?x, ?y .
-        ?x log:notEqualTo ?y .
-        ([] ?lang) log:langlit ?x .
-        ([] ?lang) log:langlit ?y .
-    } .
+    { ?node this:violates ?shape } <= { (?node ?path) this:hasDuplicateLanguage [] }
 }.
 
-# todo node shape?

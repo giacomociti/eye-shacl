@@ -317,3 +317,12 @@
 } <= {
     (?U_122 ?U_121) log:dtlit ?U_120.
 }.
+{
+    (?U_123 ?U_124) this:hasDuplicateLanguage ?U_125.
+} <= {
+    (?U_123 ?U_124) this:value ?U_126.
+    (?U_123 ?U_124) this:value ?U_127.
+    ?U_126 log:notEqualTo ?U_127.
+    (?U_128 ?U_125) log:langlit ?U_126.
+    (?U_129 ?U_125) log:langlit ?U_127.
+}.
