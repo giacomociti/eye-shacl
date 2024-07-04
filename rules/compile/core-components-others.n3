@@ -41,6 +41,26 @@
     } .
 } .
 
+{
+    ?shape sh:closed true .
+    (?x { ?shape sh:property [ sh:path ?x ] . ?x this:nodeKind sh:IRI } ?existing) log:collectAllIn [] .
+    (?x { ?shape sh:ignoredProperties [ list:member ?x ]} ?ignored) log:collectAllIn [] .
+    (?existing ?ignored) list:append ?allowed .
+    [] log:notIncludes { ?shape sh:deactivated true } .
+}
+=>
+{
+    {
+        ?node this:violates ?shape .
+    }
+    <=
+    {
+        ?node ?property ?value .
+        ?allowed list:notMember ?property .
+    } .
+} .
+
+
 # HasValueConstraintComponent
 {
     ?shape sh:hasValue ?hasValue ; sh:path ?path .
