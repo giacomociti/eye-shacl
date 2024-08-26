@@ -4,7 +4,7 @@
 @prefix sh: <http://www.w3.org/ns/shacl#> .
 @prefix this: <http://eye-shacl#> .
 
-{ [] sh:shapesGraph ?shapesGraph . <compile.n3> log:semantics ?semantics } => ?semantics .
+{ [] sh:shapesGraph ?shapesGraph . <../../dist/compile.n3> log:semantics ?semantics } => ?semantics .
 
 
 {
