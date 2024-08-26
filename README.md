@@ -28,14 +28,3 @@ Online resources are allowed as input, like in the following example from the of
 https://raw.githubusercontent.com/w3c/data-shapes/gh-pages/data-shapes-test-suite/tests/core/complex/personexample.ttl \
 https://raw.githubusercontent.com/w3c/data-shapes/gh-pages/data-shapes-test-suite/tests/core/complex/personexample.ttl
 ```
-
-
-### To do
-- improve tests (clone result path as required by the test suite)
-- add sh:details
-- replace skolem IRIs in sh:sourceShape
-
-### Known issues
-- parsing of ill-typed literals (see test core/node/datatype-001.ttl)
-- sh:flags is ignored (see test core/node/pattern-002.ttl)
-- date offset (see test core/node/minInclusive-003.ttl)

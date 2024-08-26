@@ -33,7 +33,7 @@ files=(
     "custom/test16.ttl"
     "custom/test17.ttl"
     "custom/test18.ttl"
-    "custom/test19.ttl"
+    "custom/test19.ttl" # sh:shapesGraph
     "custom/test20.ttl"
     "custom/test21.ttl"
     "custom/test22.ttl"
@@ -42,7 +42,7 @@ files=(
     # https://github.com/w3c/data-shapes/tree/gh-pages/data-shapes-test-suite/tests/core
 
     "core/complex/personexample.ttl"
-    "core/complex/shacl-shacl.ttl" # RDF list vs N3 list
+    "core/complex/shacl-shacl.ttl"
 
     "core/misc/deactivated-001.ttl"
     "core/misc/deactivated-002.ttl"
