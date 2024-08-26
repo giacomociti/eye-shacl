@@ -1,0 +1,9 @@
+@prefix log: <http://www.w3.org/2000/10/swap/log#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+
+{
+    [] sh:entailment <http://www.w3.org/ns/entailment/RDFS> .
+    <https://raw.githubusercontent.com/eyereasoner/lib-rdfs/main/lib-rdfs.n3> log:semantics ?semantics
+}
+=>
+?semantics .
