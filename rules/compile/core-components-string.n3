@@ -7,8 +7,7 @@
 
 # UniqueLangConstraintComponent
 { 
-    ?shape sh:uniqueLang true; sh:path ?path .
-    [] log:notIncludes { ?shape sh:deactivated true } .
+    ?shape a this:PropertyShape ; sh:uniqueLang true; sh:path ?path .
 } 
 => 
 {
@@ -32,8 +31,7 @@
 }.
 
 { 
-    ?shape sh:uniqueLang true; sh:path ?path .
-    [] log:notIncludes { ?shape sh:deactivated true } .
+    ?shape a this:PropertyShape ; sh:uniqueLang true; sh:path ?path .
 } 
 => 
 {

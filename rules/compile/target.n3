@@ -5,8 +5,7 @@
 @prefix this: <http://eye-shacl#> .
 
 {
-    ?shape sh:targetClass ?targetClass .
-    [] log:notIncludes { ?shape sh:deactivated true } .
+    ?shape a this:Shape ; sh:targetClass ?targetClass .
 }
 =>
 {
@@ -14,8 +13,7 @@
 } .
 
 {
-    ?shape a sh:Shape , rdfs:Class .
-    [] log:notIncludes { ?shape sh:deactivated true } .
+    ?shape a this:Shape , rdfs:Class .
 }
 =>
 {
@@ -23,8 +21,7 @@
 } .
 
 {
-    ?shape sh:targetNode ?targetNode .
-    [] log:notIncludes { ?shape sh:deactivated true } .
+    ?shape a this:Shape ; sh:targetNode ?targetNode .
 }
 =>
 {
@@ -34,8 +31,7 @@
 
 
 {
-    ?shape sh:targetObjectsOf ?predicate .
-    [] log:notIncludes { ?shape sh:deactivated true } .
+    ?shape a this:Shape ; sh:targetObjectsOf ?predicate .
 }
 =>
 {
@@ -52,8 +48,7 @@
 
 
 {
-    ?shape sh:targetSubjectsOf ?predicate .
-    [] log:notIncludes { ?shape sh:deactivated true } .
+    ?shape a this:Shape ; sh:targetSubjectsOf ?predicate .
 }
 =>
 {

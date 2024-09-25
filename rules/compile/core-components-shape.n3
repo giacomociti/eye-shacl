@@ -13,8 +13,7 @@
 
 # node -> property
 {
-    ?shape sh:property ?propertyShape ; a sh:NodeShape .
-    [] log:notIncludes { ?shape sh:deactivated true } .
+    ?shape sh:property ?propertyShape ; a this:NodeShape .
 }
 => 
 {
@@ -22,8 +21,7 @@
 } .
 
 {
-    ?shape sh:property ?propertyShape ; a sh:NodeShape .
-    [] log:notIncludes { ?shape sh:deactivated true } .
+    ?shape sh:property ?propertyShape ; a this:NodeShape .
 }
 => 
 {
@@ -32,8 +30,7 @@
 
 # property -> property
 {
-    ?shape sh:property ?propertyShape ; sh:path ?path .
-    [] log:notIncludes { ?shape sh:deactivated true } .
+    ?shape a this:PropertyShape ; sh:property ?propertyShape ; sh:path ?path .
 }
 => 
 {
@@ -48,8 +45,7 @@
 } .
 
 {
-    ?shape sh:property ?propertyShape ; sh:path ?path .
-    [] log:notIncludes { ?shape sh:deactivated true } .
+    ?shape a this:PropertyShape ; sh:property ?propertyShape ; sh:path ?path .
 }
 => 
 {
@@ -122,8 +118,7 @@
 
 
 {
-    ?shape sh:qualifiedValueShape ?valueShape ; sh:path ?path .
-    [] log:notIncludes { ?shape sh:deactivated true } .
+    ?shape a this:PropertyShape ; sh:qualifiedValueShape ?valueShape ; sh:path ?path .
     (
         ?x {
             ?shape sh:qualifiedValueShapesDisjoint true .

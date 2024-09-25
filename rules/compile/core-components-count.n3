@@ -9,8 +9,7 @@
 
 # MinCountConstraintComponent
 {
-    ?shape sh:minCount ?minCount ; sh:path ?path .
-    [] log:notIncludes { ?shape sh:deactivated true } .
+    ?shape a this:PropertyShape ; sh:minCount ?minCount ; sh:path ?path .
 }
 =>
 {
@@ -36,7 +35,7 @@
 } .
 
 {
-    ?shape sh:minCount ?minCount ; sh:path ?path .
+    ?shape a this:PropertyShape ; sh:minCount ?minCount ; sh:path ?path .
 }
 =>
 {
@@ -54,8 +53,7 @@
 
 # MaxCountConstraintComponent
 {
-    ?shape sh:maxCount ?maxCount ; sh:path ?path .
-    [] log:notIncludes { ?shape sh:deactivated true } .
+    ?shape a this:PropertyShape ; sh:maxCount ?maxCount ; sh:path ?path .
 }
 =>
 {
@@ -81,7 +79,7 @@
 } .
 
 {
-    ?shape sh:maxCount ?maxCount ; sh:path ?path .
+    ?shape a this:PropertyShape ; sh:maxCount ?maxCount ; sh:path ?path .
 }
 =>
 {

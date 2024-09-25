@@ -11,11 +11,10 @@
 
 # ClosedConstraintComponent
 {
-    ?shape sh:closed true .
+    ?shape a this:Shape ; sh:closed true .
     (?x { ?shape sh:property [ sh:path ?x ] . ?x this:nodeKind sh:IRI } ?existing) log:collectAllIn [] .
     (?x { ?shape sh:ignoredProperties [ list:member ?x ]} ?ignored) log:collectAllIn [] .
     (?existing ?ignored) list:append ?allowed .
-    [] log:notIncludes { ?shape sh:deactivated true } .
     ?allowed log:localN3String ?allowedString .
     ("allowed properties are only: %s" ?allowedString) string:format ?message .
 }
@@ -42,11 +41,10 @@
 } .
 
 {
-    ?shape sh:closed true .
+    ?shape a this:Shape ; sh:closed true .
     (?x { ?shape sh:property [ sh:path ?x ] . ?x this:nodeKind sh:IRI } ?existing) log:collectAllIn [] .
     (?x { ?shape sh:ignoredProperties [ list:member ?x ]} ?ignored) log:collectAllIn [] .
     (?existing ?ignored) list:append ?allowed .
-    [] log:notIncludes { ?shape sh:deactivated true } .
 }
 =>
 {
@@ -63,8 +61,7 @@
 
 # HasValueConstraintComponent
 {
-    ?shape sh:hasValue ?hasValue ; sh:path ?path .
-    [] log:notIncludes { ?shape sh:deactivated true } .
+    ?shape a this:PropertyShape ; sh:hasValue ?hasValue ; sh:path ?path .
     ("missing expected value: %s" ?hasValue) string:format ?message .
 } 
 =>
@@ -89,8 +86,7 @@
 }.
 
 {
-   ?shape sh:hasValue ?hasValue ; sh:path ?path .
-   [] log:notIncludes { ?shape sh:deactivated true } .
+   ?shape a this:PropertyShape ; sh:hasValue ?hasValue ; sh:path ?path .
 } 
 =>
 {
@@ -105,8 +101,7 @@
 }.
 
 {
-    ?shape sh:hasValue ?hasValue ; a sh:NodeShape .
-    [] log:notIncludes { ?shape sh:deactivated true } .
+    ?shape a this:NodeShape ; sh:hasValue ?hasValue .
     ("missing expected value: %s" ?hasValue) string:format ?message .
 } 
 =>
@@ -129,7 +124,7 @@
 }.
 
 {
-    ?shape sh:hasValue ?hasValue ; a sh:NodeShape .
+    ?shape a this:NodeShape ; sh:hasValue ?hasValue .
     [] log:notIncludes { ?shape sh:deactivated true } .
 } 
 =>
@@ -145,8 +140,7 @@
 
 # InConstraintComponent
 {
-    ?shape sh:in ?in ; sh:path ?path .
-    [] log:notIncludes { ?shape sh:deactivated true } .
+    ?shape a this:PropertyShape ; sh:in ?in ; sh:path ?path .
 } 
 =>
 {
@@ -174,8 +168,7 @@
 }.
 
 {
-   ?shape sh:in ?in ; sh:path ?path .
-   [] log:notIncludes { ?shape sh:deactivated true } .
+   ?shape a this:PropertyShape ; sh:in ?in ; sh:path ?path .
 } 
 =>
 {
@@ -190,8 +183,7 @@
 }.
 
 {
-    ?shape sh:in ?in ; a sh:NodeShape .
-    [] log:notIncludes { ?shape sh:deactivated true } .
+    ?shape a this:NodeShape ; sh:in ?in .
 } 
 =>
 {
@@ -214,8 +206,7 @@
 }.
 
 {
-   ?shape sh:in ?in ; a sh:NodeShape .
-   [] log:notIncludes { ?shape sh:deactivated true } .
+   ?shape a this:NodeShape ; sh:in ?in .
 } 
 =>
 {

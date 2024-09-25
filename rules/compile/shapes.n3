@@ -1,0 +1,30 @@
+@prefix log: <http://www.w3.org/2000/10/swap/log#> .
+@prefix sh: <http://www.w3.org/ns/shacl#>.
+@prefix this: <http://eye-shacl#> .
+
+{
+    ?shape ?param [] .
+    ?param this:constraint [] .
+    [] log:notIncludes { ?shape sh:deactivated true } .
+}
+=>
+{
+    ?shape a this:Shape .
+} .
+
+{
+    ?shape a this:Shape .
+    [] log:notIncludes { ?shape sh:path [] } .
+}
+=>
+{
+    ?shape a this:NodeShape .
+} .
+
+{
+    ?shape a this:Shape ; sh:path [] .
+}
+=>
+{
+    ?shape a this:PropertyShape .
+} .

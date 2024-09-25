@@ -23,33 +23,10 @@ sh:maxLength this:validator this:maxLength ; this:messageFormat "value should ha
 sh:pattern this:validator this:pattern ; this:messageFormat "value should match pattern %s".
 sh:languageIn this:validator this:languageIn ; this:messageFormat "value should have one of the language tags: %s".
 
-
-{
-    ?param this:constraint [] .
-    ?shape ?param [] .
-}
-=> 
-{
-    ?shape a sh:Shape .
-} .
-
-# shapes without path are node shapes
-{
-    ?shape a sh:Shape .
-    [] log:notIncludes { ?shape sh:path [] } .
-}
-=>
-{
-    ?shape a sh:NodeShape .
-} .
-
-
-
 # node shapes with validator
 {
    ?param this:constraint ?constraint ; this:validator ?validator ; this:messageFormat ?messageFormat .
-   ?shape a sh:NodeShape ; ?param ?paramValue .
-   [] log:notIncludes { ?shape sh:deactivated true } .
+   ?shape a this:NodeShape ; ?param ?paramValue .
    ?paramValue log:localN3String ?paramValueString .
    (?messageFormat ?paramValueString) string:format ?message .
 }
@@ -75,8 +52,7 @@ sh:languageIn this:validator this:languageIn ; this:messageFormat "value should 
 
 {
    ?param this:constraint ?constraint ; this:validator ?validator .
-   ?shape a sh:NodeShape ; ?param ?paramValue .
-   [] log:notIncludes { ?shape sh:deactivated true } .
+   ?shape a this:NodeShape ; ?param ?paramValue .
 }
 => 
 {
@@ -91,9 +67,8 @@ sh:languageIn this:validator this:languageIn ; this:messageFormat "value should 
 
 # property shapes with validator
 {
-   ?shape sh:path ?path ; ?param ?paramValue .
+   ?shape a this:PropertyShape ; sh:path ?path ; ?param ?paramValue .
    ?param this:constraint ?constraint ; this:validator ?validator ; this:messageFormat ?messageFormat .
-   [] log:notIncludes { ?shape sh:deactivated true } .
    ?paramValue log:localN3String ?paramValueString .
    (?messageFormat ?paramValueString) string:format ?message .
 }
@@ -120,9 +95,8 @@ sh:languageIn this:validator this:languageIn ; this:messageFormat "value should 
 } .
 
 {
-   ?shape sh:path ?path ; ?param ?paramValue .
+   ?shape a this:PropertyShape ; sh:path ?path ; ?param ?paramValue .
    ?param this:constraint ?constraint ; this:validator ?validator .
-   [] log:notIncludes { ?shape sh:deactivated true } .
 }
 => 
 {
@@ -145,7 +119,7 @@ sh:languageIn this:validator this:languageIn ; this:messageFormat "value should 
 } .
 
 {
-   ?shape a sh:Shape .
+   ?shape a this:Shape .
    [] log:notIncludes { ?shape sh:message [] } .
 }
 => 
@@ -162,7 +136,7 @@ sh:languageIn this:validator this:languageIn ; this:messageFormat "value should 
 } .
 
 {
-   ?shape a sh:Shape .
+   ?shape a this:Shape .
    [] log:notIncludes { ?shape sh:severity [] } .
 }
 => 

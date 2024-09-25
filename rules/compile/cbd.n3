@@ -39,7 +39,7 @@
 
 
 {
-    ?shape a sh:Shape .
+    ?shape a this:Shape .
     (?triple {?shape this:cbd ?triple } ?triples) log:collectAllIn [] .
     ?triples log:conjunction ?graph.
 }
