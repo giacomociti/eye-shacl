@@ -28,3 +28,13 @@
 {
     ?shape a this:PropertyShape .
 } .
+
+{
+    ?shape a this:Shape .
+    (?triple {?triple this:cbd ?shape } ?triples) log:collectAllIn [] .
+    ?triples log:conjunction ?graph.
+}
+=>
+{
+    ?graph this:describeShape ?shape .
+} .

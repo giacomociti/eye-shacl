@@ -1,360 +1,270 @@
-@prefix this: <http://eye-shacl#>.
-@prefix sh: <http://www.w3.org/ns/shacl#>.
-@prefix log: <http://www.w3.org/2000/10/swap/log#>.
-@prefix list: <http://www.w3.org/2000/10/swap/list#>.
-@prefix math: <http://www.w3.org/2000/10/swap/math#>.
-@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
-@prefix pred: <http://www.w3.org/2007/rif-builtin-predicate#>.
-@prefix string: <http://www.w3.org/2000/10/swap/string#>.
-@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix log: <http://www.w3.org/2000/10/swap/log#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
 
-<http://eye-shacl#> this:report _:bn_7.
 {
-    ?U_0 sh:entailment <http://www.w3.org/ns/entailment/RDFS>.
-    <file:///home/giacomo/repo/giacomociti/eye-shacl/dist/lib-rdfs.n3> log:semantics ?U_1.
-} => ?U_1.
+    [] sh:entailment <http://www.w3.org/ns/entailment/RDFS> .
+    <lib-rdfs.n3> log:semantics ?semantics
+}
+=>
+?semantics .@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix log: <http://www.w3.org/2000/10/swap/log#> .
+@prefix list: <http://www.w3.org/2000/10/swap/list#> .
+@prefix sh: <http://www.w3.org/ns/shacl#>.
+@prefix this: <http://eye-shacl#> .
+
 {
-    <http://eye-shacl#> this:report ?U_2.
-    ?U_3 log:notIncludes {
-        ?U_2 sh:conforms ?U_4.
-    }.
-} => {
-    ?U_2 a sh:ValidationReport.
-    ?U_2 sh:conforms true.
+    (?focusNode ?path) this:values ?values
+}
+<=
+{
+    (?x { (?focusNode ?path) this:value ?x } ?xs) log:collectAllIn [] .
+    ?xs list:unique ?values
+} .
+
+# predicate path 
+{ 
+    (?focusNode ?path) this:value ?value 
+} 
+<= 
+{ 
+    ?focusNode ?path ?value
+} .
+
+# sequence path
+{
+    (?focusNode (?path)) this:value ?value 
+}
+<=
+{
+    (?focusNode ?path) this:value ?value
+} .
+
+{
+    (?focusNode ?path) this:value ?value 
+}
+<=
+{
+    ?path list:firstRest (?first ?rest) .
+    (?focusNode ?first) this:value ?v .
+    (?v ?rest) this:value ?value
+} .
+@prefix this: <http://eye-shacl#> .
+@prefix sh: <http://www.w3.org/ns/shacl#>.
+@prefix log: <http://www.w3.org/2000/10/swap/log#> .
+
+this: this:report [] .
+
+{
+    this: this:report ?report .
+    [] log:notIncludes { ?report sh:conforms [] } .
+}
+=>
+{
+    ?report a sh:ValidationReport .
+    ?report sh:conforms true .
+} .
+
+{
+    this: this:report ?report .
+    ?report sh:conforms true ; sh:result [] .
+    { ?report sh:conforms true } log:becomes { ?report sh:conforms false }.
+}
+=>
+{
+ 
+} .
+
+{
+    ?result sh:sourceShape ?shape .
+    ?shape sh:severity ?severity .
+}
+=> 
+{
+    ?result sh:resultSeverity ?severity
+} .
+
+{
+   ?result sh:sourceShape ?shape .
+   [] log:notIncludes { ?shape sh:severity [] } .
+}
+=> 
+{
+   ?result sh:resultSeverity sh:Violation
+} .@prefix list: <http://www.w3.org/2000/10/swap/list#> .
+@prefix log: <http://www.w3.org/2000/10/swap/log#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix this: <http://eye-shacl#> .
+
+{ [] sh:shapesGraph ?shapesGraph . <compile.n3> log:semantics ?semantics } => ?semantics .
+
+
+{
+    [] sh:shapesGraph [ log:semantics [ log:includes { ?s ?p ?o } ] ] .
+    ?s this:skolem ?skolemS .
+    ?o this:skolem ?skolemO .
+}
+=>
+{
+    ?skolemS ?p ?skolemO .
+} .
+
+
+
+{
+    ?x this:skolem ?x .
+}
+<=
+{
+    ?x log:rawType ?rawType .
+    (log:UnlabeledBlankNode log:LabeledBlankNode) list:notMember ?rawType .
+} .
+
+{
+    ?x this:skolem ?skolem .
+}
+<=
+{
+    ?x log:rawType ?rawType .
+    (log:UnlabeledBlankNode log:LabeledBlankNode) list:member ?rawType .
+    ?x log:skolem ?skolem .
+} .
+
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix log: <http://www.w3.org/2000/10/swap/log#> .
+@prefix list: <http://www.w3.org/2000/10/swap/list#> .
+@prefix string: <http://www.w3.org/2000/10/swap/string#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix math: <http://www.w3.org/2000/10/swap/math#> .
+@prefix this: <http://eye-shacl#> .
+@prefix pred: <http://www.w3.org/2007/rif-builtin-predicate#>.
+@prefix sh: <http://www.w3.org/ns/shacl#>.
+
+{
+    ?value this:node ?node .
+}
+<=
+{
+    [] log:notIncludes { ?value this:violates ?node }
+} .
+
+# https://www.w3.org/TR/shacl/#core-components-logical
+{
+    ?value this:and ?and .
+}
+<=
+{
+    (?x { ?x list:in ?and . ?value this:violates ?x } ()) log:collectAllIn [] .
+} .
+
+{
+    ?value this:or ?or .
+}
+<=
+{
+    (?x { ?x list:in ?or . ?value this:violates ?x } ?xs) log:collectAllIn [] .
+    ?xs list:length ?violations .
+    ?or list:length [ math:greaterThan ?violations ] .
+} .
+
+{
+    ?value this:not ?not .
+}
+<=
+{
+    ?value this:violates ?not .
+} .
+
+{
+    ?value this:xone ?xone .
+}
+<=
+{
+    (?x { ?x list:in ?xone . ?value this:violates ?x } ?failed) log:collectAllIn [] .
+    (?x { ?x list:in ?xone . ?failed list:notMember ?x } (?valid)) log:collectAllIn [] .
+} .
+
+
+
+# https://www.w3.org/TR/shacl/#core-components-range
+
+{ ?value this:minExclusive ?minExclusive } <= { ?minExclusive a this:Number . ?value a this:Number ; math:greaterThan ?minExclusive }.
+{ ?value this:minInclusive ?minInclusive } <= { ?minInclusive a this:Number . ?value a this:Number ; math:notLessThan ?minInclusive }.
+{ ?value this:maxExclusive ?maxExclusive } <= { ?maxExclusive a this:Number . ?value a this:Number ; math:lessThan ?maxExclusive }.
+{ ?value this:maxInclusive ?maxInclusive } <= { ?maxInclusive a this:Number . ?value a this:Number ; math:notGreaterThan ?maxInclusive }.
+
+{ ?value this:minExclusive ?minExclusive } <= { ?minExclusive this:datatype xsd:dateTime . (?value ?minExclusive) pred:dateTime-greater-than true }.
+{ ?value this:minInclusive ?minInclusive } <= { ?minInclusive this:datatype xsd:dateTime . (?value ?minInclusive) pred:dateTime-greater-than-or-equal true }.
+{ ?value this:maxExclusive ?maxExclusive } <= { ?maxExclusive this:datatype xsd:dateTime . (?value ?maxExclusive) pred:dateTime-less-than true }.
+{ ?value this:maxInclusive ?maxInclusive } <= { ?maxInclusive this:datatype xsd:dateTime . (?value ?maxInclusive) pred:dateTime-less-than-or-equal true }.
+
+{ ?value this:minExclusive ?minExclusive } <= { 
+    ?minExclusive this:datatype ?datatype . 
+    ?datatype log:notEqualTo xsd:integer, xsd:decimal, xsd:double, xsd:float, xsd:dateTime .
+    ?value this:datatype ?datatype ; string:greaterThan ?minExclusive 
+} .
+{ ?value this:minInclusive ?minInclusive } <= { 
+    ?minInclusive this:datatype ?datatype . 
+    ?datatype log:notEqualTo xsd:integer, xsd:decimal, xsd:double, xsd:float, xsd:dateTime . 
+    ?value this:datatype ?datatype ; string:notLessThan ?minInclusive 
+} .
+{ ?value this:maxExclusive ?maxExclusive } <= { 
+    ?maxExclusive this:datatype ?datatype . 
+    ?datatype log:notEqualTo xsd:integer, xsd:decimal, xsd:double, xsd:float, xsd:dateTime . 
+    ?value this:datatype ?datatype ; string:lessThan ?maxExclusive 
+} .
+{ ?value this:maxInclusive ?maxInclusive } <= { 
+    ?maxInclusive this:datatype ?datatype . 
+    ?datatype log:notEqualTo xsd:integer, xsd:decimal, xsd:double, xsd:float, xsd:dateTime . 
+    ?value this:datatype ?datatype ; string:notGreaterThan ?maxInclusive 
+} .
+
+
+{ ?value a this:Number } <= { ?value this:datatype [ list:in (xsd:integer xsd:decimal xsd:double xsd:float) ] }.
+
+{ ?value this:minLength ?minLength } <= { (?text []) log:dtlit ?value . ?text string:length [math:notLessThan ?minLength] }.
+{ ?value this:minLength ?minLength } <= { ?value log:rawType log:Other ; log:uri ?text . ?text string:length [math:notLessThan ?minLength] }.
+
+{ ?value this:maxLength ?maxLength } <= { (?text []) log:dtlit ?value . ?text string:length [math:notGreaterThan ?maxLength] }.
+{ ?value this:maxLength ?maxLength } <= { ?value log:rawType log:Other ; log:uri ?text . ?text string:length [math:notGreaterThan ?maxLength] }.
+
+{ ?value this:pattern ?pattern } <= { (?text []) log:dtlit ?value . ?text string:matches ?pattern }. # flags?
+
+{ ?value this:languageIn ?languageIn } <= { 
+    ( [] ?lang ) log:langlit ?value .
+    ?lang string:startsWith [ list:in ?languageIn ] .
 }.
+
+
+# https://www.w3.org/TR/shacl/#core-components-value-type
+
+{ ?value this:class ?class } <= { ?value a ?class } .
+{ ?value this:class ?class } <= { ?subclass rdfs:subClassOf ?class . ?value this:class ?subclass } .
+
+
+{ ?value this:nodeKind sh:IRI } <= { ?value log:rawType log:Other . ?value log:uri [] }. 
+{ ?value this:nodeKind sh:Literal } <= { ?value log:rawType log:Literal }. 
+{ ?value this:nodeKind sh:BlankNode } <= { ?value log:rawType log:LabeledBlankNode }. 
+{ ?value this:nodeKind sh:BlankNode } <= { ?value log:rawType log:UnlabeledBlankNode }.
+{ ?value this:nodeKind sh:BlankNode } <= { ?value log:rawType log:SkolemIRI }.
+{ ?value this:nodeKind sh:BlankNodeOrIRI } <= { ?value this:nodeKind sh:BlankNode }. 
+{ ?value this:nodeKind sh:BlankNodeOrIRI } <= { ?value this:nodeKind sh:IRI }. 
+{ ?value this:nodeKind sh:IRIOrLiteral } <= { ?value this:nodeKind sh:IRI }. 
+{ ?value this:nodeKind sh:IRIOrLiteral } <= { ?value this:nodeKind sh:Literal }. 
+{ ?value this:nodeKind sh:BlankNodeOrLiteral } <= { ?value this:nodeKind sh:BlankNode }. 
+{ ?value this:nodeKind sh:BlankNodeOrLiteral } <= { ?value this:nodeKind sh:Literal }. 
+
+# should also check that is not ill-typed
+{ ?value this:datatype ?datatype } <= { ([] ?datatype) log:dtlit ?value }.
+
+
 {
-    <http://eye-shacl#> this:report ?U_5.
-    ?U_5 sh:conforms true.
-    ?U_5 sh:result ?U_6.
-    {
-        ?U_5 sh:conforms true.
-    } log:becomes {
-        ?U_5 sh:conforms false.
-    }.
-} => true.
+    (?node ?path) this:hasDuplicateLanguage ?lang .
+}
+<=
 {
-    ?U_7 sh:shapesGraph ?U_8.
-    <file:///home/giacomo/repo/giacomociti/eye-shacl/dist/compile.n3> log:semantics ?U_9.
-} => ?U_9.
-{
-    ?U_10 sh:shapesGraph ?U_11.
-    ?U_11 log:semantics ?U_12.
-    ?U_12 log:includes {
-        ?U_14 ?U_13 ?U_15.
-    }.
-    ?U_14 this:skolem ?U_16.
-    ?U_15 this:skolem ?U_17.
-} => {
-    ?U_16 ?U_13 ?U_17.
-}.
-{
-    (?U_18 ?U_19) this:values ?U_20.
-} <= {
-    (?U_21 {
-        (?U_18 ?U_19) this:value ?U_21.
-    } ?U_22) log:collectAllIn ?U_23.
-    ?U_22 list:unique ?U_20.
-}.
-{
-    (?U_24 ?U_25) this:value ?U_26.
-} <= {
-    ?U_24 ?U_25 ?U_26.
-}.
-{
-    (?U_27 (?U_28)) this:value ?U_29.
-} <= {
-    (?U_27 ?U_28) this:value ?U_29.
-}.
-{
-    (?U_30 ?U_31) this:value ?U_32.
-} <= {
-    ?U_31 list:firstRest (?U_33 ?U_34).
-    (?U_30 ?U_33) this:value ?U_35.
-    (?U_35 ?U_34) this:value ?U_32.
-}.
-{
-    ?U_36 this:skolem ?U_36.
-} <= {
-    ?U_36 log:rawType ?U_37.
-    (log:UnlabeledBlankNode log:LabeledBlankNode) list:notMember ?U_37.
-}.
-{
-    ?U_38 this:skolem ?U_39.
-} <= {
-    ?U_38 log:rawType ?U_40.
-    (log:UnlabeledBlankNode log:LabeledBlankNode) list:member ?U_40.
-    ?U_38 log:skolem ?U_39.
-}.
-{
-    ?U_41 this:node ?U_42.
-} <= {
-    ?U_43 log:notIncludes {
-        ?U_41 this:violates ?U_42.
-    }.
-}.
-{
-    ?U_44 this:and ?U_45.
-} <= {
-    (?U_46 {
-        ?U_46 list:in ?U_45.
-        ?U_44 this:violates ?U_46.
-    } ()) log:collectAllIn ?U_47.
-}.
-{
-    ?U_48 this:or ?U_49.
-} <= {
-    (?U_50 {
-        ?U_50 list:in ?U_49.
-        ?U_48 this:violates ?U_50.
-    } ?U_51) log:collectAllIn ?U_52.
-    ?U_51 list:length ?U_53.
-    ?U_49 list:length ?U_54.
-    ?U_54 math:greaterThan ?U_53.
-}.
-{
-    ?U_55 this:not ?U_56.
-} <= {
-    ?U_55 this:violates ?U_56.
-}.
-{
-    ?U_57 this:xone ?U_58.
-} <= {
-    (?U_59 {
-        ?U_59 list:in ?U_58.
-        ?U_57 this:violates ?U_59.
-    } ?U_60) log:collectAllIn ?U_61.
-    (?U_59 {
-        ?U_59 list:in ?U_58.
-        ?U_60 list:notMember ?U_59.
-    } (?U_62)) log:collectAllIn ?U_63.
-}.
-{
-    ?U_64 this:minExclusive ?U_65.
-} <= {
-    ?U_65 a this:Number.
-    ?U_64 a this:Number.
-    ?U_64 math:greaterThan ?U_65.
-}.
-{
-    ?U_66 this:minExclusive ?U_67.
-} <= {
-    ?U_67 this:datatype xsd:dateTime.
-    (?U_66 ?U_67) pred:dateTime-greater-than true.
-}.
-{
-    ?U_68 this:minExclusive ?U_69.
-} <= {
-    ?U_69 this:datatype ?U_70.
-    ?U_70 log:notEqualTo xsd:integer.
-    ?U_70 log:notEqualTo xsd:decimal.
-    ?U_70 log:notEqualTo xsd:double.
-    ?U_70 log:notEqualTo xsd:float.
-    ?U_70 log:notEqualTo xsd:dateTime.
-    ?U_68 this:datatype ?U_70.
-    ?U_68 string:greaterThan ?U_69.
-}.
-{
-    ?U_71 this:minInclusive ?U_72.
-} <= {
-    ?U_72 a this:Number.
-    ?U_71 a this:Number.
-    ?U_71 math:notLessThan ?U_72.
-}.
-{
-    ?U_73 this:minInclusive ?U_74.
-} <= {
-    ?U_74 this:datatype xsd:dateTime.
-    (?U_73 ?U_74) pred:dateTime-greater-than-or-equal true.
-}.
-{
-    ?U_75 this:minInclusive ?U_76.
-} <= {
-    ?U_76 this:datatype ?U_77.
-    ?U_77 log:notEqualTo xsd:integer.
-    ?U_77 log:notEqualTo xsd:decimal.
-    ?U_77 log:notEqualTo xsd:double.
-    ?U_77 log:notEqualTo xsd:float.
-    ?U_77 log:notEqualTo xsd:dateTime.
-    ?U_75 this:datatype ?U_77.
-    ?U_75 string:notLessThan ?U_76.
-}.
-{
-    ?U_78 this:maxExclusive ?U_79.
-} <= {
-    ?U_79 a this:Number.
-    ?U_78 a this:Number.
-    ?U_78 math:lessThan ?U_79.
-}.
-{
-    ?U_80 this:maxExclusive ?U_81.
-} <= {
-    ?U_81 this:datatype xsd:dateTime.
-    (?U_80 ?U_81) pred:dateTime-less-than true.
-}.
-{
-    ?U_82 this:maxExclusive ?U_83.
-} <= {
-    ?U_83 this:datatype ?U_84.
-    ?U_84 log:notEqualTo xsd:integer.
-    ?U_84 log:notEqualTo xsd:decimal.
-    ?U_84 log:notEqualTo xsd:double.
-    ?U_84 log:notEqualTo xsd:float.
-    ?U_84 log:notEqualTo xsd:dateTime.
-    ?U_82 this:datatype ?U_84.
-    ?U_82 string:lessThan ?U_83.
-}.
-{
-    ?U_85 this:maxInclusive ?U_86.
-} <= {
-    ?U_86 a this:Number.
-    ?U_85 a this:Number.
-    ?U_85 math:notGreaterThan ?U_86.
-}.
-{
-    ?U_87 this:maxInclusive ?U_88.
-} <= {
-    ?U_88 this:datatype xsd:dateTime.
-    (?U_87 ?U_88) pred:dateTime-less-than-or-equal true.
-}.
-{
-    ?U_89 this:maxInclusive ?U_90.
-} <= {
-    ?U_90 this:datatype ?U_91.
-    ?U_91 log:notEqualTo xsd:integer.
-    ?U_91 log:notEqualTo xsd:decimal.
-    ?U_91 log:notEqualTo xsd:double.
-    ?U_91 log:notEqualTo xsd:float.
-    ?U_91 log:notEqualTo xsd:dateTime.
-    ?U_89 this:datatype ?U_91.
-    ?U_89 string:notGreaterThan ?U_90.
-}.
-{
-    ?U_92 a this:Number.
-} <= {
-    ?U_92 this:datatype ?U_93.
-    ?U_93 list:in (xsd:integer xsd:decimal xsd:double xsd:float).
-}.
-{
-    ?U_94 this:minLength ?U_95.
-} <= {
-    (?U_96 ?U_97) log:dtlit ?U_94.
-    ?U_96 string:length ?U_98.
-    ?U_98 math:notLessThan ?U_95.
-}.
-{
-    ?U_99 this:minLength ?U_100.
-} <= {
-    ?U_99 log:rawType log:Other.
-    ?U_99 log:uri ?U_101.
-    ?U_101 string:length ?U_102.
-    ?U_102 math:notLessThan ?U_100.
-}.
-{
-    ?U_103 this:maxLength ?U_104.
-} <= {
-    (?U_105 ?U_106) log:dtlit ?U_103.
-    ?U_105 string:length ?U_107.
-    ?U_107 math:notGreaterThan ?U_104.
-}.
-{
-    ?U_108 this:maxLength ?U_109.
-} <= {
-    ?U_108 log:rawType log:Other.
-    ?U_108 log:uri ?U_110.
-    ?U_110 string:length ?U_111.
-    ?U_111 math:notGreaterThan ?U_109.
-}.
-{
-    ?U_112 this:pattern ?U_113.
-} <= {
-    (?U_114 ?U_115) log:dtlit ?U_112.
-    ?U_114 string:matches ?U_113.
-}.
-{
-    ?U_116 this:languageIn ?U_117.
-} <= {
-    (?U_118 ?U_119) log:langlit ?U_116.
-    ?U_119 string:startsWith ?U_120.
-    ?U_120 list:in ?U_117.
-}.
-{
-    ?U_121 this:class ?U_122.
-} <= {
-    ?U_121 a ?U_122.
-}.
-{
-    ?U_123 this:class ?U_124.
-} <= {
-    ?U_125 rdfs:subClassOf ?U_124.
-    ?U_123 this:class ?U_125.
-}.
-{
-    ?U_126 this:nodeKind sh:IRI.
-} <= {
-    ?U_126 log:rawType log:Other.
-    ?U_126 log:uri ?U_127.
-}.
-{
-    ?U_128 this:nodeKind sh:Literal.
-} <= {
-    ?U_128 log:rawType log:Literal.
-}.
-{
-    ?U_129 this:nodeKind sh:BlankNode.
-} <= {
-    ?U_129 log:rawType log:LabeledBlankNode.
-}.
-{
-    ?U_130 this:nodeKind sh:BlankNode.
-} <= {
-    ?U_130 log:rawType log:UnlabeledBlankNode.
-}.
-{
-    ?U_131 this:nodeKind sh:BlankNode.
-} <= {
-    ?U_131 log:rawType log:SkolemIRI.
-}.
-{
-    ?U_132 this:nodeKind sh:BlankNodeOrIRI.
-} <= {
-    ?U_132 this:nodeKind sh:BlankNode.
-}.
-{
-    ?U_133 this:nodeKind sh:BlankNodeOrIRI.
-} <= {
-    ?U_133 this:nodeKind sh:IRI.
-}.
-{
-    ?U_134 this:nodeKind sh:IRIOrLiteral.
-} <= {
-    ?U_134 this:nodeKind sh:IRI.
-}.
-{
-    ?U_135 this:nodeKind sh:IRIOrLiteral.
-} <= {
-    ?U_135 this:nodeKind sh:Literal.
-}.
-{
-    ?U_136 this:nodeKind sh:BlankNodeOrLiteral.
-} <= {
-    ?U_136 this:nodeKind sh:BlankNode.
-}.
-{
-    ?U_137 this:nodeKind sh:BlankNodeOrLiteral.
-} <= {
-    ?U_137 this:nodeKind sh:Literal.
-}.
-{
-    ?U_138 this:datatype ?U_139.
-} <= {
-    (?U_140 ?U_139) log:dtlit ?U_138.
-}.
-{
-    (?U_141 ?U_142) this:hasDuplicateLanguage ?U_143.
-} <= {
-    (?U_141 ?U_142) this:value ?U_144.
-    (?U_141 ?U_142) this:value ?U_145.
-    ?U_144 log:notEqualTo ?U_145.
-    (?U_146 ?U_143) log:langlit ?U_144.
-    (?U_147 ?U_143) log:langlit ?U_145.
-}.
+    (?node ?path) this:value ?x, ?y .
+    ?x log:notEqualTo ?y .
+    ([] ?lang) log:langlit ?x .
+    ([] ?lang) log:langlit ?y .
+} .

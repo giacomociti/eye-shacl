@@ -126,20 +126,3 @@ sh:languageIn this:validator this:languageIn ; this:messageFormat "value should 
 {
    { ?result sh:sourceShape ?shape ; this:message ?message } => { ?result sh:resultMessage ?message }
 } .
-
-{
-   ?shape sh:severity ?severity .
-}
-=> 
-{
-   { ?result sh:sourceShape ?shape } => { ?result sh:resultSeverity ?severity }
-} .
-
-{
-   ?shape a this:Shape .
-   [] log:notIncludes { ?shape sh:severity [] } .
-}
-=> 
-{
-   { ?result sh:sourceShape ?shape } => { ?result sh:resultSeverity sh:Violation }
-} .

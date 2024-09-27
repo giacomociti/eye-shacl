@@ -3,7 +3,7 @@
 
 {
     [] sh:entailment <http://www.w3.org/ns/entailment/RDFS> .
-    <../../dist/lib-rdfs.n3> log:semantics ?semantics
+    <lib-rdfs.n3> log:semantics ?semantics
 }
 =>
 ?semantics .

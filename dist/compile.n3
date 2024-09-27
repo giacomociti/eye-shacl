@@ -1,1055 +1,1263 @@
-@prefix sh: <http://www.w3.org/ns/shacl#>.
-@prefix this: <http://eye-shacl#>.
-@prefix log: <http://www.w3.org/2000/10/swap/log#>.
-@prefix list: <http://www.w3.org/2000/10/swap/list#>.
-@prefix math: <http://www.w3.org/2000/10/swap/math#>.
-@prefix string: <http://www.w3.org/2000/10/swap/string#>.
-@prefix func: <http://www.w3.org/2007/rif-builtin-function#>.
-@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix list: <http://www.w3.org/2000/10/swap/list#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix log: <http://www.w3.org/2000/10/swap/log#> .
+@prefix this: <http://eye-shacl#> .
+@prefix ex: <http://example.org/> .
 
-sh:class this:constraint sh:ClassConstraintComponent.
+{ ?value this:nodeKind sh:BlankNode } <= { ?value log:rawType log:LabeledBlankNode }. 
+{ ?value this:nodeKind sh:BlankNode } <= { ?value log:rawType log:UnlabeledBlankNode }.
+{ ?value this:nodeKind sh:BlankNode } <= { ?value log:rawType log:SkolemIRI }.
+
+
+{
+    { ?s ?p ?o } this:cbd ?s 
+}
+<=
+{
+    ?s ?p ?o .
+    ?p log:notEqualTo this:cbd  .
+} .
+
+{
+    ?triple this:cbd ?x
+}
+<=
+{
+    ?x [] ?y .
+    ?y this:nodeKind sh:BlankNode .
+    ?triple this:cbd ?y .    
+} .
+
+{
+    ?triple this:cbd ?x
+}
+<=
+{
+    ?x [] [ list:member ?s ] .
+    ?s this:nodeKind sh:BlankNode .
+    ?triple sh:cbd ?s .    
+} .
+@prefix sh: <http://www.w3.org/ns/shacl#>.
+@prefix this: <http://eye-shacl#> .
+
+# https://www.w3.org/TR/shacl/#core-components-value-type
+sh:class this:constraint sh:ClassConstraintComponent .
 sh:nodeKind this:constraint sh:NodeKindConstraintComponent.
-sh:datatype this:constraint sh:DatatypeConstraintComponent.
-sh:minCount this:constraint sh:MinCountConstraintComponent.
-sh:maxCount this:constraint sh:MaxCountConstraintComponent.
-sh:minExclusive this:constraint sh:MinExclusiveConstraintComponent.
-sh:minInclusive this:constraint sh:MinInclusiveConstraintComponent.
-sh:maxExclusive this:constraint sh:MaxExclusiveConstraintComponent.
-sh:maxInclusive this:constraint sh:MaxInclusiveConstraintComponent.
-sh:minLength this:constraint sh:MinLengthConstraintComponent.
-sh:maxLength this:constraint sh:MaxLengthConstraintComponent.
-sh:pattern this:constraint sh:PatternConstraintComponent.
-sh:languageIn this:constraint sh:LanguageInConstraintComponent.
-sh:uniqueLang this:constraint sh:UniqueLangConstraintComponent.
-sh:equals this:constraint sh:EqualsConstraintComponent.
-sh:disjoint this:constraint sh:DisjointConstraintComponent.
-sh:lessThan this:constraint sh:LessThanConstraintComponent.
-sh:lessThanOrEquals this:constraint sh:LessThanOrEqualsConstraintComponent.
-sh:not this:constraint sh:NotConstraintComponent.
-sh:and this:constraint sh:AndConstraintComponent.
-sh:or this:constraint sh:OrConstraintComponent.
-sh:xone this:constraint sh:XoneConstraintComponent.
-sh:node this:constraint sh:NodeConstraintComponent.
-sh:property this:constraint sh:PropertyConstraintComponent.
-sh:qualifiedValueShape this:constraint sh:QualifiedValueShapeConstraintComponent.
-sh:qualifiedMinCount this:constraint sh:QualifiedMinCountConstraintComponent.
-sh:qualifiedMaxCount this:constraint sh:QualifiedMaxCountConstraintComponent.
-sh:closed this:constraint sh:ClosedConstraintComponent.
-sh:ignoredProperties this:constraint sh:ClosedConstraintComponent.
-sh:hasValue this:constraint sh:HasValueConstraintComponent.
-sh:in this:constraint sh:InConstraintComponent.
-sh:node this:validator this:node.
-sh:and this:validator this:and.
-sh:or this:validator this:or.
-sh:not this:validator this:not.
-sh:xone this:validator this:xone.
-sh:class this:validator this:class.
-sh:nodeKind this:validator this:nodeKind.
-sh:datatype this:validator this:datatype.
-sh:minExclusive this:validator this:minExclusive.
-sh:minInclusive this:validator this:minInclusive.
-sh:maxExclusive this:validator this:maxExclusive.
-sh:maxInclusive this:validator this:maxInclusive.
-sh:minLength this:validator this:minLength.
-sh:maxLength this:validator this:maxLength.
-sh:pattern this:validator this:pattern.
-sh:languageIn this:validator this:languageIn.
-sh:node this:messageFormat "value should satisfy shape %s".
-sh:and this:messageFormat "value should satisfy all of the following shapes: %s".
-sh:or this:messageFormat "value should satisfy at least one of the following shapes: %s".
-sh:not this:messageFormat "value should not satisfy the following shape: %s".
-sh:xone this:messageFormat "value should satisfy exactly one of the following shapes: %s".
-sh:class this:messageFormat "value should be instance of %s".
-sh:nodeKind this:messageFormat "value should have node kind %s".
-sh:datatype this:messageFormat "value should have datatype %s".
-sh:minExclusive this:messageFormat "value should be greater than %s".
-sh:minInclusive this:messageFormat "value should be greater than or equal to %s".
-sh:maxExclusive this:messageFormat "value should be less than %s".
-sh:maxInclusive this:messageFormat "value should be less than or equal to %s".
-sh:minLength this:messageFormat "value should have at least %s characters".
-sh:maxLength this:messageFormat "value should have at most %s characters".
-sh:pattern this:messageFormat "value should match pattern %s".
-sh:languageIn this:messageFormat "value should have one of the language tags: %s".
+sh:datatype this:constraint sh:DatatypeConstraintComponent .
+# https://www.w3.org/TR/shacl/#core-components-count
+sh:minCount this:constraint sh:MinCountConstraintComponent .
+sh:maxCount this:constraint sh:MaxCountConstraintComponent .
+# https://www.w3.org/TR/shacl/#core-components-range
+sh:minExclusive this:constraint sh:MinExclusiveConstraintComponent .
+sh:minInclusive this:constraint sh:MinInclusiveConstraintComponent .
+sh:maxExclusive this:constraint sh:MaxExclusiveConstraintComponent .
+sh:maxInclusive this:constraint sh:MaxInclusiveConstraintComponent .
+# https://www.w3.org/TR/shacl/#core-components-string
+sh:minLength this:constraint sh:MinLengthConstraintComponent .
+sh:maxLength this:constraint sh:MaxLengthConstraintComponent .
+sh:pattern this:constraint sh:PatternConstraintComponent .
+sh:languageIn this:constraint sh:LanguageInConstraintComponent .
+sh:uniqueLang this:constraint sh:UniqueLangConstraintComponent .
+# https://www.w3.org/TR/shacl/#core-components-property-pairs
+sh:equals this:constraint sh:EqualsConstraintComponent .
+sh:disjoint this:constraint sh:DisjointConstraintComponent .
+sh:lessThan this:constraint sh:LessThanConstraintComponent .
+sh:lessThanOrEquals this:constraint sh:LessThanOrEqualsConstraintComponent .
+# https://www.w3.org/TR/shacl/#core-components-logical
+sh:not this:constraint sh:NotConstraintComponent .
+sh:and this:constraint sh:AndConstraintComponent .
+sh:or this:constraint sh:OrConstraintComponent .
+sh:xone this:constraint sh:XoneConstraintComponent .
+# https://www.w3.org/TR/shacl/#core-components-shape
+sh:node this:constraint sh:NodeConstraintComponent .
+sh:property this:constraint sh:PropertyConstraintComponent .
+sh:qualifiedValueShape this:constraint sh:QualifiedValueShapeConstraintComponent .
+sh:qualifiedMinCount this:constraint sh:QualifiedMinCountConstraintComponent .
+sh:qualifiedMaxCount this:constraint sh:QualifiedMaxCountConstraintComponent .
+# https://www.w3.org/TR/shacl/#core-components-others
+sh:closed this:constraint sh:ClosedConstraintComponent .
+sh:ignoredProperties this:constraint sh:ClosedConstraintComponent .
+sh:hasValue this:constraint sh:HasValueConstraintComponent .
+sh:in this:constraint sh:InConstraintComponent .
+
+# https://www.w3.org/TR/shacl/#core-components-count
+
+@prefix log: <http://www.w3.org/2000/10/swap/log#> .
+@prefix string: <http://www.w3.org/2000/10/swap/string#> .
+@prefix math: <http://www.w3.org/2000/10/swap/math#> .
+@prefix list: <http://www.w3.org/2000/10/swap/list#> .
+@prefix sh: <http://www.w3.org/ns/shacl#>.
+@prefix this: <http://eye-shacl#> .
+
+# MinCountConstraintComponent
 {
-    ?U_0 a this:Shape.
-    (?U_1 {
-        ?U_0 this:cbd ?U_1.
-    } ?U_2) log:collectAllIn ?U_3.
-    ?U_2 log:conjunction ?U_4.
-} => {
-    ?U_4 this:describeShape ?U_0.
-}.
+    ?shape a this:PropertyShape ; sh:minCount ?minCount ; sh:path ?path .
+}
+=>
 {
-    ?U_5 a this:PropertyShape.
-    ?U_5 sh:minCount ?U_6.
-    ?U_5 sh:path ?U_7.
-} => {
     {
-        ?U_5 this:focusNode ?U_319.
-        (?U_319 ?U_7) this:values ?U_320.
-        ?U_320 list:length ?U_321.
-        ?U_321 math:lessThan ?U_6.
-        <http://eye-shacl#> this:report ?U_322.
-        ("at least %s values expected, but found %s" ?U_6 ?U_321) string:format ?U_323.
-    } => {
-        ?U_322 sh:result ?U_324.
-        ?U_324 a sh:ValidationResult.
-        ?U_324 sh:sourceConstraintComponent sh:MinCountConstraintComponent.
-        ?U_324 sh:sourceShape ?U_5.
-        ?U_324 sh:focusNode ?U_319.
-        ?U_324 sh:resultPath ?U_7.
-        ?U_324 this:message ?U_323.
-    }.
-}.
-{
-    ?U_8 a this:PropertyShape.
-    ?U_8 sh:minCount ?U_9.
-    ?U_8 sh:path ?U_10.
-} => {
+        ?shape this:focusNode ?node .
+        (?node ?path) this:values ?values .
+        ?values list:length ?length .
+        ?length math:lessThan ?minCount .
+        this: this:report ?report .
+        ("at least %s values expected, but found %s" ?minCount ?length) string:format ?message .
+    }
+    =>
     {
-        _:sk_11 this:violates ?U_8.
-    } <= {
-        (_:sk_11 ?U_10) this:values _:sk_12.
-        _:sk_12 list:length _:sk_13.
-        _:sk_13 math:lessThan ?U_9.
-    }.
-}.
+        ?report sh:result [
+            a sh:ValidationResult ;
+            sh:sourceConstraintComponent sh:MinCountConstraintComponent;
+            sh:sourceShape ?shape ;
+            sh:focusNode ?node ;
+            sh:resultPath ?path ;
+            this:message ?message ;
+        ] .
+    } .
+} .
+
 {
-    ?U_14 a this:PropertyShape.
-    ?U_14 sh:maxCount ?U_15.
-    ?U_14 sh:path ?U_16.
-} => {
+    ?shape a this:PropertyShape ; sh:minCount ?minCount ; sh:path ?path .
+}
+=>
+{
     {
-        ?U_14 this:focusNode ?U_325.
-        (?U_325 ?U_16) this:values ?U_326.
-        ?U_326 list:length ?U_327.
-        ?U_327 math:greaterThan ?U_15.
-        <http://eye-shacl#> this:report ?U_328.
-        ("at most %s values expected, but found %s" ?U_15 ?U_327) string:format ?U_329.
-    } => {
-        ?U_328 sh:result ?U_330.
-        ?U_330 a sh:ValidationResult.
-        ?U_330 sh:sourceConstraintComponent sh:MaxCountConstraintComponent.
-        ?U_330 sh:sourceShape ?U_14.
-        ?U_330 sh:focusNode ?U_325.
-        ?U_330 sh:resultPath ?U_16.
-        ?U_330 this:message ?U_329.
-    }.
-}.
-{
-    ?U_17 a this:PropertyShape.
-    ?U_17 sh:maxCount ?U_18.
-    ?U_17 sh:path ?U_19.
-} => {
+        ?node this:violates ?shape .
+    }
+    <=
     {
-        _:sk_20 this:violates ?U_17.
-    } <= {
-        (_:sk_20 ?U_19) this:values _:sk_21.
-        _:sk_21 list:length _:sk_22.
-        _:sk_22 math:greaterThan ?U_18.
-    }.
-}.
+        (?node ?path) this:values ?values .
+        ?values list:length [ math:lessThan ?minCount ].
+    } .
+} .
+
+
+
+# MaxCountConstraintComponent
 {
-    ?U_23 a this:Shape.
-    ?U_23 sh:closed true.
-    (?U_24 {
-        ?U_23 sh:property ?U_25.
-        ?U_25 sh:path ?U_24.
-        ?U_24 this:nodeKind sh:IRI.
-    } ?U_26) log:collectAllIn ?U_27.
-    (?U_24 {
-        ?U_23 sh:ignoredProperties ?U_28.
-        ?U_28 list:member ?U_24.
-    } ?U_29) log:collectAllIn ?U_30.
-    (?U_26 ?U_29) list:append ?U_31.
-    ?U_31 log:localN3String ?U_32.
-    ("allowed properties are only: %s" ?U_32) string:format ?U_33.
-} => {
+    ?shape a this:PropertyShape ; sh:maxCount ?maxCount ; sh:path ?path .
+}
+=>
+{
     {
-        ?U_23 this:focusNode ?U_331.
-        ?U_331 ?U_332 ?U_333.
-        ?U_31 list:notMember ?U_332.
-        <http://eye-shacl#> this:report ?U_334.
-    } => {
-        ?U_334 sh:result ?U_335.
-        ?U_335 a sh:ValidationResult.
-        ?U_335 sh:sourceConstraintComponent sh:ClosedConstraintComponent.
-        ?U_335 sh:sourceShape ?U_23.
-        ?U_335 sh:focusNode ?U_331.
-        ?U_335 sh:value ?U_333.
-        ?U_335 sh:resultPath ?U_332.
-        ?U_335 this:message ?U_33.
-    }.
-}.
-{
-    ?U_34 a this:Shape.
-    ?U_34 sh:closed true.
-    (?U_35 {
-        ?U_34 sh:property ?U_36.
-        ?U_36 sh:path ?U_35.
-        ?U_35 this:nodeKind sh:IRI.
-    } ?U_37) log:collectAllIn ?U_38.
-    (?U_35 {
-        ?U_34 sh:ignoredProperties ?U_39.
-        ?U_39 list:member ?U_35.
-    } ?U_40) log:collectAllIn ?U_41.
-    (?U_37 ?U_40) list:append ?U_42.
-} => {
+        ?shape this:focusNode ?node .
+        (?node ?path) this:values ?values .
+        ?values list:length ?length .
+        ?length math:greaterThan ?maxCount .
+        this: this:report ?report .
+        ("at most %s values expected, but found %s" ?maxCount ?length) string:format ?message .
+    }
+    =>
     {
-        _:sk_43 this:violates ?U_34.
-    } <= {
-        _:sk_43 _:sk_44 _:sk_45.
-        ?U_42 list:notMember _:sk_44.
-    }.
-}.
+        ?report sh:result [
+            a sh:ValidationResult ;
+            sh:sourceConstraintComponent sh:MaxCountConstraintComponent;
+            sh:sourceShape ?shape ;
+            sh:focusNode ?node ;
+            sh:resultPath ?path ;
+            this:message ?message ;
+        ] .
+    } .
+} .
+
 {
-    ?U_46 a this:PropertyShape.
-    ?U_46 sh:hasValue ?U_47.
-    ?U_46 sh:path ?U_48.
-    ("missing expected value: %s" ?U_47) string:format ?U_49.
-} => {
+    ?shape a this:PropertyShape ; sh:maxCount ?maxCount ; sh:path ?path .
+}
+=>
+{
     {
-        ?U_46 this:focusNode ?U_336.
-        (?U_336 ?U_48) this:values ?U_337.
-        ?U_337 list:notMember ?U_47.
-        <http://eye-shacl#> this:report ?U_338.
-    } => {
-        ?U_338 sh:result ?U_339.
-        ?U_339 a sh:ValidationResult.
-        ?U_339 sh:sourceConstraintComponent sh:HasValueConstraintComponent.
-        ?U_339 sh:sourceShape ?U_46.
-        ?U_339 sh:focusNode ?U_336.
-        ?U_339 sh:resultPath ?U_48.
-        ?U_339 this:message ?U_49.
-    }.
-}.
-{
-    ?U_50 a this:PropertyShape.
-    ?U_50 sh:hasValue ?U_51.
-    ?U_50 sh:path ?U_52.
-} => {
+        ?node this:violates ?shape .        
+    }
+    <=
     {
-        _:sk_53 this:violates ?U_50.
-    } <= {
-        (_:sk_53 ?U_52) this:values _:sk_54.
-        _:sk_54 list:notMember ?U_51.
-    }.
-}.
+       (?node ?path) this:values ?values .
+        ?values list:length [ math:greaterThan ?maxCount ].
+    } .
+} .
+
+# https://www.w3.org/TR/shacl/#core-components-others
+
+@prefix list: <http://www.w3.org/2000/10/swap/list#> .
+@prefix string: <http://www.w3.org/2000/10/swap/string#> .
+@prefix log: <http://www.w3.org/2000/10/swap/log#> .
+@prefix sh: <http://www.w3.org/ns/shacl#>.
+@prefix this: <http://eye-shacl#> .
+@prefix func: <http://www.w3.org/2007/rif-builtin-function#>.
+
+{ ?value this:nodeKind sh:IRI } <= { ?value log:rawType log:Other . ?value log:uri [] }. 
+
+# ClosedConstraintComponent
 {
-    ?U_55 a this:NodeShape.
-    ?U_55 sh:hasValue ?U_56.
-    ("missing expected value: %s" ?U_56) string:format ?U_57.
-} => {
+    ?shape a this:Shape ; sh:closed true .
+    (?x { ?shape sh:property [ sh:path ?x ] . ?x this:nodeKind sh:IRI } ?existing) log:collectAllIn [] .
+    (?x { ?shape sh:ignoredProperties [ list:member ?x ]} ?ignored) log:collectAllIn [] .
+    (?existing ?ignored) list:append ?allowed .
+    ?allowed log:localN3String ?allowedString .
+    ("allowed properties are only: %s" ?allowedString) string:format ?message .
+}
+=>
+{
     {
-        ?U_55 this:focusNode ?U_340.
-        ?U_340 log:notEqualTo ?U_56.
-        <http://eye-shacl#> this:report ?U_341.
-    } => {
-        ?U_341 sh:result ?U_342.
-        ?U_342 a sh:ValidationResult.
-        ?U_342 sh:sourceConstraintComponent sh:HasValueConstraintComponent.
-        ?U_342 sh:sourceShape ?U_55.
-        ?U_342 sh:focusNode ?U_340.
-        ?U_342 this:message ?U_57.
-    }.
-}.
-{
-    ?U_58 a this:NodeShape.
-    ?U_58 sh:hasValue ?U_59.
-    ?U_60 log:notIncludes {
-        ?U_58 sh:deactivated true.
-    }.
-} => {
+        ?shape this:focusNode ?node .
+        ?node ?property ?value .
+        ?allowed list:notMember ?property .
+        this: this:report ?report .
+    }
+    =>
     {
-        _:sk_61 this:violates ?U_58.
-    } <= {
-        _:sk_61 log:notEqualTo ?U_59.
-    }.
-}.
+        ?report sh:result [
+            a sh:ValidationResult ;
+            sh:sourceConstraintComponent sh:ClosedConstraintComponent;
+            sh:sourceShape ?shape ;
+            sh:focusNode ?node ;
+            sh:value ?value ;
+            sh:resultPath ?property ;
+            this:message ?message ;
+        ] .
+    } .
+} .
+
 {
-    ?U_62 a this:PropertyShape.
-    ?U_62 sh:in ?U_63.
-    ?U_62 sh:path ?U_64.
-} => {
+    ?shape a this:Shape ; sh:closed true .
+    (?x { ?shape sh:property [ sh:path ?x ] . ?x this:nodeKind sh:IRI } ?existing) log:collectAllIn [] .
+    (?x { ?shape sh:ignoredProperties [ list:member ?x ]} ?ignored) log:collectAllIn [] .
+    (?existing ?ignored) list:append ?allowed .
+}
+=>
+{
     {
-        ?U_62 this:focusNode ?U_343.
-        (?U_343 ?U_64) this:values ?U_344.
-        (?U_344 ?U_63) func:except ?U_345.
-        ?U_345 list:member ?U_346.
-        <http://eye-shacl#> this:report ?U_347.
-    } => {
-        ?U_347 sh:result ?U_348.
-        ?U_348 a sh:ValidationResult.
-        ?U_348 sh:sourceConstraintComponent sh:InConstraintComponent.
-        ?U_348 sh:sourceShape ?U_62.
-        ?U_348 sh:focusNode ?U_343.
-        ?U_348 sh:value ?U_346.
-        ?U_348 sh:resultPath ?U_64.
-        ?U_348 this:message "value is not in the list of allowed values".
-    }.
-}.
-{
-    ?U_65 a this:PropertyShape.
-    ?U_65 sh:in ?U_66.
-    ?U_65 sh:path ?U_67.
-} => {
+        ?node this:violates ?shape .
+    }
+    <=
     {
-        _:sk_68 this:violates ?U_65.
-    } <= {
-        (_:sk_68 ?U_67) this:value _:sk_69.
-        ?U_66 list:notMember _:sk_69.
-    }.
-}.
+        ?node ?property ?value .
+        ?allowed list:notMember ?property .
+    } .
+} .
+
+
+# HasValueConstraintComponent
 {
-    ?U_70 a this:NodeShape.
-    ?U_70 sh:in ?U_71.
-} => {
+    ?shape a this:PropertyShape ; sh:hasValue ?hasValue ; sh:path ?path .
+    ("missing expected value: %s" ?hasValue) string:format ?message .
+} 
+=>
+{
     {
-        ?U_70 this:focusNode ?U_349.
-        ?U_71 list:notMember ?U_349.
-        <http://eye-shacl#> this:report ?U_350.
-    } => {
-        ?U_350 sh:result ?U_351.
-        ?U_351 a sh:ValidationResult.
-        ?U_351 sh:sourceConstraintComponent sh:InConstraintComponent.
-        ?U_351 sh:sourceShape ?U_70.
-        ?U_351 sh:focusNode ?U_349.
-        ?U_351 sh:value ?U_349.
-        ?U_351 this:message "value is not in the list of allowed values".
-    }.
-}.
-{
-    ?U_72 a this:NodeShape.
-    ?U_72 sh:in ?U_73.
-} => {
+        ?shape this:focusNode ?focusNode .
+        (?focusNode ?path) this:values ?values .
+        ?values list:notMember ?hasValue .
+        this: this:report ?report .
+    }
+    =>
     {
-        _:sk_74 this:violates ?U_72.
-    } <= {
-        ?U_73 list:notMember _:sk_74.
-    }.
+        ?report sh:result [
+            a sh:ValidationResult ;
+            sh:sourceConstraintComponent sh:HasValueConstraintComponent ;
+            sh:sourceShape ?shape ;
+            sh:focusNode ?focusNode ;
+            sh:resultPath ?path ;
+            this:message ?message ;
+        ] .
+    } .
 }.
+
 {
-    ?U_75 a this:PropertyShape.
-    ?U_75 sh:equals ?U_76.
-    ?U_75 sh:path ?U_77.
-    ?U_76 log:localN3String ?U_78.
-    ("Must have same values as %s" ?U_78) string:format ?U_79.
-} => {
+   ?shape a this:PropertyShape ; sh:hasValue ?hasValue ; sh:path ?path .
+} 
+=>
+{
     {
-        ?U_75 this:focusNode ?U_352.
-        (?U_352 ?U_77) this:values ?U_353.
-        (?U_352 ?U_76) this:values ?U_354.
-        (?U_353 ?U_354) list:append ?U_355.
-        (?U_356 {
-            ?U_356 list:in ?U_353.
-            ?U_356 list:in ?U_354.
-        } ?U_357) log:collectAllIn ?U_358.
-        ?U_355 list:member ?U_359.
-        ?U_357 list:notMember ?U_359.
-        <http://eye-shacl#> this:report ?U_360.
-    } => {
-        ?U_360 sh:result ?U_361.
-        ?U_361 a sh:ValidationResult.
-        ?U_361 sh:sourceConstraintComponent sh:EqualsConstraintComponent.
-        ?U_361 sh:sourceShape ?U_75.
-        ?U_361 sh:focusNode ?U_352.
-        ?U_361 sh:resultPath ?U_77.
-        ?U_361 sh:value ?U_359.
-        ?U_361 this:message ?U_79.
-    }.
-}.
-{
-    ?U_80 a this:NodeShape.
-    ?U_80 sh:equals ?U_81.
-    ?U_81 log:localN3String ?U_82.
-    ("Must be value of %s" ?U_82) string:format ?U_83.
-} => {
+        ?node this:violates ?shape .
+    }
+    <=
     {
-        ?U_80 this:focusNode ?U_362.
-        (?U_362 ?U_81) this:values ?U_363.
-        ((?U_362) ?U_363) list:append ?U_364.
-        (?U_365 {
-            ?U_365 log:equalTo ?U_362.
-            ?U_365 list:in ?U_363.
-        } ?U_366) log:collectAllIn ?U_367.
-        ?U_364 list:member ?U_368.
-        ?U_366 list:notMember ?U_368.
-        <http://eye-shacl#> this:report ?U_369.
-    } => {
-        ?U_369 sh:result ?U_370.
-        ?U_370 a sh:ValidationResult.
-        ?U_370 sh:sourceConstraintComponent sh:EqualsConstraintComponent.
-        ?U_370 sh:sourceShape ?U_80.
-        ?U_370 sh:focusNode ?U_362.
-        ?U_370 sh:value ?U_368.
-        ?U_370 this:message ?U_83.
-    }.
+        (?node ?path) this:values ?values .
+        ?values list:notMember ?hasValue .
+    } .
 }.
+
 {
-    ?U_84 a this:PropertyShape.
-    ?U_84 sh:equals ?U_85.
-    ?U_84 sh:path ?U_86.
-} => {
+    ?shape a this:NodeShape ; sh:hasValue ?hasValue .
+    ("missing expected value: %s" ?hasValue) string:format ?message .
+} 
+=>
+{
     {
-        _:sk_87 this:violates ?U_84.
-    } <= {
-        (_:sk_87 ?U_86) this:values _:sk_88.
-        (_:sk_87 ?U_85) this:values _:sk_89.
-        _:sk_88 list:setNotEqualTo _:sk_89.
-    }.
-}.
-{
-    ?U_90 a this:NodeShape.
-    ?U_90 sh:equals ?U_91.
-} => {
+        ?shape this:focusNode ?focusNode .
+        ?focusNode log:notEqualTo ?hasValue .
+        this: this:report ?report .
+    }
+    =>
     {
-        _:sk_92 this:violates ?U_90.
-    } <= {
-        (_:sk_92 ?U_91) this:values _:sk_93.
-        _:sk_93 list:notMember _:sk_92.
-    }.
+        ?report sh:result [
+            a sh:ValidationResult ;
+            sh:sourceConstraintComponent sh:HasValueConstraintComponent ;
+            sh:sourceShape ?shape ;
+            sh:focusNode ?focusNode ;
+            this:message ?message ;
+        ] .
+    } .
 }.
+
 {
-    ?U_94 a this:PropertyShape.
-    ?U_94 sh:disjoint ?U_95.
-    ?U_94 sh:path ?U_96.
-    ?U_95 log:localN3String ?U_97.
-    ("Must have different values than %s" ?U_97) string:format ?U_98.
-} => {
+    ?shape a this:NodeShape ; sh:hasValue ?hasValue .
+    [] log:notIncludes { ?shape sh:deactivated true } .
+} 
+=>
+{
     {
-        ?U_94 this:focusNode ?U_371.
-        (?U_371 ?U_96) this:value ?U_372.
-        (?U_371 ?U_95) this:value ?U_372.
-        <http://eye-shacl#> this:report ?U_373.
-    } => {
-        ?U_373 sh:result ?U_374.
-        ?U_374 a sh:ValidationResult.
-        ?U_374 sh:sourceConstraintComponent sh:DisjointConstraintComponent.
-        ?U_374 sh:sourceShape ?U_94.
-        ?U_374 sh:focusNode ?U_371.
-        ?U_374 sh:value ?U_372.
-        ?U_374 sh:resultPath ?U_96.
-        ?U_374 this:message ?U_98.
-    }.
-}.
-{
-    ?U_99 a this:NodeShape.
-    ?U_99 sh:disjoint ?U_100.
-    ?U_100 log:localN3String ?U_101.
-    ("Must not be a value of %s" ?U_101) string:format ?U_102.
-} => {
+        ?node this:violates ?shape .
+    }
+    <=
     {
-        ?U_99 this:focusNode ?U_375.
-        (?U_375 ?U_100) this:value ?U_375.
-        <http://eye-shacl#> this:report ?U_376.
-    } => {
-        ?U_376 sh:result ?U_377.
-        ?U_377 a sh:ValidationResult.
-        ?U_377 sh:sourceConstraintComponent sh:DisjointConstraintComponent.
-        ?U_377 sh:sourceShape ?U_99.
-        ?U_377 sh:focusNode ?U_375.
-        ?U_377 sh:value ?U_375.
-        ?U_377 this:message ?U_102.
-    }.
+       ?node log:notEqualTo ?hasValue .
+    } .
 }.
+
+# InConstraintComponent
 {
-    ?U_103 a this:PropertyShape.
-    ?U_103 sh:disjoint ?U_104.
-    ?U_103 sh:path ?U_105.
-} => {
+    ?shape a this:PropertyShape ; sh:in ?in ; sh:path ?path .
+} 
+=>
+{
     {
-        _:sk_106 this:violates ?U_103.
-    } <= {
-        (_:sk_106 ?U_105) this:value _:sk_107.
-        (_:sk_106 ?U_104) this:value _:sk_107.
-    }.
-}.
-{
-    ?U_108 a this:NodeShape.
-    ?U_108 sh:disjoint ?U_109.
-} => {
+        ?shape this:focusNode ?focusNode .
+
+        (?focusNode ?path) this:values ?values .
+        (?values ?in) func:except ?except . # checking all values at once improves performance
+        ?except list:member ?value .
+        
+        this: this:report ?report .
+    }
+    =>
     {
-        _:sk_110 this:violates ?U_108.
-    } <= {
-        (_:sk_110 ?U_109) this:value _:sk_110.
-    }.
+        ?report sh:result [
+            a sh:ValidationResult ;
+            sh:sourceConstraintComponent sh:InConstraintComponent ;
+            sh:sourceShape ?shape ;
+            sh:focusNode ?focusNode ;
+            sh:value ?value ;
+            sh:resultPath ?path ;
+            this:message "value is not in the list of allowed values" ;
+        ] .
+    } .
 }.
+
 {
-    ?U_111 a this:PropertyShape.
-    ?U_111 sh:lessThan ?U_112.
-    ?U_111 sh:path ?U_113.
-    ?U_112 log:localN3String ?U_114.
-    ("Value is not less than value of %s" ?U_114) string:format ?U_115.
-} => {
+   ?shape a this:PropertyShape ; sh:in ?in ; sh:path ?path .
+} 
+=>
+{
     {
-        ?U_111 this:focusNode ?U_378.
-        (?U_378 ?U_113) this:value ?U_379.
-        (?U_378 ?U_112) this:value ?U_380.
-        ?U_381 log:notIncludes {
-            ?U_379 this:maxExclusive ?U_380.
-        }.
-        <http://eye-shacl#> this:report ?U_382.
-    } => {
-        ?U_382 sh:result ?U_383.
-        ?U_383 a sh:ValidationResult.
-        ?U_383 sh:sourceConstraintComponent sh:LessThanConstraintComponent.
-        ?U_383 sh:sourceShape ?U_111.
-        ?U_383 sh:focusNode ?U_378.
-        ?U_383 sh:value ?U_379.
-        ?U_383 sh:resultPath ?U_113.
-        ?U_383 this:message ?U_115.
-    }.
-}.
-{
-    ?U_116 a this:PropertyShape.
-    ?U_116 sh:lessThan ?U_117.
-    ?U_116 sh:path ?U_118.
-} => {
+        ?node this:violates ?shape .
+    }
+    <=
     {
-        _:sk_119 this:violates ?U_116.
-    } <= {
-        (_:sk_119 ?U_118) this:value _:sk_120.
-        (_:sk_119 ?U_117) this:value _:sk_121.
-        _:sk_122 log:notIncludes {
-            _:sk_120 this:maxExclusive _:sk_121.
-        }.
-    }.
+        (?node ?path) this:value ?value .
+        ?in list:notMember ?value .
+    } .
 }.
+
 {
-    ?U_123 a this:PropertyShape.
-    ?U_123 sh:lessThanOrEquals ?U_124.
-    ?U_123 sh:path ?U_125.
-    ?U_124 log:localN3String ?U_126.
-    ("Value is not less than or equal to value of %s" ?U_126) string:format ?U_127.
-} => {
+    ?shape a this:NodeShape ; sh:in ?in .
+} 
+=>
+{
     {
-        ?U_123 this:focusNode ?U_384.
-        (?U_384 ?U_125) this:value ?U_385.
-        (?U_384 ?U_124) this:value ?U_386.
-        ?U_387 log:notIncludes {
-            ?U_385 this:maxInclusive ?U_386.
-        }.
-        <http://eye-shacl#> this:report ?U_388.
-    } => {
-        ?U_388 sh:result ?U_389.
-        ?U_389 a sh:ValidationResult.
-        ?U_389 sh:sourceConstraintComponent sh:LessThanOrEqualsConstraintComponent.
-        ?U_389 sh:sourceShape ?U_123.
-        ?U_389 sh:focusNode ?U_384.
-        ?U_389 sh:value ?U_385.
-        ?U_389 sh:resultPath ?U_125.
-        ?U_389 this:message ?U_127.
-    }.
-}.
-{
-    ?U_128 a this:PropertyShape.
-    ?U_128 sh:lessThanOrEquals ?U_129.
-    ?U_128 sh:path ?U_130.
-} => {
+        ?shape this:focusNode ?focusNode .
+        ?in list:notMember ?focusNode .
+        this: this:report ?report .
+    }
+    =>
     {
-        _:sk_131 this:violates ?U_128.
-    } <= {
-        (_:sk_131 ?U_130) this:value _:sk_132.
-        (_:sk_131 ?U_129) this:value _:sk_133.
-        _:sk_134 log:notIncludes {
-            _:sk_132 this:maxInclusive _:sk_133.
-        }.
-    }.
+        ?report sh:result [
+            a sh:ValidationResult ;
+            sh:sourceConstraintComponent sh:InConstraintComponent ;
+            sh:sourceShape ?shape ;
+            sh:focusNode ?focusNode ;
+            sh:value ?focusNode ;
+            this:message "value is not in the list of allowed values" ;
+        ] .
+    } .
 }.
+
 {
-    ?U_135 sh:property ?U_136.
-    ?U_135 a this:NodeShape.
-} => {
+   ?shape a this:NodeShape ; sh:in ?in .
+} 
+=>
+{
     {
-        ?U_136 this:focusNode _:sk_137.
-    } <= {
-        ?U_135 this:focusNode _:sk_137.
-    }.
-}.
-{
-    ?U_138 sh:property ?U_139.
-    ?U_138 a this:NodeShape.
-} => {
+        ?node this:violates ?shape .
+    }
+    <=
     {
-        _:sk_140 this:violates ?U_138.
-    } <= {
-        _:sk_140 this:violates ?U_139.
-    }.
-}.
+        ?in list:notMember ?node .
+    } .
+}.# https://www.w3.org/TR/shacl/#core-components-property-pairs
+
+@prefix list: <http://www.w3.org/2000/10/swap/list#> .
+@prefix log: <http://www.w3.org/2000/10/swap/log#> .
+@prefix math: <http://www.w3.org/2000/10/swap/math#> .
+@prefix string: <http://www.w3.org/2000/10/swap/string#> .
+@prefix sh: <http://www.w3.org/ns/shacl#>.
+@prefix this: <http://eye-shacl#> .
+
+# EqualsConstraintComponent
+{ 
+    ?shape a this:PropertyShape ; sh:equals ?otherPredicate ; sh:path ?path .
+    ?otherPredicate log:localN3String ?otherPredicateString .
+    ("Must have same values as %s" ?otherPredicateString) string:format ?message .
+} 
+=> 
 {
-    ?U_141 a this:PropertyShape.
-    ?U_141 sh:property ?U_142.
-    ?U_141 sh:path ?U_143.
-} => {
     {
-        ?U_142 this:focusNode _:sk_144.
-    } <= {
-        ?U_141 this:focusNode _:sk_145.
-        (_:sk_145 ?U_143) this:value _:sk_144.
-    }.
-}.
-{
-    ?U_146 a this:PropertyShape.
-    ?U_146 sh:property ?U_147.
-    ?U_146 sh:path ?U_148.
-} => {
+        ?shape this:focusNode ?focusNode .
+        (?focusNode ?path) this:values ?thisValues .
+        (?focusNode ?otherPredicate) this:values ?otherValues .
+
+        (?thisValues ?otherValues) list:append ?union .
+        (?x { ?x list:in ?thisValues , ?otherValues } ?intersection) log:collectAllIn [] .
+        
+        ?union list:member ?value .
+        ?intersection list:notMember ?value .
+
+        this: this:report ?report .
+    }
+    =>
     {
-        _:sk_149 this:violates ?U_146.
-    } <= {
-        (_:sk_149 ?U_148) this:value _:sk_150.
-        _:sk_150 this:violates ?U_147.
-    }.
+        ?report sh:result [
+            a sh:ValidationResult ;
+            sh:sourceConstraintComponent sh:EqualsConstraintComponent ;
+            sh:sourceShape ?shape ;
+            sh:focusNode ?focusNode ;
+            sh:resultPath ?path ;
+            sh:value ?value ;
+            this:message ?message ;
+        ]
+    } .
+
 }.
+
+
+
+{ 
+    ?shape a this:NodeShape ; sh:equals ?otherPredicate .
+    ?otherPredicate log:localN3String ?otherPredicateString .
+    ("Must be value of %s" ?otherPredicateString) string:format ?message .
+} 
+=> 
 {
-    ?U_151 sh:qualifiedMinCount ?U_152.
-    ?U_151 sh:qualifiedValueShape ?U_153.
-    ?U_151 sh:path ?U_154.
-} => {
     {
-        ?U_151 this:focusNode ?U_390.
-        ?U_390 this:qualifiedCount (?U_151 ?U_391).
-        ?U_391 math:lessThan ?U_152.
-        ("%s values passed, expected at least %s" ?U_391 ?U_152) string:format ?U_392.
-        <http://eye-shacl#> this:report ?U_393.
-    } => {
-        ?U_393 sh:result ?U_394.
-        ?U_394 a sh:ValidationResult.
-        ?U_394 sh:sourceConstraintComponent sh:QualifiedMinCountConstraintComponent.
-        ?U_394 sh:sourceShape ?U_151.
-        ?U_394 sh:focusNode ?U_390.
-        ?U_394 sh:resultPath ?U_154.
-        ?U_394 this:message ?U_392.
-    }.
-}.
-{
-    ?U_155 sh:qualifiedMaxCount ?U_156.
-    ?U_155 sh:qualifiedValueShape ?U_157.
-    ?U_155 sh:path ?U_158.
-} => {
+        ?shape  this:focusNode ?focusNode .
+        (?focusNode ?otherPredicate) this:values ?otherValues .
+        
+        ((?focusNode) ?otherValues) list:append ?union .
+        (?x { ?x log:equalTo ?focusNode ; list:in ?otherValues } ?intersection) log:collectAllIn [] .
+        
+        ?union list:member ?value .
+        ?intersection list:notMember ?value .
+
+        this: this:report ?report .
+    }
+    =>
     {
-        ?U_155 this:focusNode ?U_395.
-        ?U_395 this:qualifiedCount (?U_155 ?U_396).
-        ?U_396 math:greaterThan ?U_156.
-        ("%s values passed, expected at most %s" ?U_396 ?U_156) string:format ?U_397.
-        <http://eye-shacl#> this:report ?U_398.
-    } => {
-        ?U_398 sh:result ?U_399.
-        ?U_399 a sh:ValidationResult.
-        ?U_399 sh:sourceConstraintComponent sh:QualifiedMaxCountConstraintComponent.
-        ?U_399 sh:sourceShape ?U_155.
-        ?U_399 sh:focusNode ?U_395.
-        ?U_399 sh:resultPath ?U_158.
-        ?U_399 this:message ?U_397.
-    }.
+        ?report sh:result [
+            a sh:ValidationResult ;
+            sh:sourceConstraintComponent sh:EqualsConstraintComponent ;
+            sh:sourceShape ?shape ;
+            sh:focusNode ?focusNode ;
+            sh:value ?value ;
+            this:message ?message ;
+        ]
+    } .
 }.
+
 {
-    ?U_159 a this:PropertyShape.
-    ?U_159 sh:qualifiedValueShape ?U_160.
-    ?U_159 sh:path ?U_161.
-    (?U_162 {
-        ?U_159 sh:qualifiedValueShapesDisjoint true.
-        ?U_163 sh:property ?U_159.
-        ?U_163 sh:property ?U_164.
-        ?U_159 log:notEqualTo ?U_164.
-        ?U_164 sh:qualifiedValueShape ?U_162.
-    } ?U_165) log:collectAllIn ?U_166.
-} => {
+    ?shape a this:PropertyShape ; sh:equals ?otherPredicate ; sh:path ?path .
+}
+=>
+{
     {
-        _:sk_167 this:qualifiedCount (?U_159 _:sk_168).
-    } <= {
-        (_:sk_167 ?U_161) this:values _:sk_169.
-        (?U_162 {
-            ?U_162 list:in _:sk_169.
-            _:sk_170 log:notIncludes {
-                ?U_162 this:violates ?U_160.
-            }.
-            ({
-                _:sk_171 list:in ?U_165.
-            } {
-                ?U_162 this:violates _:sk_171.
-            }) log:forAllIn _:sk_172.
-        } _:sk_173) log:collectAllIn _:sk_174.
-        _:sk_173 list:length _:sk_168.
-    }.
-}.
-{
-    ?U_175 sh:qualifiedMinCount ?U_176.
-    ?U_175 sh:qualifiedValueShape ?U_177.
-    ?U_175 sh:path ?U_178.
-} => {
+        ?node this:violates ?shape .
+    }
+    <=
     {
-        _:sk_179 this:violates ?U_175.
-    } <= {
-        _:sk_179 this:qualifiedCount (?U_175 _:sk_180).
-        _:sk_180 math:lessThan ?U_176.
-    }.
-}.
+        (?node ?path) this:values ?thisValues .
+        (?node ?otherPredicate) this:values ?otherValues .
+        ?thisValues list:setNotEqualTo ?otherValues .
+    } .
+} .
+
 {
-    ?U_181 sh:qualifiedMaxCount ?U_182.
-    ?U_181 sh:qualifiedValueShape ?U_183.
-    ?U_181 sh:path ?U_184.
-} => {
+    ?shape a this:NodeShape ; sh:equals ?otherPredicate .
+}
+=>
+{
     {
-        _:sk_185 this:violates ?U_181.
-    } <= {
-        _:sk_185 this:qualifiedCount (?U_181 _:sk_186).
-        _:sk_186 math:greaterThan ?U_182.
-    }.
-}.
-{
-    ?U_187 a this:PropertyShape.
-    ?U_187 sh:uniqueLang true.
-    ?U_187 sh:path ?U_188.
-} => {
+        ?node this:violates ?shape .
+    }
+    <=
     {
-        ?U_187 this:focusNode ?U_400.
-        (?U_400 ?U_188) this:hasDuplicateLanguage ?U_401.
-        ("Language \"%s\" has been used more than once" ?U_401) string:format ?U_402.
-        <http://eye-shacl#> this:report ?U_403.
-    } => {
-        ?U_403 sh:result ?U_404.
-        ?U_404 a sh:ValidationResult.
-        ?U_404 sh:sourceConstraintComponent sh:UniqueLangConstraintComponent.
-        ?U_404 sh:sourceShape ?U_187.
-        ?U_404 sh:focusNode ?U_400.
-        ?U_404 sh:resultPath ?U_188.
-        ?U_404 this:message ?U_402.
-    }.
-}.
+        (?node ?otherPredicate) this:values ?otherValues .
+        ?otherValues list:notMember ?node .
+    } .
+} .
+
+# DisjointConstraintComponent
+{ 
+    ?shape a this:PropertyShape ; sh:disjoint ?otherPredicate ; sh:path ?path .
+    ?otherPredicate log:localN3String ?otherPredicateString .
+    ("Must have different values than %s" ?otherPredicateString) string:format ?message .
+} 
+=> 
 {
-    ?U_189 a this:PropertyShape.
-    ?U_189 sh:uniqueLang true.
-    ?U_189 sh:path ?U_190.
-} => {
     {
-        _:sk_191 this:violates ?U_189.
-    } <= {
-        (_:sk_191 ?U_190) this:hasDuplicateLanguage _:sk_192.
-    }.
-}.
-{
-    ?U_193 sh:inversePath ?U_194.
-} => {
+        ?shape this:focusNode ?focusNode .
+          
+        (?focusNode ?path) this:value ?value .
+        (?focusNode ?otherPredicate) this:value ?value .
+         
+        this: this:report ?report .
+    }
+    =>
     {
-        (_:sk_195 ?U_193) this:value _:sk_196.
-    } <= {
-        (_:sk_196 ?U_194) this:value _:sk_195.
-    }.
+        ?report sh:result [
+            a sh:ValidationResult ;
+            sh:sourceConstraintComponent sh:DisjointConstraintComponent ;
+            sh:sourceShape ?shape ;
+            sh:focusNode ?focusNode ;
+            sh:value ?value ;
+            sh:resultPath ?path ;
+            this:message ?message ;
+        ]
+    } .
 }.
+
+{ 
+    ?shape a this:NodeShape ; sh:disjoint ?otherPredicate .
+    ?otherPredicate log:localN3String ?otherPredicateString .
+    ("Must not be a value of %s" ?otherPredicateString) string:format ?message .
+} 
+=> 
 {
-    ?U_197 sh:alternativePath ?U_198.
-    ?U_198 list:member ?U_199.
-} => {
     {
-        (_:sk_200 ?U_197) this:value _:sk_201.
-    } <= {
-        (_:sk_200 ?U_199) this:value _:sk_201.
-    }.
-}.
-{
-    ?U_202 sh:zeroOrMorePath ?U_203.
-} => {
+        ?shape this:focusNode ?focusNode .
+          
+        (?focusNode ?otherPredicate) this:value ?focusNode .
+         
+        this: this:report ?report .
+    }
+    =>
     {
-        (_:sk_204 ?U_202) this:value _:sk_205.
-    } <= {
-        _:sk_204 log:equalTo _:sk_205.
-    }.
+        ?report sh:result [
+            a sh:ValidationResult ;
+            sh:sourceConstraintComponent sh:DisjointConstraintComponent ;
+            sh:sourceShape ?shape ;
+            sh:focusNode ?focusNode ;
+            sh:value ?focusNode ;
+            this:message ?message ;
+        ]
+    } .
 }.
+
 {
-    ?U_206 sh:zeroOrMorePath ?U_207.
-} => {
+    ?shape a this:PropertyShape ; sh:disjoint ?otherPredicate ; sh:path ?path .
+}
+=>
+{
     {
-        (_:sk_208 ?U_206) this:value _:sk_209.
-    } <= {
-        (_:sk_208 ?U_207) this:value _:sk_210.
-        (_:sk_210 ?U_206) this:value _:sk_209.
-    }.
-}.
-{
-    ?U_211 sh:oneOrMorePath ?U_212.
-} => {
+        ?node this:violates ?shape .
+    }
+    <=
     {
-        (_:sk_213 ?U_211) this:value _:sk_214.
-    } <= {
-        (_:sk_213 ?U_212) this:value _:sk_214.
-    }.
-}.
+        (?node ?path) this:value ?value .
+        (?node ?otherPredicate) this:value ?value .
+    } .
+} .
+
 {
-    ?U_215 sh:oneOrMorePath ?U_216.
-} => {
+    ?shape a this:NodeShape ; sh:disjoint ?otherPredicate .
+}
+=>
+{
     {
-        (_:sk_217 ?U_215) this:value _:sk_218.
-    } <= {
-        (_:sk_217 ?U_216) this:value _:sk_219.
-        (_:sk_219 ?U_215) this:value _:sk_218.
-    }.
-}.
-{
-    ?U_220 sh:zeroOrOnePath ?U_221.
-} => {
+        ?node this:violates ?shape .
+    }
+    <=
     {
-        (_:sk_222 ?U_220) this:value _:sk_223.
-    } <= {
-        _:sk_222 log:equalTo _:sk_223.
-    }.
-}.
+        (?node ?otherPredicate) this:value ?node .   
+    } .
+} .
+
+# LessThanConstraintComponent
+{ 
+    ?shape a this:PropertyShape ; sh:lessThan ?otherPredicate ; sh:path ?path .
+    ?otherPredicate log:localN3String ?otherPredicateString .
+    ("Value is not less than value of %s" ?otherPredicateString) string:format ?message .
+} 
+=> 
 {
-    ?U_224 sh:zeroOrOnePath ?U_225.
-} => {
     {
-        (_:sk_226 ?U_224) this:value _:sk_227.
-    } <= {
-        (_:sk_226 ?U_225) this:value _:sk_227.
-    }.
-}.
-{
-    ?U_229 ?U_228 ?U_230.
-    ?U_228 this:constraint ?U_231.
-    ?U_232 log:notIncludes {
-        ?U_229 sh:deactivated true.
-    }.
-} => {
-    ?U_229 a this:Shape.
-}.
-{
-    ?U_233 a this:Shape.
-    ?U_234 log:notIncludes {
-        ?U_233 sh:path ?U_235.
-    }.
-} => {
-    ?U_233 a this:NodeShape.
-}.
-{
-    ?U_236 a this:Shape.
-    ?U_236 sh:path ?U_237.
-} => {
-    ?U_236 a this:PropertyShape.
-}.
-{
-    ?U_238 a this:Shape.
-    ?U_238 sh:targetClass ?U_239.
-} => {
+        ?shape this:focusNode ?focusNode .
+          
+        (?focusNode ?path) this:value ?value .
+        (?focusNode ?otherPredicate) this:value ?otherValue .
+        [] log:notIncludes { ?value this:maxExclusive ?otherValue } .
+         
+        this: this:report ?report .
+    }
+    =>
     {
-        ?U_238 this:focusNode _:sk_240.
-    } <= {
-        _:sk_240 this:class ?U_239.
-    }.
+        ?report sh:result [
+            a sh:ValidationResult ;
+            sh:sourceConstraintComponent sh:LessThanConstraintComponent ;
+            sh:sourceShape ?shape ;
+            sh:focusNode ?focusNode ;
+            sh:value ?value ;
+            sh:resultPath ?path ;
+            this:message ?message ;
+        ]
+    } .
 }.
+
+
 {
-    ?U_241 a this:Shape.
-    ?U_241 a rdfs:Class.
-} => {
+    ?shape a this:PropertyShape ; sh:lessThan ?otherPredicate ; sh:path ?path .
+}
+=>
+{
     {
-        ?U_241 this:focusNode _:sk_242.
-    } <= {
-        _:sk_242 this:class ?U_241.
-    }.
-}.
-{
-    ?U_243 a this:Shape.
-    ?U_243 sh:targetNode ?U_244.
-} => {
+        ?node this:violates ?shape .
+    }
+    <=
     {
-        ?U_243 this:focusNode ?U_244.
-    } <= {
-        <http://eye-shacl#> this:report _:sk_245.
-    }.
-}.
+        (?node ?path) this:value ?value .
+        (?node ?otherPredicate) this:value ?otherValue .
+        [] log:notIncludes { ?value this:maxExclusive ?otherValue } .
+    } .
+} .
+
+
+# LessThanOrEqualsConstraintComponent
+{ 
+    ?shape a this:PropertyShape ; sh:lessThanOrEquals ?otherPredicate ; sh:path ?path .
+     ?otherPredicate log:localN3String ?otherPredicateString .
+    ("Value is not less than or equal to value of %s" ?otherPredicateString) string:format ?message .
+} 
+=> 
 {
-    ?U_246 a this:Shape.
-    ?U_246 sh:targetObjectsOf ?U_247.
-} => {
     {
-        ?U_246 this:focusNode _:sk_248.
-    } <= {
-        <http://eye-shacl#> this:report _:sk_249.
-        _:sk_250 ?U_247 _:sk_248.
-    }.
-}.
-{
-    ?U_251 a this:Shape.
-    ?U_251 sh:targetSubjectsOf ?U_252.
-} => {
+        ?shape this:focusNode ?focusNode .
+          
+        (?focusNode ?path) this:value ?value .
+        (?focusNode ?otherPredicate) this:value ?otherValue .
+        [] log:notIncludes { ?value this:maxInclusive ?otherValue } .
+         
+        this: this:report ?report .
+    }
+    =>
     {
-        ?U_251 this:focusNode _:sk_253.
-    } <= {
-        <http://eye-shacl#> this:report _:sk_254.
-        _:sk_253 ?U_252 _:sk_255.
-    }.
+        ?report sh:result [
+            a sh:ValidationResult ;
+            sh:sourceConstraintComponent sh:LessThanOrEqualsConstraintComponent ;
+            sh:sourceShape ?shape ;
+            sh:focusNode ?focusNode ;
+            sh:value ?value ;
+            sh:resultPath ?path ;
+            this:message ?message ;
+        ]
+    } .
 }.
+
 {
-    ?U_256 this:constraint ?U_257.
-    ?U_256 this:validator ?U_258.
-    ?U_256 this:messageFormat ?U_259.
-    ?U_260 a this:NodeShape.
-    ?U_260 ?U_256 ?U_261.
-    ?U_261 log:localN3String ?U_262.
-    (?U_259 ?U_262) string:format ?U_263.
-} => {
+    ?shape a this:PropertyShape ; sh:lessThanOrEquals ?otherPredicate ; sh:path ?path .
+}
+=>
+{
     {
-        ?U_260 this:focusNode ?U_405.
-        ?U_406 log:notIncludes {
-            ?U_405 ?U_258 ?U_261.
-        }.
-        <http://eye-shacl#> this:report ?U_407.
-    } => {
-        ?U_407 sh:result ?U_408.
-        ?U_408 a sh:ValidationResult.
-        ?U_408 sh:sourceConstraintComponent ?U_257.
-        ?U_408 sh:sourceShape ?U_260.
-        ?U_408 sh:focusNode ?U_405.
-        ?U_408 sh:value ?U_405.
-        ?U_408 this:message ?U_263.
-    }.
-}.
-{
-    ?U_264 this:constraint ?U_265.
-    ?U_264 this:validator ?U_266.
-    ?U_267 a this:NodeShape.
-    ?U_267 ?U_264 ?U_268.
-} => {
+        ?node this:violates ?shape .
+    }
+    <=
     {
-        _:sk_269 this:violates ?U_267.
-    } <= {
-        _:sk_270 log:notIncludes {
-            _:sk_269 ?U_266 ?U_268.
-        }.
-    }.
-}.
+        (?node ?path) this:value ?value .
+        (?node ?otherPredicate) this:value ?otherValue .
+        [] log:notIncludes { ?value this:maxInclusive ?otherValue } .
+    } .
+} .
+
+# https://www.w3.org/TR/shacl/#core-components-shape
+
+@prefix log: <http://www.w3.org/2000/10/swap/log#> .
+@prefix string: <http://www.w3.org/2000/10/swap/string#> .
+@prefix math: <http://www.w3.org/2000/10/swap/math#> .
+@prefix list: <http://www.w3.org/2000/10/swap/list#> .
+@prefix sh: <http://www.w3.org/ns/shacl#>.
+@prefix this: <http://eye-shacl#> .
+
+
+# PropertyShapeComponent
+
+# node -> property
 {
-    ?U_271 a this:PropertyShape.
-    ?U_271 sh:path ?U_272.
-    ?U_271 ?U_273 ?U_274.
-    ?U_273 this:constraint ?U_275.
-    ?U_273 this:validator ?U_276.
-    ?U_273 this:messageFormat ?U_277.
-    ?U_274 log:localN3String ?U_278.
-    (?U_277 ?U_278) string:format ?U_279.
-} => {
+    ?shape sh:property ?propertyShape ; a this:NodeShape .
+}
+=> 
+{
+    { ?propertyShape this:focusNode ?node } <= { ?shape this:focusNode ?node }
+} .
+
+{
+    ?shape sh:property ?propertyShape ; a this:NodeShape .
+}
+=> 
+{
+    { ?node this:violates ?shape } <= { ?node this:violates ?propertyShape }
+} .
+
+# property -> property
+{
+    ?shape a this:PropertyShape ; sh:property ?propertyShape ; sh:path ?path .
+}
+=> 
+{
     {
-        ?U_271 this:focusNode ?U_409.
-        (?U_409 ?U_272) this:value ?U_410.
-        ?U_411 log:notIncludes {
-            ?U_410 ?U_276 ?U_274.
-        }.
-        <http://eye-shacl#> this:report ?U_412.
-    } => {
-        ?U_412 sh:result ?U_413.
-        ?U_413 a sh:ValidationResult.
-        ?U_413 sh:sourceConstraintComponent ?U_275.
-        ?U_413 sh:sourceShape ?U_271.
-        ?U_413 sh:focusNode ?U_409.
-        ?U_413 sh:resultPath ?U_272.
-        ?U_413 sh:value ?U_410.
-        ?U_413 this:message ?U_279.
-    }.
-}.
-{
-    ?U_280 a this:PropertyShape.
-    ?U_280 sh:path ?U_281.
-    ?U_280 ?U_282 ?U_283.
-    ?U_282 this:constraint ?U_284.
-    ?U_282 this:validator ?U_285.
-} => {
+        ?propertyShape this:focusNode ?value 
+    }
+    <= 
     {
-        _:sk_286 this:violates ?U_280.
-    } <= {
-        (_:sk_286 ?U_281) this:value _:sk_287.
-        _:sk_288 log:notIncludes {
-            _:sk_287 ?U_285 ?U_283.
-        }.
-    }.
-}.
+        ?shape this:focusNode ?node .
+        (?node ?path) this:value ?value 
+    }
+} .
+
 {
-    ?U_289 sh:message ?U_290.
-} => {
+    ?shape a this:PropertyShape ; sh:property ?propertyShape ; sh:path ?path .
+}
+=> 
+{
+    { 
+        ?node this:violates ?shape 
+    } 
+    <=
+    { 
+        (?node ?path) this:value ?value .
+        ?value this:violates ?propertyShape 
+    }
+} .
+
+# qualifiedValueShape
+ 
+
+{
+    ?shape sh:qualifiedMinCount ?minCount .
+    ?shape sh:qualifiedValueShape ?valueShape ; sh:path ?path .
+}
+=>
+{
     {
-        ?U_414 sh:sourceShape ?U_289.
-    } => {
-        ?U_414 sh:resultMessage ?U_290.
-    }.
-}.
-{
-    ?U_291 a this:Shape.
-    ?U_292 log:notIncludes {
-        ?U_291 sh:message ?U_293.
-    }.
-} => {
+        ?shape this:focusNode ?node .
+        ?node this:qualifiedCount (?shape ?length) .
+        ?length math:lessThan ?minCount .
+
+        ("%s values passed, expected at least %s" ?length ?minCount) string:format ?message .
+        this: this:report ?report .
+    }
+    =>
     {
-        ?U_415 sh:sourceShape ?U_291.
-        ?U_415 this:message ?U_416.
-    } => {
-        ?U_415 sh:resultMessage ?U_416.
-    }.
-}.
+        ?report sh:result [
+            a sh:ValidationResult ;
+            sh:sourceConstraintComponent sh:QualifiedMinCountConstraintComponent;
+            sh:sourceShape ?shape ;
+            sh:focusNode ?node ;
+            sh:resultPath ?path ;
+            this:message ?message ;
+        ] .
+    } .
+} .
+
 {
-    ?U_294 sh:severity ?U_295.
-} => {
+    ?shape sh:qualifiedMaxCount ?maxCount .
+    ?shape sh:qualifiedValueShape ?valueShape ; sh:path ?path .
+}
+=>
+{
     {
-        ?U_417 sh:sourceShape ?U_294.
-    } => {
-        ?U_417 sh:resultSeverity ?U_295.
-    }.
-}.
-{
-    ?U_296 a this:Shape.
-    ?U_297 log:notIncludes {
-        ?U_296 sh:severity ?U_298.
-    }.
-} => {
+        ?shape this:focusNode ?node .
+        ?node this:qualifiedCount (?shape ?length) .
+        ?length math:greaterThan ?maxCount .
+
+        ("%s values passed, expected at most %s" ?length ?maxCount) string:format ?message .
+        this: this:report ?report .
+    }
+    =>
     {
-        ?U_418 sh:sourceShape ?U_296.
-    } => {
-        ?U_418 sh:resultSeverity sh:Violation.
-    }.
-}.
+        ?report sh:result [
+            a sh:ValidationResult ;
+            sh:sourceConstraintComponent sh:QualifiedMaxCountConstraintComponent;
+            sh:sourceShape ?shape ;
+            sh:focusNode ?node ;
+            sh:resultPath ?path ;
+            this:message ?message ;
+        ] .
+    } .
+} .
+
+
 {
-    ?U_299 this:nodeKind sh:BlankNode.
-} <= {
-    ?U_299 log:rawType log:LabeledBlankNode.
-}.
+    ?shape a this:PropertyShape ; sh:qualifiedValueShape ?valueShape ; sh:path ?path .
+    (
+        ?x {
+            ?shape sh:qualifiedValueShapesDisjoint true .
+            ?parent sh:property ?shape, ?other .
+            ?shape log:notEqualTo ?other .
+            ?other sh:qualifiedValueShape ?x
+        } ?siblings
+    ) log:collectAllIn [] .
+}
+=>
 {
-    ?U_300 this:nodeKind sh:BlankNode.
-} <= {
-    ?U_300 log:rawType log:UnlabeledBlankNode.
-}.
+    {
+       ?node this:qualifiedCount (?shape ?length)
+    }
+    <=
+    {
+        (?node ?path) this:values ?values .
+        (?x { 
+            ?x list:in ?values . 
+            [] log:notIncludes { ?x this:violates ?valueShape } .
+            (
+                { ?sibling list:in ?siblings }
+                { ?x this:violates ?sibling }
+            ) log:forAllIn [] .
+        } ?xs) log:collectAllIn [] .
+                
+        ?xs list:length ?length .
+    } .
+} .
+
+
 {
-    ?U_301 this:nodeKind sh:BlankNode.
-} <= {
-    ?U_301 log:rawType log:SkolemIRI.
-}.
+    ?shape sh:qualifiedMinCount ?minCount .
+    ?shape sh:qualifiedValueShape ?valueShape ; sh:path ?path .
+}
+=>
 {
-    ?U_302 this:nodeKind sh:IRI.
-} <= {
-    ?U_302 log:rawType log:Other.
-    ?U_302 log:uri ?U_303.
-}.
+    {
+       ?node this:violates ?shape
+    }
+    <=
+    {
+        ?node this:qualifiedCount (?shape ?length) .
+        ?length math:lessThan ?minCount .
+    } .
+} .
+
 {
-    ?U_304 this:cbd {
-        ?U_304 ?U_305 ?U_306.
-    }.
-} <= {
-    ?U_304 ?U_305 ?U_306.
-    ?U_305 log:notEqualTo this:cbd.
-}.
+    ?shape sh:qualifiedMaxCount ?maxCount .
+    ?shape sh:qualifiedValueShape ?valueShape ; sh:path ?path .
+}
+=>
 {
-    ?U_307 this:cbd {
-        ?U_309 ?U_308 ?U_310.
-    }.
-} <= {
-    ?U_307 ?U_311 ?U_312.
-    ?U_312 this:nodeKind sh:BlankNode.
-    ?U_312 this:cbd {
-        ?U_309 ?U_308 ?U_310.
-    }.
-}.
+    {
+       ?node this:violates ?shape
+    }
+    <=
+    {
+        ?node this:qualifiedCount (?shape ?length) .
+        ?length math:greaterThan ?maxCount .
+    } .
+} .# https://www.w3.org/TR/shacl/#core-components-string
+@prefix string: <http://www.w3.org/2000/10/swap/string#> .
+@prefix log: <http://www.w3.org/2000/10/swap/log#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix this: <http://eye-shacl#> .
+
+
+# UniqueLangConstraintComponent
+{ 
+    ?shape a this:PropertyShape ; sh:uniqueLang true; sh:path ?path .
+} 
+=> 
 {
-    ?U_313 this:cbd {
-        ?U_315 ?U_314 ?U_316.
-    }.
-} <= {
-    ?U_313 ?U_317 ?U_318.
-    ?U_318 list:member ?U_315.
-    ?U_315 this:nodeKind sh:BlankNode.
-    ?U_315 ?U_314 ?U_316.
+    {
+        ?shape this:focusNode ?focusNode .
+        (?focusNode ?path) this:hasDuplicateLanguage ?lang .
+        ("Language \"%s\" has been used more than once" ?lang) string:format ?message .
+        this: this:report ?report .
+    }
+    =>
+    {
+        ?report sh:result [
+            a sh:ValidationResult ;
+            sh:sourceConstraintComponent sh:UniqueLangConstraintComponent ;
+            sh:sourceShape ?shape ;
+            sh:focusNode ?focusNode ;
+            sh:resultPath ?path ;
+            this:message ?message ;
+        ] .
+    } .
 }.
+
+{ 
+    ?shape a this:PropertyShape ; sh:uniqueLang true; sh:path ?path .
+} 
+=> 
+{
+    { ?node this:violates ?shape } <= { (?node ?path) this:hasDuplicateLanguage [] }
+}.
+
+
+@prefix log: <http://www.w3.org/2000/10/swap/log#> .
+@prefix list: <http://www.w3.org/2000/10/swap/list#> .
+@prefix sh: <http://www.w3.org/ns/shacl#>.
+@prefix this: <http://eye-shacl#> .
+
+# path
+
+{
+    ?path sh:inversePath ?inversePath .
+}
+=>
+{
+    {
+        (?node ?path) this:value ?value .
+    }
+    <=
+    {
+        (?value ?inversePath) this:value ?node .
+    } .
+} .
+
+{
+    ?path sh:alternativePath ?alternatives .
+    ?alternatives list:member ?alt .
+}
+=>
+{
+    {
+        (?node ?path) this:value ?value .
+    }
+    <=
+    {
+        (?node ?alt) this:value ?value .
+    } .
+} .
+
+{
+    ?path sh:zeroOrMorePath ?zeroOrMorePath .
+}
+=>
+{
+    {
+        (?node ?path) this:value ?value .
+    }
+    <=
+    {
+        ?node log:equalTo ?value .
+    } .
+} .
+
+{
+    ?path sh:zeroOrMorePath ?zeroOrMorePath .
+}
+=>
+{
+    {
+        (?node ?path) this:value ?value .
+    }
+    <=
+    {
+        (?node ?zeroOrMorePath) this:value ?v .
+        (?v ?path) this:value ?value .
+    } .
+} .
+
+{
+    ?path sh:oneOrMorePath ?oneOrMorePath .
+}
+=>
+{
+    {
+        (?node ?path) this:value ?value .
+    }
+    <=
+    {
+        (?node ?oneOrMorePath) this:value ?value .
+    } .
+} .
+
+{
+    ?path sh:oneOrMorePath ?oneOrMorePath .
+}
+=>
+{
+    {
+        (?node ?path) this:value ?value .
+    }
+    <=
+    {
+        (?node ?oneOrMorePath) this:value ?v .
+        (?v ?path) this:value ?value .
+    } .
+} .
+
+{
+    ?path sh:zeroOrOnePath ?zeroOrOnePath .
+}
+=>
+{
+    {
+        (?node ?path) this:value ?value .
+    }
+    <=
+    {
+        ?node log:equalTo ?value .
+    } .
+} .
+
+{
+    ?path sh:zeroOrOnePath ?zeroOrOnePath .
+}
+=>
+{
+    {
+        (?node ?path) this:value ?value .
+    }
+    <=
+    {
+        (?node ?zeroOrOnePath) this:value ?value .
+    } .
+} .
+@prefix log: <http://www.w3.org/2000/10/swap/log#> .
+@prefix sh: <http://www.w3.org/ns/shacl#>.
+@prefix this: <http://eye-shacl#> .
+
+{
+    ?shape ?param [] .
+    ?param this:constraint [] .
+    [] log:notIncludes { ?shape sh:deactivated true } .
+}
+=>
+{
+    ?shape a this:Shape .
+} .
+
+{
+    ?shape a this:Shape .
+    [] log:notIncludes { ?shape sh:path [] } .
+}
+=>
+{
+    ?shape a this:NodeShape .
+} .
+
+{
+    ?shape a this:Shape ; sh:path [] .
+}
+=>
+{
+    ?shape a this:PropertyShape .
+} .
+
+{
+    ?shape a this:Shape .
+    (?triple {?triple this:cbd ?shape } ?triples) log:collectAllIn [] .
+    ?triples log:conjunction ?graph.
+}
+=>
+{
+    ?graph this:describeShape ?shape .
+} .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix log: <http://www.w3.org/2000/10/swap/log#> .
+@prefix sh: <http://www.w3.org/ns/shacl#>.
+@prefix this: <http://eye-shacl#> .
+
+{
+    ?shape a this:Shape ; sh:targetClass ?targetClass .
+}
+=>
+{
+    { ?shape this:focusNode ?x } <= { ?x this:class ?targetClass }
+} .
+
+{
+    ?shape a this:Shape , rdfs:Class .
+}
+=>
+{
+    { ?shape this:focusNode ?x } <= { ?x this:class ?shape }
+} .
+
+{
+    ?shape a this:Shape ; sh:targetNode ?targetNode .
+}
+=>
+{
+    { ?shape this:focusNode ?targetNode } <= { this: this:report [] }
+} .
+
+
+
+{
+    ?shape a this:Shape ; sh:targetObjectsOf ?predicate .
+}
+=>
+{
+    { 
+        ?shape this:focusNode ?x 
+    } 
+    <= 
+    { 
+        # trick to avoid triggering at build time
+        this: this:report [] . 
+        [] ?predicate ?x 
+    }
+} .
+
+
+{
+    ?shape a this:Shape ; sh:targetSubjectsOf ?predicate .
+}
+=>
+{
+    {
+         ?shape this:focusNode ?x
+    } 
+    <= 
+    { 
+        # trick to avoid triggering at build time
+        this: this:report [] .
+        ?x ?predicate [] 
+    }
+} .
+
+@prefix string: <http://www.w3.org/2000/10/swap/string#> .
+@prefix list: <http://www.w3.org/2000/10/swap/list#> .
+@prefix log: <http://www.w3.org/2000/10/swap/log#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix this: <http://eye-shacl#> .
+
+sh:node this:validator this:node ; this:messageFormat "value should satisfy shape %s".
+sh:and this:validator this:and ; this:messageFormat "value should satisfy all of the following shapes: %s".
+sh:or this:validator this:or ; this:messageFormat "value should satisfy at least one of the following shapes: %s".
+sh:not this:validator this:not ; this:messageFormat "value should not satisfy the following shape: %s".
+sh:xone this:validator this:xone ; this:messageFormat "value should satisfy exactly one of the following shapes: %s".
+# sh:in this:validator list:in ; this:messageFormat "value should be one of: %s".
+sh:class this:validator this:class ; this:messageFormat "value should be instance of %s".
+sh:nodeKind this:validator this:nodeKind ; this:messageFormat "value should have node kind %s".
+sh:datatype this:validator this:datatype ; this:messageFormat "value should have datatype %s".
+sh:minExclusive this:validator this:minExclusive ; this:messageFormat "value should be greater than %s".
+sh:minInclusive this:validator this:minInclusive ; this:messageFormat "value should be greater than or equal to %s".
+sh:maxExclusive this:validator this:maxExclusive ; this:messageFormat "value should be less than %s".
+sh:maxInclusive this:validator this:maxInclusive ; this:messageFormat "value should be less than or equal to %s".
+sh:minLength this:validator this:minLength ; this:messageFormat "value should have at least %s characters".
+sh:maxLength this:validator this:maxLength ; this:messageFormat "value should have at most %s characters".
+sh:pattern this:validator this:pattern ; this:messageFormat "value should match pattern %s".
+sh:languageIn this:validator this:languageIn ; this:messageFormat "value should have one of the language tags: %s".
+
+# node shapes with validator
+{
+   ?param this:constraint ?constraint ; this:validator ?validator ; this:messageFormat ?messageFormat .
+   ?shape a this:NodeShape ; ?param ?paramValue .
+   ?paramValue log:localN3String ?paramValueString .
+   (?messageFormat ?paramValueString) string:format ?message .
+}
+=> 
+{
+   {
+       ?shape this:focusNode ?node .
+       [] log:notIncludes { ?node ?validator ?paramValue } .
+       this: this:report ?report .
+   }
+   => 
+   {
+       ?report sh:result [
+           a sh:ValidationResult ;
+           sh:sourceConstraintComponent ?constraint ;
+           sh:sourceShape ?shape ;
+           sh:focusNode ?node ;
+           sh:value ?node ;
+           this:message ?message ;
+       ] .
+   } .
+} .
+
+{
+   ?param this:constraint ?constraint ; this:validator ?validator .
+   ?shape a this:NodeShape ; ?param ?paramValue .
+}
+=> 
+{
+   {
+       ?x this:violates ?shape 
+   }
+   <= 
+   {
+       [] log:notIncludes { ?x ?validator ?paramValue }
+   }
+} .
+
+# property shapes with validator
+{
+   ?shape a this:PropertyShape ; sh:path ?path ; ?param ?paramValue .
+   ?param this:constraint ?constraint ; this:validator ?validator ; this:messageFormat ?messageFormat .
+   ?paramValue log:localN3String ?paramValueString .
+   (?messageFormat ?paramValueString) string:format ?message .
+}
+=> 
+{
+   {
+       ?shape this:focusNode ?node .
+       ( ?node ?path ) this:value ?value .
+       [] log:notIncludes { ?value ?validator ?paramValue } .
+       this: this:report ?report .
+   }
+   => 
+   {
+       ?report sh:result [
+           a sh:ValidationResult ;
+           sh:sourceConstraintComponent ?constraint ;
+           sh:sourceShape ?shape ;
+           sh:focusNode ?node ;
+           sh:resultPath ?path ;
+           sh:value ?value ;
+           this:message ?message ;
+       ] .
+   } .
+} .
+
+{
+   ?shape a this:PropertyShape ; sh:path ?path ; ?param ?paramValue .
+   ?param this:constraint ?constraint ; this:validator ?validator .
+}
+=> 
+{
+   {
+       ?x this:violates ?shape .
+   }
+   <= 
+   {
+       ( ?x ?path ) this:value ?value .
+       [] log:notIncludes { ?value ?validator ?paramValue } .
+   } .
+} .
+
+{
+   ?shape sh:message ?message .
+}
+=> 
+{
+   { ?result sh:sourceShape ?shape } => { ?result sh:resultMessage ?message }
+} .
+
+{
+   ?shape a this:Shape .
+   [] log:notIncludes { ?shape sh:message [] } .
+}
+=> 
+{
+   { ?result sh:sourceShape ?shape ; this:message ?message } => { ?result sh:resultMessage ?message }
+} .

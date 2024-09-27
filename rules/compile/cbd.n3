@@ -10,40 +10,30 @@
 
 
 {
-    ?s this:cbd { ?s ?p ?o }
+    { ?s ?p ?o } this:cbd ?s 
 }
 <=
 {
-    ?s ?p ?o . ?p log:notEqualTo this:cbd .
+    ?s ?p ?o .
+    ?p log:notEqualTo this:cbd  .
 } .
 
 {
-    ?x this:cbd { ?s ?p ?o }
+    ?triple this:cbd ?x
 }
 <=
 {
     ?x [] ?y .
     ?y this:nodeKind sh:BlankNode .
-    ?y this:cbd {?s ?p ?o}   
+    ?triple this:cbd ?y .    
 } .
 
 {
-    ?x this:cbd { ?s ?p ?o }
+    ?triple this:cbd ?x
 }
 <=
 {
     ?x [] [ list:member ?s ] .
     ?s this:nodeKind sh:BlankNode .
-    ?s ?p ?o .    
-} .
-
-
-{
-    ?shape a this:Shape .
-    (?triple {?shape this:cbd ?triple } ?triples) log:collectAllIn [] .
-    ?triples log:conjunction ?graph.
-}
-=>
-{
-    ?graph this:describeShape ?shape .
+    ?triple sh:cbd ?s .    
 } .

@@ -24,3 +24,20 @@ this: this:report [] .
  
 } .
 
+{
+    ?result sh:sourceShape ?shape .
+    ?shape sh:severity ?severity .
+}
+=> 
+{
+    ?result sh:resultSeverity ?severity
+} .
+
+{
+   ?result sh:sourceShape ?shape .
+   [] log:notIncludes { ?shape sh:severity [] } .
+}
+=> 
+{
+   ?result sh:resultSeverity sh:Violation
+} .
