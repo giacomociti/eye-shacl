@@ -1,4 +1,3 @@
-test/core
 test-expected.ttl
 test-actual.ttl
 test-actual-report.ttl
