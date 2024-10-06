@@ -1,5 +1,5 @@
 # Use the EYE reasoner Docker image as the base image
-FROM eyereasoner/eye:10.23.2 
+FROM eyereasoner/eye:latest
 
 # Set the working directory inside the container
 WORKDIR /workspace
