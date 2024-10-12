@@ -33,9 +33,19 @@
 }
 <=
 {
+    ?x list:member ?s .
+    ?s this:nodeKind sh:BlankNode .
+    ?triple this:cbd ?s .    
+} .
+
+{
+    ?triple this:cbd ?x
+}
+<=
+{
     ?x [] [ list:member ?s ] .
     ?s this:nodeKind sh:BlankNode .
-    ?triple sh:cbd ?s .    
+    ?triple this:cbd ?s .    
 } .
 @prefix sh: <http://www.w3.org/ns/shacl#>.
 @prefix this: <http://eye-shacl#> .

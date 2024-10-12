@@ -1,0 +1,75 @@
+@prefix log: <http://www.w3.org/2000/10/swap/log#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix sh: <http://www.w3.org/ns/shacl#>.
+@prefix list: <http://www.w3.org/2000/10/swap/list#> .
+
+# Rules used as a query to extract the relevant information to compare SHACL validation reports.
+
+# SHACL Test Suite definition of full compliance:
+# https://w3c.github.io/data-shapes/data-shapes-test-suite/#Validate
+
+{ 
+    ?report a sh:ValidationReport ; ?p ?o .
+    ?p list:in (sh:conforms sh:result)
+} 
+=> 
+{ 
+    ?report a sh:ValidationReport ; ?p ?o .
+} .
+
+{ 
+    ?report sh:result ?result . 
+    ?result ?p ?o .
+    ?p list:in (
+        rdf:type
+        sh:focusNode
+        # sh:resultPath
+        sh:resultSeverity
+        sh:sourceConstraint
+        sh:sourceConstraintComponent
+        sh:sourceShape
+        sh:value
+        #sh:resultMessage
+    )
+} 
+=> 
+{ 
+    ?result ?p ?o 
+} .
+
+
+# for paths, keep only triples without skolem nodes
+# (relying on path-split.n3 to clone triples with skolem nodes)
+
+{
+    ?s ?p ?o .
+    ?p list:in (
+        sh:resultPath
+        sh:inversePath
+        # sh:alternativePath
+        sh:zeroOrMorePath
+        sh:zeroOrOnePath
+        sh:oneOrMorePath
+    ) .
+    ?s log:rawType [ log:notEqualTo log:SkolemIRI ] .
+    ?o log:rawType [ log:notEqualTo log:SkolemIRI, rdf:List ] . # lists are handled in the next rule
+}
+=>
+{ 
+    ?s ?p ?o
+} .
+
+{
+    ?s ?p ?o .
+    ?p list:in (
+        sh:resultPath
+        sh:alternativePath
+    ) .
+    ?s log:rawType [ log:notEqualTo log:SkolemIRI ] .
+    ?o log:rawType rdf:List .
+    [] log:notIncludes { ?o list:member [ log:rawType log:SkolemIRI ] }.
+}
+=>
+{ 
+    ?s ?p ?o
+} .

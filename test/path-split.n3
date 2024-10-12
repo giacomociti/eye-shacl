@@ -1,0 +1,118 @@
+@prefix list: <http://www.w3.org/2000/10/swap/list#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix log: <http://www.w3.org/2000/10/swap/log#> .
+@prefix : <#> .
+
+# https://w3c.github.io/data-shapes/data-shapes-test-suite/#dfn-full-compliance
+# the blank node structures representing property paths via sh:resultPath must not be shared among multiple results
+
+# create a fresh blank node for each skolem node
+{
+    ?s ?p ?skolem .
+    ?skolem log:rawType log:SkolemIRI .
+    ?p list:in (
+        sh:resultPath
+        sh:inversePath
+        sh:alternativePath
+        sh:zeroOrMorePath
+        sh:zeroOrOnePath
+        sh:oneOrMorePath
+    )
+}
+=>
+{
+    ?skolem :becomes [ :branch ?s ] .
+} .
+
+# create a fresh blank node for each skolem node in a list
+{
+    ?s ?p ?list .
+    ?p list:in (sh:resultPath sh:alternativePath) .
+    ?list list:iterate (?index ?skolem) .
+    ?skolem log:rawType log:SkolemIRI .
+}
+=>
+{
+    ?skolem :becomes [ :branch ?s; :list ?list; :index ?index ]
+} .
+
+# clone lists having skolem nodes, replacing each with the corresponding blank node
+{
+    ?s ?p ?list .
+    ?p list:in (sh:resultPath sh:alternativePath) .
+    ?list list:member [ log:rawType log:SkolemIRI ] .
+     (?x {  
+        ?list list:iterate (?index []) .
+        (?s ?list ?index) :nonSkolemMember ?x .
+    } ?newList) log:collectAllIn [] .
+}
+=>
+{
+    ?list :becomes ?newList .
+    ?newList :branch ?s .
+} .
+
+# clone sh:resultPath triples, replacing skolem nodes
+{
+    ?result sh:resultPath ?path .
+    ?path :becomes ?new .
+    ?new :branch ?result .
+}
+=>
+{
+    ?result sh:resultPath ?new .
+} .
+
+# clone triples with skolem subjects, replacing them
+{
+    ?skolem :becomes ?blank ; ?p ?o.
+    ?p log:notEqualTo :becomes .
+    (?skolem ?o) :nonSkolem ?nonSkolem .
+}
+=>
+{
+    ?blank ?p ?nonSkolem
+} .
+
+
+## maps a node to a skolem-free version:
+
+# using a :becomes triple, if present 
+{
+    (?branch ?x) :nonSkolem ?y .
+}
+<=
+{
+    ?x :becomes ?y .
+    ?y :branch ?branch .
+} .
+# otherwise mapping to itself
+{
+    (?branch ?x) :nonSkolem ?x . 
+}
+<=
+{
+    [] log:notIncludes { ?x :becomes [ ] }
+} .
+
+
+## maps a list member to a non-skolem node:
+
+# use the blank replacement for skolem nodes
+{
+    (?branch ?list ?index) :nonSkolemMember ?blank .
+}
+<=
+{
+    (?list ?index) list:memberAt [ :becomes ?blank ] .
+    ?blank :branch ?branch ; :list ?list ; :index ?index .
+} .
+# otherwise keep the list member
+{
+    (?branch ?list ?index) :nonSkolemMember ?x .
+}
+<=
+{
+    (?list ?index) list:memberAt ?x .
+    ?x log:rawType [ log:notEqualTo log:SkolemIRI ] .
+} .

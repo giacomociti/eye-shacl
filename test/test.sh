@@ -82,11 +82,11 @@ files=(
     "core/node/xone-001.ttl"
     "core/node/xone-duplicate.ttl"
 
-    # "core/path/path-alternative-001.ttl" ## not a real issue (path in report)
-    # "core/path/path-complex-001.ttl" ## not a real issue (path in report)
-    # "core/path/path-complex-002.ttl" ## not a real issue (path in report)
-    # "core/path/path-inverse-001.ttl" ## not a real issue (path in report)
-    # "core/path/path-oneOrMore-001.ttl" ## not a real issue (path in report)
+    "core/path/path-alternative-001.ttl"
+    "core/path/path-complex-001.ttl"
+    "core/path/path-complex-002.ttl"
+    "core/path/path-inverse-001.ttl"
+    "core/path/path-oneOrMore-001.ttl"
     "core/path/path-sequence-001.ttl"
     "core/path/path-sequence-002.ttl"
     "core/path/path-sequence-duplicate-001.ttl" 
