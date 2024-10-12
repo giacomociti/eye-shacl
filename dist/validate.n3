@@ -268,3 +268,14 @@ this: this:report [] .
     ([] ?lang) log:langlit ?x .
     ([] ?lang) log:langlit ?y .
 } .
+
+{
+    (?thisValues ?otherValues) this:notInBoth ?value .
+}
+<=
+{
+    (?thisValues ?otherValues) list:append ?union .
+    (?x { ?x list:in ?thisValues , ?otherValues } ?intersection) log:collectAllIn [] .    
+    ?union list:member ?value .
+    ?intersection list:notMember ?value .
+} .

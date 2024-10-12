@@ -19,13 +19,7 @@
         ?shape this:focusNode ?focusNode .
         (?focusNode ?path) this:values ?thisValues .
         (?focusNode ?otherPredicate) this:values ?otherValues .
-
-        (?thisValues ?otherValues) list:append ?union .
-        (?x { ?x list:in ?thisValues , ?otherValues } ?intersection) log:collectAllIn [] .
-        
-        ?union list:member ?value .
-        ?intersection list:notMember ?value .
-
+        (?thisValues ?otherValues) this:notInBoth ?value .
         this: this:report ?report .
     }
     =>
@@ -43,8 +37,6 @@
 
 }.
 
-
-
 { 
     ?shape a this:NodeShape ; sh:equals ?otherPredicate .
     ?otherPredicate log:localN3String ?otherPredicateString .
@@ -55,13 +47,7 @@
     {
         ?shape  this:focusNode ?focusNode .
         (?focusNode ?otherPredicate) this:values ?otherValues .
-        
-        ((?focusNode) ?otherValues) list:append ?union .
-        (?x { ?x log:equalTo ?focusNode ; list:in ?otherValues } ?intersection) log:collectAllIn [] .
-        
-        ?union list:member ?value .
-        ?intersection list:notMember ?value .
-
+        ((?focusNode) ?otherValues) this:notInBoth ?value .
         this: this:report ?report .
     }
     =>
@@ -118,10 +104,8 @@
 {
     {
         ?shape this:focusNode ?focusNode .
-          
         (?focusNode ?path) this:value ?value .
         (?focusNode ?otherPredicate) this:value ?value .
-         
         this: this:report ?report .
     }
     =>
@@ -147,9 +131,7 @@
 {
     {
         ?shape this:focusNode ?focusNode .
-          
         (?focusNode ?otherPredicate) this:value ?focusNode .
-         
         this: this:report ?report .
     }
     =>
@@ -204,11 +186,9 @@
 {
     {
         ?shape this:focusNode ?focusNode .
-          
         (?focusNode ?path) this:value ?value .
         (?focusNode ?otherPredicate) this:value ?otherValue .
         [] log:notIncludes { ?value this:maxExclusive ?otherValue } .
-         
         this: this:report ?report .
     }
     =>
@@ -253,11 +233,9 @@
 {
     {
         ?shape this:focusNode ?focusNode .
-          
         (?focusNode ?path) this:value ?value .
         (?focusNode ?otherPredicate) this:value ?otherValue .
         [] log:notIncludes { ?value this:maxInclusive ?otherValue } .
-         
         this: this:report ?report .
     }
     =>
