@@ -1,6 +1,9 @@
 name: CI
 
-on: [push, pull_request]
+on:
+  push:
+  schedule:
+    - cron: "45 22 * * 5"   # At 10:45 PM, only on Fridays
 
 jobs:
   build-and-test:
