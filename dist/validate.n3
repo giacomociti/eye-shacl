@@ -1,12 +1,4 @@
-@prefix log: <http://www.w3.org/2000/10/swap/log#> .
-@prefix sh: <http://www.w3.org/ns/shacl#> .
-
-{
-    [] sh:entailment <http://www.w3.org/ns/entailment/RDFS> .
-    <lib-rdfs.n3> log:semantics ?semantics
-}
-=>
-?semantics .@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix log: <http://www.w3.org/2000/10/swap/log#> .
 @prefix list: <http://www.w3.org/2000/10/swap/list#> .
 @prefix sh: <http://www.w3.org/ns/shacl#>.

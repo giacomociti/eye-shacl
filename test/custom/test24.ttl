@@ -1,0 +1,54 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix ex: <http:/example.org/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix sht: <http://www.w3.org/ns/shacl-test#> .
+
+# shapes
+ex:shape1
+  sh:targetNode ex:valid, ex:invalid ;
+  sh:property [
+    sh:path ex:knows ;
+    sh:minCount 1 ;
+    sh:maxCount 1 ;
+  ].
+
+[] sh:entailment <http://www.w3.org/ns/owl-profile/E> . 
+
+# data
+ex:invalid ex:knows ex:valid .
+ex:foo ex:knows ex:invalid .
+
+ex:knows a owl:SymmetricProperty .
+
+
+<>
+  rdf:type mf:Manifest ;
+  mf:entries (
+      <test24>
+    ) ;
+.
+<test24>
+  rdf:type sht:Validate ;
+  rdfs:label "Test 24" ;
+  mf:action [
+      sht:dataGraph <> ;
+      sht:shapesGraph <> ;
+    ] ;
+  mf:result [
+      rdf:type sh:ValidationReport ;
+      sh:conforms "false"^^xsd:boolean ;
+      sh:result [
+          a sh:ValidationResult ;
+          sh:resultSeverity sh:Violation ;
+          sh:sourceConstraintComponent sh:MaxCountConstraintComponent ;
+          sh:focusNode ex:invalid ;
+          sh:resultPath ex:knows ;
+          sh:sourceShape [] ;
+        ] ;
+    ] ;
+  mf:status sht:approved ;
+.

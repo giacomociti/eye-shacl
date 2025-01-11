@@ -1,0 +1,20 @@
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix log: <http://www.w3.org/2000/10/swap/log#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix this: <http://eye-shacl#> .
+
+<http://www.w3.org/ns/entailment/RDFS> rdfs:seeAlso <https://raw.githubusercontent.com/eyereasoner/lib-rdfs/main/lib-rdfs.n3> .
+<http://www.w3.org/ns/owl-profile/E> rdfs:seeAlso <https://raw.githubusercontent.com/eyereasoner/lib-owl/refs/heads/main/lib-owl-e.n3> .
+<http://www.w3.org/ns/owl-profile/P> rdfs:seeAlso <https://raw.githubusercontent.com/eyereasoner/lib-owl/refs/heads/main/lib-owl-p.n3> .
+<http://www.w3.org/ns/owl-profile/RL> rdfs:seeAlso <https://raw.githubusercontent.com/eyereasoner/lib-owl/refs/heads/main/lib-owl-rl.n3> .
+
+{
+    [] sh:entailment [ rdfs:seeAlso ?n3 ]
+}
+=>
+{
+    { this: this:report [] . ?n3 log:semantics ?semantics } => ?semantics
+} .
+
+
+
