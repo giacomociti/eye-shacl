@@ -40,6 +40,8 @@ files=(
     "custom/test23.ttl"
     "custom/test24.ttl"
     "custom/test25.ttl"
+    "custom/test26.ttl"
+    "custom/test27.ttl"
 
     # https://github.com/w3c/data-shapes/tree/gh-pages/data-shapes-test-suite/tests/core
 
