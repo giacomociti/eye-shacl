@@ -194,6 +194,16 @@ WHERE {
 
 { ?shape this:target ?target } <= { [] a this:Shape ; sh:property ?shape ; this:target ?target } .
 
+# { ?shape this:valueConstraint (?constraint ?component) } <= { 
+#     ?shape sh:property ?property .
+#     ?property this:valueConstraint (?constraint ?component)
+# } .
+
+{ (?shape ?innerShape) this:innerConstraint ?constraint } <= { 
+    ?innerShape sh:property ?property .
+    (?shape ?property) this:innerConstraint ?constraint .
+} .
+
 # generate SPARQL paths from SHACL paths
 
 { ?path this:path ?sparql } <= { 
@@ -290,6 +300,22 @@ WHERE {
     """ ?target ?pathSPARQL ?shape ?severity ?pathFormat) string:format ?constraint .
 } .
 
+{ (?shape ?innerShape) this:innerConstraint ?constraint } <= { 
+    ?shape this:target ?target .
+    ?innerShape sh:minCount ?minCount .
+    ?minCount math:greaterThan 0 .
+    ?innerShape sh:path ?path .
+    ?path this:path ?pathSPARQL .
+    ("""
+    {
+        SELECT ?focusNode ?value WHERE {
+            %s
+            FILTER NOT EXISTS { ?focusNode %s ?value }
+        }
+    }
+    """ ?target ?pathSPARQL) string:format ?constraint
+} .
+
 { ?shape this:constraintClause ?constraint } <= { 
     ?shape sh:minCount ?minCount .
     ?shape this:target ?target .
@@ -344,26 +370,30 @@ WHERE {
 
 # MinInclusiveConstraintComponent
 { ?shape this:valueConstraint (?constraint sh:MinInclusiveConstraintComponent) } <= { 
-    ?shape sh:minInclusive [ this:formatNode ?minInclusive ] .
-    ("FILTER (!(?value >= %s))" ?minInclusive) string:format ?constraint .
+    ?shape sh:minInclusive [ this:formatNode ?minInclusive ; this:datatype ?datatype ] .
+    ?datatype this:compatibleTypes ?types .
+    ("FILTER (!isLiteral(?value) || !(datatype(?value) IN (%s)) || ?value < %s)" ?types ?minInclusive) string:format ?constraint .
 } .
 
 # MaxInclusiveConstraintComponent
 { ?shape this:valueConstraint (?constraint sh:MaxInclusiveConstraintComponent) } <= { 
-    ?shape sh:maxInclusive [ this:formatNode ?maxInclusive ] .
-    ("FILTER (!(?value <= %s))" ?maxInclusive) string:format ?constraint .
+    ?shape sh:maxInclusive [ this:formatNode ?maxInclusive ; this:datatype ?datatype ] .
+    ?datatype this:compatibleTypes ?types .
+    ("FILTER (!isLiteral(?value) || !(datatype(?value) IN (%s)) || ?value > %s)" ?types ?maxInclusive) string:format ?constraint .
 } .
 
 # MinExclusiveConstraintComponent
 { ?shape this:valueConstraint (?constraint sh:MinExclusiveConstraintComponent) } <= { 
-    ?shape sh:minExclusive [ this:formatNode ?minExclusive ] .
-    ("FILTER (!(?value > %s))" ?minExclusive) string:format ?constraint .
+    ?shape sh:minExclusive [ this:formatNode ?minExclusive ; this:datatype ?datatype ] .
+    ?datatype this:compatibleTypes ?types .
+    ("FILTER (!isLiteral(?value) || !(datatype(?value) IN (%s)) || ?value <= %s)" ?types ?minExclusive) string:format ?constraint .
 } .
 
 # MaxExclusiveConstraintComponent
 { ?shape this:valueConstraint (?constraint sh:MaxExclusiveConstraintComponent) } <= { 
-    ?shape sh:maxExclusive [ this:formatNode ?maxExclusive ] .
-    ("FILTER (!(?value >= %s))" ?maxExclusive) string:format ?constraint .
+    ?shape sh:maxExclusive [ this:formatNode ?maxExclusive ; this:datatype ?datatype ] .
+    ?datatype this:compatibleTypes ?types .
+    ("FILTER (!isLiteral(?value) || !(datatype(?value) IN (%s)) || ?value >= %s)" ?types ?maxExclusive) string:format ?constraint .
 } .
 
 # MinLengthConstraintComponent
@@ -596,16 +626,89 @@ WHERE {
 # OrConstraintComponent
 { ?shape this:valueConstraint (?constraint sh:OrConstraintComponent) } <= { 
     ?shape sh:or ?alternatives .
-    (?alternatives this:valueConstraint) list:map ?innerConstraints .
-    (?innerConstraints list:first) list:map ?innerConstraintsFirst .
-    (?innerConstraintsFirst "\n\t\t") string:join ?constraint
+    (?shape ?alternatives) this:pairs ?pairs .
+    (?pairs this:innerConstraints) list:map ?innerConstraints .
+    (?innerConstraints "\n\t\t") string:join ?joined .
+    ("""
+    {   SELECT DISTINCT ?focusNode ?value WHERE 
+        {
+            %s
+        }
+    }
+    """ ?joined) string:format ?constraint
+} .
+
+# NotConstraintComponent
+{ ?shape this:valueConstraint (?constraint sh:NotConstraintComponent) } <= { 
+    ?shape sh:not ?innerShape .
+    (?shape ?innerShape) this:innerConstraints ?innerConstraints .
+    ?shape this:target ?target .
+
+    
+    ("""
+        {
+            %s
+        }
+        MINUS
+        {
+            %s
+        }
+    """ ?target ?innerConstraints) string:format ?constraint
+} .
+
+# AndConstraintComponent
+{ ?shape this:valueConstraint (?constraint sh:AndConstraintComponent) } <= { 
+    ?shape sh:and ?shapes .
+    (?shape ?shapes) this:pairs ?pairs .
+    (?pairs this:innerConstraints) list:map ?innerConstraints .
+    (?innerConstraints "UNION") string:join ?constraint .
+} .
+
+# XoneConstraintComponent
+{ ?shape this:valueConstraint (?constraint sh:XoneConstraintComponent) } <= { 
+    ?shape sh:xone ?alternatives .
+    (?shape ?alternatives) this:pairs ?pairs .
+    (?pairs this:innerConstraints) list:map ?innerConstraints .
+    #TODO inject in each inner shape: BIND(ex:innerShape AS ?shape)
+    (?innerConstraints "UNION") string:join ?joined .
+    ("""
+    {   SELECT DISTINCT ?focusNode ?value WHERE 
+        {
+            %s
+        }
+        GROUP BY ?focusNode ?value
+        HAVING (COUNT(?shape) != 1)
+    }
+    """ ?joined) string:format ?constraint
+} .
+
+
+{ (?shape ?innerShape) this:innerConstraints ?constraints } <= { 
+    (((?shape ?innerShape)) this:innerConstraint) list:map ?innerConstraints .
+    (?innerConstraints "UNION") string:join ?constraints .
+    ?joined this:wrapInBraces ?constraints .
+} .
+
+{ (?shape ?innerShape) this:innerConstraint ?constraint } <= { 
+    ?shape this:target ?target .
+    ?innerShape this:valueConstraint (?innerConstraint []) .
+    (?shape ?innerShape) this:refersPath ?refersPath .
+    ("""
+    {
+        SELECT ?focusNode ?value ?shape WHERE {
+            %s
+            ?focusNode %s ?value .
+            %s
+        }
+    }
+    """ ?target ?refersPath ?innerConstraint) string:format ?constraint
 } .
 
 # TODO more constraint components
 
+
+
 # ClosedConstraintComponent
-
-
 
 { ?shape this:allowedProperties ?allowed } <= {
     ?shape a this:Shape ; sh:closed true .
@@ -693,8 +796,10 @@ WHERE {
 
 { ?value this:datatype ?datatype } <= { ([] ?datatype) log:dtlit ?value }.
 
-# { ?value this:compatibleTypes "xsd:dateTime" } <= { ?value this:datatype xsd:dateTime } .
-{ ?value this:compatibleTypes "xsd:integer, xsd:decimal, xsd:double, xsd:float" } <= { ?value this:datatype [ list:in (xsd:integer xsd:decimal xsd:double xsd:float) ]  } .
+xsd:string this:compatibleTypes "xsd:string" .
+xsd:dateTime this:compatibleTypes "xsd:dateTime" .
+{ ?dataype this:compatibleTypes "xsd:integer, xsd:decimal, xsd:double, xsd:float" } <= { ?datatype list:in (xsd:integer xsd:decimal xsd:double xsd:float) } .
+
 
 # generate SPARQL representations of RDF nodes
 { ?node this:formatNode ?format } <= { 
@@ -726,4 +831,54 @@ WHERE {
 { ?value this:formatNode ?format } <= { 
     ( ?text ?lang) log:langlit ?value .
     ('"%s"@%s' ?text ?lang) string:format ?format 
+} .
+
+# refers relation
+{ ?shape1 this:refers ?shape2 } <= {
+    ?shape1 ?p ?shape2 .
+    ?p list:in (sh:property sh:node sh:not sh:qualifiedValueShape) .
+} .
+
+{ ?shape1 this:refers ?shape2 } <= {
+    ?shape1 ?p ?list .
+    ?list list:member ?shape2 .
+    ?p list:in (sh:or sh:xone sh:and) .
+} .
+
+{ (?rootShape ?shape) this:refersList (?rootShape ?shape) } <= { ?rootShape this:refers ?shape } .
+
+{ (?rootShape ?shape) this:refersList ?list } <= { 
+    ?x this:refers ?shape .
+    (?rootShape ?x) this:refersList ?prefix .
+    (?prefix (?shape)) list:append ?list .
+} .
+
+{ (?rootShape ?shape) this:refersPath ?path  } <= { 
+    (?rootShape ?shape) this:refersList ?list .
+    (?list sh:path) list:map ?paths .
+    ?paths this:joinPaths ?path .
+} .
+
+{ ?item this:wrapInParents ?wrapped } <= { ("(" ?item ")") string:concatenation ?wrapped } .
+{ ?item this:wrapInBraces ?wrapped } <= { ("{" ?item "}") string:concatenation ?wrapped } .
+
+
+{ (?path) this:joinPaths ?path } <= { 
+    # (?path) string:concatenation ?result
+}.
+
+{ ?paths this:joinPaths ?result } <= { 
+    ?paths list:length [ math:greaterThan 1 ] .
+    (?paths this:wrapInParents) list:map ?wrapped .
+    (?wrapped " / ") string:join ?result .
+} .
+
+
+# pairs each element in ?list with the same element ?e
+{ (?e ()) this:pairs () } <= {  } .
+
+{ (?e ?list) this:pairs ?pairs } <= { 
+    ?list list:firstRest (?first ?rest) .
+    (?e ?rest) this:pairs ?restPairs .
+    ?pairs list:firstRest ((?e ?first) ?restPairs) .
 } .
