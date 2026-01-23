@@ -17,35 +17,35 @@ echo ""
 files=(
     "custom/test01.ttl"
     "custom/test02.ttl"
-    "custom/test03.ttl"
-    "custom/test04.ttl"
-    "custom/test05.ttl"
-    "custom/test06.ttl"
+    "custom/test03.ttl" #
+    "custom/test04.ttl" #
+    "custom/test05.ttl" #
+    "custom/test06.ttl" #
     "custom/test07.ttl"
     "custom/test08.ttl"
     "custom/test09.ttl"
     "custom/test10.ttl"
     "custom/test11.ttl"
-    "custom/test12.ttl"
-    "custom/test13.ttl"
-    "custom/test14.ttl"
-    "custom/test15.ttl"
-    "custom/test16.ttl"
-    "custom/test17.ttl"
-    "custom/test18.ttl"
-    "custom/test19.ttl"
-    "custom/test20.ttl"
-    "custom/test21.ttl"
-    "custom/test22.ttl"
-    "custom/test23.ttl"
-    "custom/test24.ttl"
-    "custom/test25.ttl"
-    "custom/test26.ttl"
-    "custom/test27.ttl"
+    "custom/test12.ttl" #
+    "custom/test13.ttl" #
+    "custom/test14.ttl" #
+    "custom/test15.ttl" #
+    "custom/test16.ttl" #
+    "custom/test17.ttl" #
+    "custom/test18.ttl" 
+    "custom/test19.ttl" #
+    "custom/test20.ttl" #
+    "custom/test21.ttl" #
+    "custom/test22.ttl" #
+    "custom/test23.ttl" #
+    "custom/test24.ttl" #
+    "custom/test25.ttl" #
+    "custom/test26.ttl" #
+    "custom/test27.ttl" #
 
     # https://github.com/w3c/data-shapes/tree/gh-pages/data-shapes-test-suite/tests/core
 
-    "core/complex/personexample.ttl"
+    "core/complex/personexample.ttl" #
     "core/complex/shacl-shacl.ttl"
 
     "core/misc/deactivated-001.ttl"
@@ -55,7 +55,7 @@ files=(
     "core/misc/severity-002.ttl"
 
     "core/node/and-001.ttl"
-    "core/node/and-002.ttl"
+    "core/node/and-002.ttl" 
     "core/node/class-001.ttl"
     "core/node/class-002.ttl"
     "core/node/closed-001.ttl"
@@ -67,42 +67,42 @@ files=(
     "core/node/hasValue-001.ttl"
     "core/node/in-001.ttl"
     "core/node/languageIn-001.ttl"
-    "core/node/maxExclusive-001.ttl"
-    "core/node/maxInclusive-001.ttl"
+    "core/node/maxExclusive-001.ttl" # fails but seems ok (decimal comparison)
+    "core/node/maxInclusive-001.ttl" # fails but seems ok
     "core/node/maxLength-001.ttl"
-    "core/node/minExclusive-001.ttl"
-    "core/node/minInclusive-001.ttl"
-    "core/node/minInclusive-002.ttl"
+    "core/node/minExclusive-001.ttl" # fails but seems ok
+    "core/node/minInclusive-001.ttl" 
+    "core/node/minInclusive-002.ttl" # differs
     # "core/node/minInclusive-003.ttl" # date offset
     "core/node/minLength-001.ttl"
-    "core/node/node-001.ttl" 
+    "core/node/node-001.ttl" #
     "core/node/nodeKind-001.ttl"
     "core/node/not-001.ttl"
     "core/node/not-002.ttl"
     "core/node/or-001.ttl"
     "core/node/pattern-001.ttl"
-    "core/node/pattern-002.ttl" # sh:flags ignored
+    "core/node/pattern-002.ttl"
     "core/node/qualified-001.ttl"
-    "core/node/xone-001.ttl"
-    "core/node/xone-duplicate.ttl"
+    "core/node/xone-001.ttl" #
+    "core/node/xone-duplicate.ttl" #
 
-    "core/path/path-alternative-001.ttl"
-    "core/path/path-complex-001.ttl"
-    "core/path/path-complex-002.ttl"
-    "core/path/path-inverse-001.ttl"
-    "core/path/path-oneOrMore-001.ttl"
-    "core/path/path-sequence-001.ttl"
-    "core/path/path-sequence-002.ttl"
-    "core/path/path-sequence-duplicate-001.ttl" 
+    "core/path/path-alternative-001.ttl" # missing result path
+    "core/path/path-complex-001.ttl" # missing result path
+    "core/path/path-complex-002.ttl" # missing result path
+    "core/path/path-inverse-001.ttl" # missing result path
+    "core/path/path-oneOrMore-001.ttl" # missing result path
+    "core/path/path-sequence-001.ttl" # missing result path
+    "core/path/path-sequence-002.ttl" # missing result path
+    "core/path/path-sequence-duplicate-001.ttl" #
     # "core/path/path-strange-001.ttl" # shoud be skipped (https://github.com/w3c/issues/124)
     # "core/path/path-strange-002.ttl" # shoud be skipped (https://github.com/w3c/issues/124)
     "core/path/path-unused-001.ttl"
-    "core/path/path-zeroOrMore-001.ttl"
-    "core/path/path-zeroOrOne-001.ttl"
+    "core/path/path-zeroOrMore-001.ttl" # missing result path
+    "core/path/path-zeroOrOne-001.ttl" # missing result path
 
-    "core/property/and-001.ttl"
+    "core/property/and-001.ttl" #
     "core/property/class-001.ttl"
-    "core/property/datatype-001.ttl"
+    "core/property/datatype-001.ttl" # seems ok
     "core/property/datatype-002.ttl"
     "core/property/datatype-003.ttl"
     # "core/property/datatype-ill-formed.ttl" # parsing issue
@@ -112,7 +112,7 @@ files=(
     "core/property/in-001.ttl"
     "core/property/languageIn-001.ttl"
     "core/property/lessThan-001.ttl" 
-    "core/property/lessThan-002.ttl" # expected duplicates
+    "core/property/lessThan-002.ttl" 
     "core/property/lessThanOrEquals-001.ttl"
     "core/property/maxCount-001.ttl"
     "core/property/maxCount-002.ttl"
@@ -124,20 +124,20 @@ files=(
     "core/property/minExclusive-001.ttl"
     "core/property/minExclusive-002.ttl"
     "core/property/minLength-001.ttl"
-    "core/property/node-001.ttl" 
-    "core/property/node-002.ttl"
+    "core/property/node-001.ttl" #
+    "core/property/node-002.ttl" #
     # "core/property/nodeKind-001.ttl" # check takes forever
     "core/property/not-001.ttl"
     "core/property/or-001.ttl"
     # "core/property/or-datatypes-001.ttl" # parsing error
     "core/property/pattern-001.ttl"
-    "core/property/pattern-002.ttl" # sh:flags ignored
+    "core/property/pattern-002.ttl"
     # "core/property/property-001.ttl" # expected duplicate
-    "core/property/qualifiedMinCountDisjoint-001.ttl"
-    "core/property/qualifiedValueShape-001.ttl"
-    "core/property/qualifiedValueShapesDisjoint-001.ttl"
+    "core/property/qualifiedMinCountDisjoint-001.ttl" #
+    "core/property/qualifiedValueShape-001.ttl" #
+    "core/property/qualifiedValueShapesDisjoint-001.ttl" #
     "core/property/uniqueLang-001.ttl"
-    "core/property/uniqueLang-002.ttl"
+    "core/property/uniqueLang-002.ttl" # weird requirement for boolean value
 
     "core/targets/multipleTargets-001.ttl"
     "core/targets/targetClass-001.ttl"
@@ -145,7 +145,7 @@ files=(
     "core/targets/targetNode-001.ttl"
     "core/targets/targetObjectsOf-001.ttl"
     "core/targets/targetSubjectsOf-001.ttl"
-    "core/targets/targetSubjectsOf-002.ttl"
+    "core/targets/targetSubjectsOf-002.ttl" # duplicate result
 
     # "core/validation-reports/shared.ttl" # expected duplicate
 )

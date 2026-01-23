@@ -308,7 +308,7 @@ WHERE {
     ?path this:path ?pathSPARQL .
     ("""
     {
-        SELECT ?focusNode ?value WHERE {
+        SELECT ?focusNode WHERE {
             %s
             FILTER NOT EXISTS { ?focusNode %s ?value }
         }
@@ -366,6 +366,26 @@ WHERE {
         BIND(%s AS ?resultPath)   
     }
     """ ?target ?pathSPARQL ?maxCount ?shape ?severity ?pathFormat) string:format ?constraint .
+} .
+
+{ (?shape ?innerShape) this:innerConstraint ?constraint } <= { 
+    ?shape this:target ?target .
+    ?innerShape sh:maxCount ?maxCount .
+    ?innerShape sh:path ?path .
+    ?path this:path ?pathSPARQL .
+    ("""
+    {
+        SELECT ?focusNode WHERE {
+            %s
+            {
+                SELECT ?focusNode
+                WHERE { ?focusNode %s ?value } 
+                GROUP BY ?focusNode
+                HAVING (COUNT(?value) > %s)
+            }
+        }
+    }
+    """ ?target ?pathSPARQL ?maxCount) string:format ?constraint
 } .
 
 # MinInclusiveConstraintComponent
@@ -682,6 +702,12 @@ WHERE {
     """ ?joined) string:format ?constraint
 } .
 
+# NodeConstraintComponent
+{ ?shape this:valueConstraint (?constraint sh:NodeConstraintComponent) } <= { 
+    ?shape sh:node ?innerShape .
+    (?shape ?innerShape) this:innerConstraints ?constraint .
+} .
+
 
 { (?shape ?innerShape) this:innerConstraints ?constraints } <= { 
     (((?shape ?innerShape)) this:innerConstraint) list:map ?innerConstraints .
@@ -798,7 +824,11 @@ WHERE {
 
 xsd:string this:compatibleTypes "xsd:string" .
 xsd:dateTime this:compatibleTypes "xsd:dateTime" .
-{ ?dataype this:compatibleTypes "xsd:integer, xsd:decimal, xsd:double, xsd:float" } <= { ?datatype list:in (xsd:integer xsd:decimal xsd:double xsd:float) } .
+xsd:integer this:compatibleTypes "xsd:integer, xsd:decimal, xsd:double, xsd:float" .
+xsd:decimal this:compatibleTypes "xsd:integer, xsd:decimal, xsd:double, xsd:float" .
+xsd:double this:compatibleTypes "xsd:integer, xsd:decimal, xsd:double, xsd:float" .
+xsd:float this:compatibleTypes "xsd:integer, xsd:decimal, xsd:double, xsd:float" .
+#{ ?dataype this:compatibleTypes "xsd:integer, xsd:decimal, xsd:double, xsd:float" } <= { ?datatype list:in (xsd:integer xsd:decimal xsd:double xsd:float) } .
 
 
 # generate SPARQL representations of RDF nodes
