@@ -123,7 +123,7 @@ sh:languageIn this:validator this:languageIn ; this:messageFormat "value should 
 } .
 
 {
-   ?shape a this:Shape .
+   ?shape this:shapeLevel this:topLevelShape .
    [] log:notIncludes { ?shape sh:message [] } .
 }
 => 

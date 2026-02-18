@@ -4,17 +4,7 @@
 @prefix this: <http://eye-shacl#> .
 
 {
-    ?shape ?param [] .
-    ?param this:constraint [] .
-    [] log:notIncludes { ?shape sh:deactivated true } .
-}
-=>
-{
-    ?shape a this:Shape .
-} .
-
-{
-    ?shape a this:Shape .
+    ?shape this:shapeLevel [] .
     [] log:notIncludes { ?shape sh:path [] } .
 }
 =>
@@ -23,7 +13,7 @@
 } .
 
 {
-    ?shape a this:Shape ; sh:path [] .
+    ?shape this:shapeLevel [] ; sh:path [] .
 }
 =>
 {

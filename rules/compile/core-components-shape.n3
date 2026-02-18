@@ -30,6 +30,7 @@
 
 {
     ?shape sh:property ?propertyShape ; a this:NodeShape .
+    ?shape this:shapeLevel this:innerShape .
 }
 => 
 {
@@ -54,6 +55,7 @@
 
 {
     ?shape a this:PropertyShape ; sh:property ?propertyShape ; sh:path ?path .
+    ?shape this:shapeLevel this:innerShape .
 }
 => 
 {
@@ -73,6 +75,7 @@
 {
     ?shape sh:qualifiedMinCount ?minCount .
     ?shape sh:qualifiedValueShape ?valueShape ; sh:path ?path .
+    ?shape this:shapeLevel this:topLevelShape .
 }
 =>
 {
@@ -100,6 +103,7 @@
 {
     ?shape sh:qualifiedMaxCount ?maxCount .
     ?shape sh:qualifiedValueShape ?valueShape ; sh:path ?path .
+    ?shape this:shapeLevel this:topLevelShape .
 }
 =>
 {
@@ -161,6 +165,7 @@
 {
     ?shape sh:qualifiedMinCount ?minCount .
     ?shape sh:qualifiedValueShape ?valueShape ; sh:path ?path .
+    ?shape this:shapeLevel this:innerShape .
 }
 =>
 {
@@ -177,6 +182,7 @@
 {
     ?shape sh:qualifiedMaxCount ?maxCount .
     ?shape sh:qualifiedValueShape ?valueShape ; sh:path ?path .
+    ?shape this:shapeLevel this:innerShape .
 }
 =>
 {
