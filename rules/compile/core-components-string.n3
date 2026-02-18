@@ -8,6 +8,7 @@
 # UniqueLangConstraintComponent
 { 
     ?shape a this:PropertyShape ; sh:uniqueLang true; sh:path ?path .
+    ?shape this:shapeLevel this:topLevelShape .
 } 
 => 
 {
@@ -32,6 +33,7 @@
 
 { 
     ?shape a this:PropertyShape ; sh:uniqueLang true; sh:path ?path .
+    ?shape this:shapeLevel this:innerShape .
 } 
 => 
 {

@@ -5,36 +5,46 @@
 @prefix this: <http://eye-shacl#> .
 
 {
-    ?shape a this:Shape ; sh:targetClass ?targetClass .
+    ?shape sh:targetClass ?targetClass .
+    [] log:notIncludes { ?shape sh:deactivated true } 
 }
 =>
 {
+    ?shape this:shapeLevel this:topLevelShape .
     { ?shape this:focusNode ?x } <= { ?x this:class ?targetClass }
 } .
 
 {
-    ?shape a this:Shape , rdfs:Class .
+    ?shape a sh:NodeShape , rdfs:Class .
+    [] log:notIncludes { ?shape sh:deactivated true } 
 }
 =>
 {
+    ?shape this:shapeLevel this:topLevelShape .
     { ?shape this:focusNode ?x } <= { ?x this:class ?shape }
 } .
 
 {
-    ?shape a this:Shape ; sh:targetNode ?targetNode .
+    ?shape sh:targetNode ?targetNode .
+    [] log:notIncludes { ?shape sh:deactivated true } 
 }
 =>
 {
-    { ?shape this:focusNode ?targetNode } <= { this: this:report [] }
+    ?shape this:shapeLevel this:topLevelShape .   
+    { ?shape this:focusNode ?targetNode } <= { 
+        # trick to avoid triggering at build time
+        this: this:report [] 
+    }
 } .
 
-
-
 {
-    ?shape a this:Shape ; sh:targetObjectsOf ?predicate .
+    ?shape sh:targetObjectsOf ?predicate .
+    [] log:notIncludes { ?shape sh:deactivated true } 
 }
 =>
 {
+    ?shape this:shapeLevel this:topLevelShape .
+
     { 
         ?shape this:focusNode ?x 
     } 
@@ -48,10 +58,13 @@
 
 
 {
-    ?shape a this:Shape ; sh:targetSubjectsOf ?predicate .
+    ?shape sh:targetSubjectsOf ?predicate .
+    [] log:notIncludes { ?shape sh:deactivated true } 
 }
 =>
 {
+    ?shape this:shapeLevel this:topLevelShape .
+
     {
          ?shape this:focusNode ?x
     } 

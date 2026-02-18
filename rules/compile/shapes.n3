@@ -1,19 +1,10 @@
+@prefix list: <http://www.w3.org/2000/10/swap/list#> .
 @prefix log: <http://www.w3.org/2000/10/swap/log#> .
 @prefix sh: <http://www.w3.org/ns/shacl#>.
 @prefix this: <http://eye-shacl#> .
 
 {
-    ?shape ?param [] .
-    ?param this:constraint [] .
-    [] log:notIncludes { ?shape sh:deactivated true } .
-}
-=>
-{
-    ?shape a this:Shape .
-} .
-
-{
-    ?shape a this:Shape .
+    ?shape this:shapeLevel [] .
     [] log:notIncludes { ?shape sh:path [] } .
 }
 =>
@@ -22,15 +13,36 @@
 } .
 
 {
-    ?shape a this:Shape ; sh:path [] .
+    ?shape this:shapeLevel [] ; sh:path [] .
 }
 =>
 {
     ?shape a this:PropertyShape .
 } .
 
+# see https://www.w3.org/TR/shacl/#shapes-recursion
+{ 
+    ?shape1 [ list:in (sh:property sh:node sh:not sh:qualifiedValueShape) ] ?shape2 .
+} 
+=> 
+{ 
+    ?shape1 this:refers ?shape2.
+} .
+
+{ 
+    ?shape1 [ list:in ( sh:or sh:and sh:xone) ] ?list .
+    ?list list:member ?shape2 .
+} 
+=> 
+{ 
+    ?shape1 this:refers ?shape2 .
+} .
+
+{ [] this:refers ?shape } => { ?shape this:shapeLevel this:innerShape } .
+
+
 {
-    ?shape a this:Shape .
+    ?shape this:shapeLevel this:topLevelShape .
     (?triple {?triple this:cbd ?shape } ?triples) log:collectAllIn [] .
     ?triples log:conjunction ?graph.
 }

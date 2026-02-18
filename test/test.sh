@@ -15,6 +15,7 @@ echo ""
 
 
 files=(
+    "custom/test00.ttl"
     "custom/test01.ttl"
     "custom/test02.ttl"
     "custom/test03.ttl"
@@ -42,6 +43,11 @@ files=(
     "custom/test25.ttl"
     "custom/test26.ttl"
     "custom/test27.ttl"
+    "custom/test28.ttl"
+    "custom/test29.ttl"
+    "custom/test30.ttl"
+    "custom/test31.ttl"
+    "custom/test32.ttl"
 
     # https://github.com/w3c/data-shapes/tree/gh-pages/data-shapes-test-suite/tests/core
 
@@ -58,6 +64,7 @@ files=(
     "core/node/and-002.ttl"
     "core/node/class-001.ttl"
     "core/node/class-002.ttl"
+    "core/node/class-003.ttl"
     "core/node/closed-001.ttl"
     "core/node/closed-002.ttl"
     # "core/node/datatype-001.ttl" # parsing error

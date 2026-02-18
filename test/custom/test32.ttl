@@ -1,3 +1,6 @@
+@prefix shex: <http://www.w3.org/ns/shex#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix ex: <http://example.org/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
@@ -7,33 +10,24 @@
 @prefix sht: <http://www.w3.org/ns/shacl-test#> .
 
 # shapes
-ex:shape1
-  sh:targetNode ex:valid, ex:invalid ;
-  sh:property [
-    sh:path ex:knows ;
-    sh:minCount 1 ;
-    sh:maxCount 1 ;
-  ].
-
-[] sh:entailment <http://www.w3.org/ns/entailment/RDFS> . 
-
+ex:shape
+  sh:targetNode ex:valid , ex:invalid;
+  sh:node [ sh:equals ex:knows ]
+.
 
 # data
-ex:valid ex:loves "a" .
-ex:invalid ex:knows "a" ; ex:loves "b".
-
-ex:loves rdfs:subPropertyOf ex:knows .
-
+ex:valid ex:knows ex:valid .
 
 <>
   rdf:type mf:Manifest ;
   mf:entries (
-      <test23>
+      <test32>
     ) ;
 .
-<test23>
+<test32>
   rdf:type sht:Validate ;
-  rdfs:label "Test 23" ;
+  rdfs:label "Test 32" ;
+  rdfs:comment "EqualsConstraintComponent on a node shape inside a node shape";
   mf:action [
       sht:dataGraph <> ;
       sht:shapesGraph <> ;
@@ -42,13 +36,13 @@ ex:loves rdfs:subPropertyOf ex:knows .
       rdf:type sh:ValidationReport ;
       sh:conforms "false"^^xsd:boolean ;
       sh:result [
-          a sh:ValidationResult ;
-          sh:resultSeverity sh:Violation ;
-          sh:sourceConstraintComponent sh:MaxCountConstraintComponent ;
-          sh:focusNode ex:invalid ;
-          sh:resultPath ex:knows ;
-          sh:sourceShape [] ;
-        ] ;
+        a sh:ValidationResult ;
+        sh:resultSeverity sh:Violation ;
+        sh:sourceConstraintComponent sh:NodeConstraintComponent ;
+        sh:sourceShape <http://example.org/shape> ;
+        sh:focusNode <http://example.org/invalid> ;
+        sh:value <http://example.org/invalid> ;
+      ] ;
     ] ;
   mf:status sht:approved ;
 .
