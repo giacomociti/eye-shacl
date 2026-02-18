@@ -26,7 +26,7 @@
 } 
 => 
 { 
-    ?shape2 this:shapeLevel this:innerShape .
+    ?shape1 this:refers ?shape2.
 } .
 
 { 
@@ -35,8 +35,10 @@
 } 
 => 
 { 
-    ?shape2 this:shapeLevel this:innerShape .
+    ?shape1 this:refers ?shape2 .
 } .
+
+{ [] this:refers ?shape } => { ?shape this:shapeLevel this:innerShape } .
 
 
 {

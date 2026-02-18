@@ -102,6 +102,7 @@ sh:in this:constraint sh:InConstraintComponent .
 # MinCountConstraintComponent
 {
     ?shape a this:PropertyShape ; sh:minCount ?minCount ; sh:path ?path .
+    ?shape this:shapeLevel this:topLevelShape .
 }
 =>
 {
@@ -128,6 +129,7 @@ sh:in this:constraint sh:InConstraintComponent .
 
 {
     ?shape a this:PropertyShape ; sh:minCount ?minCount ; sh:path ?path .
+    ?shape this:shapeLevel this:innerShape .
 }
 =>
 {
@@ -146,6 +148,7 @@ sh:in this:constraint sh:InConstraintComponent .
 # MaxCountConstraintComponent
 {
     ?shape a this:PropertyShape ; sh:maxCount ?maxCount ; sh:path ?path .
+    ?shape this:shapeLevel this:topLevelShape .
 }
 =>
 {
@@ -172,6 +175,7 @@ sh:in this:constraint sh:InConstraintComponent .
 
 {
     ?shape a this:PropertyShape ; sh:maxCount ?maxCount ; sh:path ?path .
+    ?shape this:shapeLevel this:innerShape .
 }
 =>
 {
@@ -202,7 +206,7 @@ sh:in this:constraint sh:InConstraintComponent .
 }
 <=
 {
-    ?shape a this:Shape ; sh:closed true .
+    ?shape sh:closed true .
     (?x { ?shape sh:property [ sh:path ?x ] . ?x this:nodeKind sh:IRI } ?existing) log:collectAllIn [] .
     (?x { ?shape sh:ignoredProperties [ list:member ?x ]} ?ignored) log:collectAllIn [] .
     (?existing ?ignored) list:append ?allowed .
@@ -211,6 +215,7 @@ sh:in this:constraint sh:InConstraintComponent .
 
 {
     ?shape this:allowedProperties ?allowed .
+    ?shape this:shapeLevel this:topLevelShape .
     ?allowed log:localN3String ?allowedString .
     ("allowed properties are only: %s" ?allowedString) string:format ?message .
 }
@@ -238,6 +243,7 @@ sh:in this:constraint sh:InConstraintComponent .
 
 {
     ?shape this:allowedProperties ?allowed .
+    ?shape this:shapeLevel this:innerShape .
 }
 =>
 {
@@ -255,6 +261,7 @@ sh:in this:constraint sh:InConstraintComponent .
 # HasValueConstraintComponent
 {
     ?shape a this:PropertyShape ; sh:hasValue ?hasValue ; sh:path ?path .
+    ?shape this:shapeLevel this:topLevelShape .
     ("missing expected value: %s" ?hasValue) string:format ?message .
 } 
 =>
@@ -279,7 +286,8 @@ sh:in this:constraint sh:InConstraintComponent .
 }.
 
 {
-   ?shape a this:PropertyShape ; sh:hasValue ?hasValue ; sh:path ?path .
+    ?shape a this:PropertyShape ; sh:hasValue ?hasValue ; sh:path ?path .
+    ?shape this:shapeLevel this:innerShape .
 } 
 =>
 {
@@ -295,6 +303,7 @@ sh:in this:constraint sh:InConstraintComponent .
 
 {
     ?shape a this:NodeShape ; sh:hasValue ?hasValue .
+    ?shape this:shapeLevel this:topLevelShape .
     ("missing expected value: %s" ?hasValue) string:format ?message .
 } 
 =>
@@ -318,7 +327,8 @@ sh:in this:constraint sh:InConstraintComponent .
 
 {
     ?shape a this:NodeShape ; sh:hasValue ?hasValue .
-    [] log:notIncludes { ?shape sh:deactivated true } .
+    ?shape this:shapeLevel this:innerShape .
+    [] log:notIncludes { ?shape sh:deactivated true } . # ??
 } 
 =>
 {
@@ -334,6 +344,7 @@ sh:in this:constraint sh:InConstraintComponent .
 # InConstraintComponent
 {
     ?shape a this:PropertyShape ; sh:in ?in ; sh:path ?path .
+    ?shape this:shapeLevel this:topLevelShape .
 } 
 =>
 {
@@ -362,6 +373,7 @@ sh:in this:constraint sh:InConstraintComponent .
 
 {
    ?shape a this:PropertyShape ; sh:in ?in ; sh:path ?path .
+   ?shape this:shapeLevel this:innerShape .
 } 
 =>
 {
@@ -377,6 +389,7 @@ sh:in this:constraint sh:InConstraintComponent .
 
 {
     ?shape a this:NodeShape ; sh:in ?in .
+    ?shape this:shapeLevel this:topLevelShape .
 } 
 =>
 {
@@ -399,7 +412,8 @@ sh:in this:constraint sh:InConstraintComponent .
 }.
 
 {
-   ?shape a this:NodeShape ; sh:in ?in .
+    ?shape a this:NodeShape ; sh:in ?in .
+    ?shape this:shapeLevel this:innerShape .
 } 
 =>
 {
@@ -422,6 +436,7 @@ sh:in this:constraint sh:InConstraintComponent .
 # EqualsConstraintComponent
 { 
     ?shape a this:PropertyShape ; sh:equals ?otherPredicate ; sh:path ?path .
+    ?shape this:shapeLevel this:topLevelShape .
     ?otherPredicate log:localN3String ?otherPredicateString .
     ("Must have same values as %s" ?otherPredicateString) string:format ?message .
 } 
@@ -451,6 +466,7 @@ sh:in this:constraint sh:InConstraintComponent .
 
 { 
     ?shape a this:NodeShape ; sh:equals ?otherPredicate .
+    ?shape this:shapeLevel this:topLevelShape .
     ?otherPredicate log:localN3String ?otherPredicateString .
     ("Must be value of %s" ?otherPredicateString) string:format ?message .
 } 
@@ -477,6 +493,7 @@ sh:in this:constraint sh:InConstraintComponent .
 
 {
     ?shape a this:PropertyShape ; sh:equals ?otherPredicate ; sh:path ?path .
+    ?shape this:shapeLevel this:innerShape .
 }
 =>
 {
@@ -493,6 +510,7 @@ sh:in this:constraint sh:InConstraintComponent .
 
 {
     ?shape a this:NodeShape ; sh:equals ?otherPredicate .
+    ?shape this:shapeLevel this:innerShape .
 }
 =>
 {
@@ -509,6 +527,7 @@ sh:in this:constraint sh:InConstraintComponent .
 # DisjointConstraintComponent
 { 
     ?shape a this:PropertyShape ; sh:disjoint ?otherPredicate ; sh:path ?path .
+    ?shape this:shapeLevel this:topLevelShape .
     ?otherPredicate log:localN3String ?otherPredicateString .
     ("Must have different values than %s" ?otherPredicateString) string:format ?message .
 } 
@@ -536,6 +555,7 @@ sh:in this:constraint sh:InConstraintComponent .
 
 { 
     ?shape a this:NodeShape ; sh:disjoint ?otherPredicate .
+    ?shape this:shapeLevel this:topLevelShape .
     ?otherPredicate log:localN3String ?otherPredicateString .
     ("Must not be a value of %s" ?otherPredicateString) string:format ?message .
 } 
@@ -561,6 +581,7 @@ sh:in this:constraint sh:InConstraintComponent .
 
 {
     ?shape a this:PropertyShape ; sh:disjoint ?otherPredicate ; sh:path ?path .
+    ?shape this:shapeLevel this:innerShape .
 }
 =>
 {
@@ -576,6 +597,7 @@ sh:in this:constraint sh:InConstraintComponent .
 
 {
     ?shape a this:NodeShape ; sh:disjoint ?otherPredicate .
+    ?shape this:shapeLevel this:innerShape .
 }
 =>
 {
@@ -591,6 +613,7 @@ sh:in this:constraint sh:InConstraintComponent .
 # LessThanConstraintComponent
 { 
     ?shape a this:PropertyShape ; sh:lessThan ?otherPredicate ; sh:path ?path .
+    ?shape this:shapeLevel this:topLevelShape .
     ?otherPredicate log:localN3String ?otherPredicateString .
     ("Value is not less than value of %s" ?otherPredicateString) string:format ?message .
 } 
@@ -620,6 +643,7 @@ sh:in this:constraint sh:InConstraintComponent .
 
 {
     ?shape a this:PropertyShape ; sh:lessThan ?otherPredicate ; sh:path ?path .
+    ?shape this:shapeLevel this:innerShape .
 }
 =>
 {
@@ -638,7 +662,8 @@ sh:in this:constraint sh:InConstraintComponent .
 # LessThanOrEqualsConstraintComponent
 { 
     ?shape a this:PropertyShape ; sh:lessThanOrEquals ?otherPredicate ; sh:path ?path .
-     ?otherPredicate log:localN3String ?otherPredicateString .
+    ?shape this:shapeLevel this:topLevelShape .
+    ?otherPredicate log:localN3String ?otherPredicateString .
     ("Value is not less than or equal to value of %s" ?otherPredicateString) string:format ?message .
 } 
 => 
@@ -666,6 +691,7 @@ sh:in this:constraint sh:InConstraintComponent .
 
 {
     ?shape a this:PropertyShape ; sh:lessThanOrEquals ?otherPredicate ; sh:path ?path .
+    ?shape this:shapeLevel this:innerShape .
 }
 =>
 {
@@ -711,6 +737,7 @@ sh:in this:constraint sh:InConstraintComponent .
 
 {
     ?shape sh:property ?propertyShape ; a this:NodeShape .
+    ?shape this:shapeLevel this:innerShape .
 }
 => 
 {
@@ -735,6 +762,7 @@ sh:in this:constraint sh:InConstraintComponent .
 
 {
     ?shape a this:PropertyShape ; sh:property ?propertyShape ; sh:path ?path .
+    ?shape this:shapeLevel this:innerShape .
 }
 => 
 {
@@ -754,6 +782,7 @@ sh:in this:constraint sh:InConstraintComponent .
 {
     ?shape sh:qualifiedMinCount ?minCount .
     ?shape sh:qualifiedValueShape ?valueShape ; sh:path ?path .
+    ?shape this:shapeLevel this:topLevelShape .
 }
 =>
 {
@@ -781,6 +810,7 @@ sh:in this:constraint sh:InConstraintComponent .
 {
     ?shape sh:qualifiedMaxCount ?maxCount .
     ?shape sh:qualifiedValueShape ?valueShape ; sh:path ?path .
+    ?shape this:shapeLevel this:topLevelShape .
 }
 =>
 {
@@ -842,6 +872,7 @@ sh:in this:constraint sh:InConstraintComponent .
 {
     ?shape sh:qualifiedMinCount ?minCount .
     ?shape sh:qualifiedValueShape ?valueShape ; sh:path ?path .
+    ?shape this:shapeLevel this:innerShape .
 }
 =>
 {
@@ -858,6 +889,7 @@ sh:in this:constraint sh:InConstraintComponent .
 {
     ?shape sh:qualifiedMaxCount ?maxCount .
     ?shape sh:qualifiedValueShape ?valueShape ; sh:path ?path .
+    ?shape this:shapeLevel this:innerShape .
 }
 =>
 {
@@ -879,6 +911,7 @@ sh:in this:constraint sh:InConstraintComponent .
 # UniqueLangConstraintComponent
 { 
     ?shape a this:PropertyShape ; sh:uniqueLang true; sh:path ?path .
+    ?shape this:shapeLevel this:topLevelShape .
 } 
 => 
 {
@@ -903,6 +936,7 @@ sh:in this:constraint sh:InConstraintComponent .
 
 { 
     ?shape a this:PropertyShape ; sh:uniqueLang true; sh:path ?path .
+    ?shape this:shapeLevel this:innerShape .
 } 
 => 
 {
@@ -1057,17 +1091,7 @@ sh:in this:constraint sh:InConstraintComponent .
 @prefix this: <http://eye-shacl#> .
 
 {
-    ?shape ?param [] .
-    ?param this:constraint [] .
-    [] log:notIncludes { ?shape sh:deactivated true } .
-}
-=>
-{
-    ?shape a this:Shape .
-} .
-
-{
-    ?shape a this:Shape .
+    ?shape this:shapeLevel [] .
     [] log:notIncludes { ?shape sh:path [] } .
 }
 =>
@@ -1076,7 +1100,7 @@ sh:in this:constraint sh:InConstraintComponent .
 } .
 
 {
-    ?shape a this:Shape ; sh:path [] .
+    ?shape this:shapeLevel [] ; sh:path [] .
 }
 =>
 {
@@ -1089,7 +1113,7 @@ sh:in this:constraint sh:InConstraintComponent .
 } 
 => 
 { 
-    ?shape2 this:shapeLevel this:innerShape .
+    ?shape1 this:refers ?shape2.
 } .
 
 { 
@@ -1098,8 +1122,10 @@ sh:in this:constraint sh:InConstraintComponent .
 } 
 => 
 { 
-    ?shape2 this:shapeLevel this:innerShape .
+    ?shape1 this:refers ?shape2 .
 } .
+
+{ [] this:refers ?shape } => { ?shape this:shapeLevel this:innerShape } .
 
 
 {
@@ -1313,7 +1339,7 @@ sh:languageIn this:validator this:languageIn ; this:messageFormat "value should 
 } .
 
 {
-   ?shape a this:Shape .
+   ?shape this:shapeLevel this:topLevelShape .
    [] log:notIncludes { ?shape sh:message [] } .
 }
 => 
