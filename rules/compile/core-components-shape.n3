@@ -11,6 +11,14 @@
 
 # PropertyShapeComponent
 
+{ 
+    ?shape sh:property ?propertyShape ; this:shapeLevel this:topLevelShape
+}
+=> 
+{ 
+    ?propertyShape this:shapeLevel this:topLevelShape . 
+} .
+
 # node -> property
 {
     ?shape sh:property ?propertyShape ; a this:NodeShape .

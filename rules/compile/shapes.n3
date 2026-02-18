@@ -30,7 +30,7 @@
 } .
 
 {
-    ?shape a this:Shape .
+    ?shape this:shapeLevel this:topLevelShape .
     (?triple {?triple this:cbd ?shape } ?triples) log:collectAllIn [] .
     ?triples log:conjunction ?graph.
 }

@@ -692,6 +692,14 @@ sh:in this:constraint sh:InConstraintComponent .
 
 # PropertyShapeComponent
 
+{ 
+    ?shape sh:property ?propertyShape ; this:shapeLevel this:topLevelShape
+}
+=> 
+{ 
+    ?propertyShape this:shapeLevel this:topLevelShape . 
+} .
+
 # node -> property
 {
     ?shape sh:property ?propertyShape ; a this:NodeShape .
@@ -1075,7 +1083,7 @@ sh:in this:constraint sh:InConstraintComponent .
 } .
 
 {
-    ?shape a this:Shape .
+    ?shape this:shapeLevel this:topLevelShape .
     (?triple {?triple this:cbd ?shape } ?triples) log:collectAllIn [] .
     ?triples log:conjunction ?graph.
 }
@@ -1089,36 +1097,46 @@ sh:in this:constraint sh:InConstraintComponent .
 @prefix this: <http://eye-shacl#> .
 
 {
-    ?shape a this:Shape ; sh:targetClass ?targetClass .
+    ?shape sh:targetClass ?targetClass .
+    [] log:notIncludes { ?shape sh:deactivated true } 
 }
 =>
 {
+    ?shape this:shapeLevel this:topLevelShape .
     { ?shape this:focusNode ?x } <= { ?x this:class ?targetClass }
 } .
 
 {
-    ?shape a this:Shape , rdfs:Class .
+    ?shape a sh:NodeShape , rdfs:Class .
+    [] log:notIncludes { ?shape sh:deactivated true } 
 }
 =>
 {
+    ?shape this:shapeLevel this:topLevelShape .
     { ?shape this:focusNode ?x } <= { ?x this:class ?shape }
 } .
 
 {
-    ?shape a this:Shape ; sh:targetNode ?targetNode .
+    ?shape sh:targetNode ?targetNode .
+    [] log:notIncludes { ?shape sh:deactivated true } 
 }
 =>
 {
-    { ?shape this:focusNode ?targetNode } <= { this: this:report [] }
+    ?shape this:shapeLevel this:topLevelShape .   
+    { ?shape this:focusNode ?targetNode } <= { 
+        # trick to avoid triggering at build time
+        this: this:report [] 
+    }
 } .
 
-
-
 {
-    ?shape a this:Shape ; sh:targetObjectsOf ?predicate .
+    ?shape sh:targetObjectsOf ?predicate .
+    [] log:notIncludes { ?shape sh:deactivated true } 
 }
 =>
 {
+    ?shape this:shapeLevel this:topLevelShape .
+
     { 
         ?shape this:focusNode ?x 
     } 
@@ -1132,10 +1150,13 @@ sh:in this:constraint sh:InConstraintComponent .
 
 
 {
-    ?shape a this:Shape ; sh:targetSubjectsOf ?predicate .
+    ?shape sh:targetSubjectsOf ?predicate .
+    [] log:notIncludes { ?shape sh:deactivated true } 
 }
 =>
 {
+    ?shape this:shapeLevel this:topLevelShape .
+
     {
          ?shape this:focusNode ?x
     } 
@@ -1174,8 +1195,9 @@ sh:languageIn this:validator this:languageIn ; this:messageFormat "value should 
 
 # node shapes with validator
 {
-   ?param this:constraint ?constraint ; this:validator ?validator ; this:messageFormat ?messageFormat .
+   ?shape this:shapeLevel this:topLevelShape .
    ?shape a this:NodeShape ; ?param ?paramValue .
+   ?param this:constraint ?constraint ; this:validator ?validator ; this:messageFormat ?messageFormat .
    ?paramValue log:localN3String ?paramValueString .
    (?messageFormat ?paramValueString) string:format ?message .
 }
@@ -1216,6 +1238,7 @@ sh:languageIn this:validator this:languageIn ; this:messageFormat "value should 
 
 # property shapes with validator
 {
+   ?shape this:shapeLevel this:topLevelShape .
    ?shape a this:PropertyShape ; sh:path ?path ; ?param ?paramValue .
    ?param this:constraint ?constraint ; this:validator ?validator ; this:messageFormat ?messageFormat .
    ?paramValue log:localN3String ?paramValueString .
