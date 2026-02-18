@@ -1,3 +1,4 @@
+@prefix list: <http://www.w3.org/2000/10/swap/list#> .
 @prefix log: <http://www.w3.org/2000/10/swap/log#> .
 @prefix sh: <http://www.w3.org/ns/shacl#>.
 @prefix this: <http://eye-shacl#> .
@@ -28,6 +29,25 @@
 {
     ?shape a this:PropertyShape .
 } .
+
+# see https://www.w3.org/TR/shacl/#shapes-recursion
+{ 
+    ?shape1 [ list:in (sh:property sh:node sh:not sh:qualifiedValueShape) ] ?shape2 .
+} 
+=> 
+{ 
+    ?shape2 this:shapeLevel this:innerShape .
+} .
+
+{ 
+    ?shape1 [ list:in ( sh:or sh:and sh:xone) ] ?list .
+    ?list list:member ?shape2 .
+} 
+=> 
+{ 
+    ?shape2 this:shapeLevel this:innerShape .
+} .
+
 
 {
     ?shape this:shapeLevel this:topLevelShape .

@@ -52,6 +52,7 @@ sh:languageIn this:validator this:languageIn ; this:messageFormat "value should 
 } .
 
 {
+   ?shape this:shapeLevel this:innerShape .
    ?param this:constraint ?constraint ; this:validator ?validator .
    ?shape a this:NodeShape ; ?param ?paramValue .
 }
@@ -97,6 +98,7 @@ sh:languageIn this:validator this:languageIn ; this:messageFormat "value should 
 } .
 
 {
+   ?shape this:shapeLevel this:innerShape .
    ?shape a this:PropertyShape ; sh:path ?path ; ?param ?paramValue .
    ?param this:constraint ?constraint ; this:validator ?validator .
 }
