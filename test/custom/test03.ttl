@@ -20,7 +20,7 @@ ex:nameShape sh:datatype xsd:string .
 # data 
 
 ex:foo a ex:Class ;
-    ex:name "foo" , 5 .
+    ex:name "foo" , "aa"@it .
 
 <>
   rdf:type mf:Manifest ;
@@ -44,7 +44,7 @@ ex:foo a ex:Class ;
         sh:sourceConstraintComponent sh:NodeConstraintComponent ;
         sh:sourceShape [] ;
         sh:focusNode ex:foo ;
-        sh:value 5 ;
+        sh:value "aa"@it ;
         sh:resultPath ex:name ;
         # sh:detail [
         #     a sh:ValidationResult ;

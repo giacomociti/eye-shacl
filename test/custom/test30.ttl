@@ -1,0 +1,59 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix ex: <http://example.org/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix sht: <http://www.w3.org/ns/shacl-test#> .
+
+# shapes
+
+
+ex:shape
+  sh:targetClass ex:City ;
+  sh:node ex:cityShape
+.
+
+ex:cityShape
+  sh:property [
+    sh:path ex:name ;
+    sh:uniqueLang true ;
+  ] .
+
+
+# data
+
+ex:valid1 a ex:City ; ex:name "Paris"@en , "Paris"@fr .
+ex:valid2 a ex:City .
+ex:invalid a ex:City ; ex:name "Paris"@en, "paris"@en .
+
+
+<>
+  rdf:type mf:Manifest ;
+  mf:entries (
+      <test30>
+    ) ;
+.
+<test30>
+  rdf:type sht:Validate ;
+  rdfs:label "Test 30" ;
+  rdfs:comment "UniqueLangConstraintComponent inside a node shape";
+  mf:action [
+      sht:dataGraph <> ;
+      sht:shapesGraph <> ;
+    ] ;
+  mf:result [
+      rdf:type sh:ValidationReport ;
+      sh:conforms "false"^^xsd:boolean ;
+      sh:result [
+        a sh:ValidationResult ;
+        sh:resultSeverity sh:Violation ;
+        sh:sourceConstraintComponent sh:NodeConstraintComponent ;
+        sh:sourceShape <http://example.org/shape> ;
+        sh:focusNode <http://example.org/invalid> ;
+        sh:value <http://example.org/invalid> ;
+      ] ;
+    ] ;
+  mf:status sht:approved ;
+.

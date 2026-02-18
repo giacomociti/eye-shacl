@@ -1,4 +1,4 @@
-@prefix ex: <http://example.org/> .
+@prefix ex: <http:/example.org/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
@@ -7,33 +7,33 @@
 @prefix sht: <http://www.w3.org/ns/shacl-test#> .
 
 # shapes
-ex:shape1
-  sh:targetNode ex:valid, ex:invalid ;
-  sh:property [
-    sh:path ex:knows ;
-    sh:minCount 1 ;
-    sh:maxCount 1 ;
-  ].
-
-[] sh:entailment <http://www.w3.org/ns/entailment/RDFS> . 
-
+ex:shape sh:targetNode ex:valid, ex:invalid ;
+  sh:or (
+      [ sh:nodeKind sh:Literal ] 
+      [ 
+        sh:property [
+          sh:path ex:next ;
+          sh:minCount 1 ;
+          sh:node ex:shape;
+        ]
+      ]
+  ) .
 
 # data
-ex:valid ex:loves "a" .
-ex:invalid ex:knows "a" ; ex:loves "b".
 
-ex:loves rdfs:subPropertyOf ex:knows .
+ex:valid ex:next [ ex:next "foo" ] .
 
 
 <>
   rdf:type mf:Manifest ;
   mf:entries (
-      <test23>
+      <test00>
     ) ;
 .
-<test23>
+<test00>
   rdf:type sht:Validate ;
-  rdfs:label "Test 23" ;
+  rdfs:label "Test 00" ;
+  rdfs:comment "recursive shape" ;
   mf:action [
       sht:dataGraph <> ;
       sht:shapesGraph <> ;
@@ -42,13 +42,13 @@ ex:loves rdfs:subPropertyOf ex:knows .
       rdf:type sh:ValidationReport ;
       sh:conforms "false"^^xsd:boolean ;
       sh:result [
-          a sh:ValidationResult ;
-          sh:resultSeverity sh:Violation ;
-          sh:sourceConstraintComponent sh:MaxCountConstraintComponent ;
-          sh:focusNode ex:invalid ;
-          sh:resultPath ex:knows ;
-          sh:sourceShape [] ;
-        ] ;
+        a sh:ValidationResult ;
+        sh:resultSeverity sh:Violation ;
+        sh:sourceConstraintComponent sh:OrConstraintComponent ;
+        sh:sourceShape ex:shape ;
+        sh:focusNode ex:invalid ; 
+        sh:value ex:invalid ;
+      ]
     ] ;
   mf:status sht:approved ;
 .
