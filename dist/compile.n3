@@ -1117,7 +1117,7 @@ sh:in this:constraint sh:InConstraintComponent .
 } .
 
 { 
-    ?shape1 [ list:in ( sh:or sh:and sh:xone) ] ?list .
+    ?shape1 [ list:in (sh:or sh:and sh:xone) ] ?list .
     ?list list:member ?shape2 .
 } 
 => 
@@ -1125,7 +1125,24 @@ sh:in this:constraint sh:InConstraintComponent .
     ?shape1 this:refers ?shape2 .
 } .
 
-{ [] this:refers ?shape } => { ?shape this:shapeLevel this:innerShape } .
+{ 
+    ?shape [ list:in (sh:node sh:not sh:qualifiedValueShape sh:or sh:and sh:xone)] [] .
+    ?shape this:refers ?innerShape .
+} 
+=> 
+{ 
+    ?innerShape this:shapeLevel this:innerShape 
+} .
+
+{ 
+    ?shape this:shapeLevel this:innerShape .
+    ?shape this:refers ?innerShape .
+} 
+=> 
+{  
+    ?innerShape this:shapeLevel this:innerShape 
+} .
+
 
 
 {
