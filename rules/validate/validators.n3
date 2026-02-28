@@ -31,7 +31,8 @@
 <=
 {
     (?x { ?x list:in ?or . ?value this:violates ?x } ?xs) log:collectAllIn [] .
-    ?xs list:length ?violations .
+    ?xs list:unique  ?unique .
+    ?unique list:length ?violations .
     ?or list:length [ math:greaterThan ?violations ] .
 } .
 

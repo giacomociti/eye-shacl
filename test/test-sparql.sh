@@ -15,37 +15,52 @@ echo ""
 
 
 files=(
+    "custom/test00.ttl" # recursive shape, should be skipped
     "custom/test01.ttl"
     "custom/test02.ttl"
-    "custom/test03.ttl" #
-    "custom/test04.ttl" #
-    "custom/test05.ttl" #
-    "custom/test06.ttl" #
+    "custom/test03.ttl"
+    "custom/test04.ttl"
+    "custom/test05.ttl"
+    "custom/test06.ttl"
     "custom/test07.ttl"
     "custom/test08.ttl"
     "custom/test09.ttl"
     "custom/test10.ttl"
     "custom/test11.ttl"
-    "custom/test12.ttl" #
-    "custom/test13.ttl" #
-    "custom/test14.ttl" #
-    "custom/test15.ttl" #
-    "custom/test16.ttl" #
-    "custom/test17.ttl" #
+    "custom/test12.ttl" # resultPath?
+    "custom/test13.ttl" 
+    "custom/test14.ttl"
+    "custom/test15.ttl" # owl:import
+    "custom/test16.ttl" # sh:qualifiedMinCount
+    "custom/test17.ttl" # numbers
     "custom/test18.ttl" 
-    "custom/test19.ttl" #
-    "custom/test20.ttl" #
-    "custom/test21.ttl" #
-    "custom/test22.ttl" #
-    "custom/test23.ttl" #
-    "custom/test24.ttl" #
-    "custom/test25.ttl" #
-    "custom/test26.ttl" #
-    "custom/test27.ttl" #
+    "custom/test19.ttl" # sh:shapesGraph
+    "custom/test20.ttl"
+    "custom/test21.ttl"
+    "custom/test22.ttl"
+    "custom/test23.ttl" # sh:entailment
+    "custom/test24.ttl" # sh:entailment
+    "custom/test25.ttl" # sh:entailment
+    "custom/test26.ttl" # sh:entailment
+    "custom/test27.ttl" # sh:entailment
+    "custom/test28.ttl" 
+    "custom/test29.ttl" 
+    "custom/test30.ttl" 
+    "custom/test31.ttl"
+    "custom/test32.ttl"
+    "custom/test33.ttl"
+    "custom/test34.ttl"
+    "custom/test35.ttl"
+    "custom/test36.ttl"
+    "custom/test37.ttl"
+    "custom/test38.ttl"
+    "custom/test39.ttl"
+    "custom/test40.ttl"
+    "custom/test41.ttl"
 
     # https://github.com/w3c/data-shapes/tree/gh-pages/data-shapes-test-suite/tests/core
 
-    "core/complex/personexample.ttl" #
+    "core/complex/personexample.ttl" # regex escape
     "core/complex/shacl-shacl.ttl"
 
     "core/misc/deactivated-001.ttl"
@@ -55,9 +70,10 @@ files=(
     "core/misc/severity-002.ttl"
 
     "core/node/and-001.ttl"
-    "core/node/and-002.ttl" 
+    "core/node/and-002.ttl"
     "core/node/class-001.ttl"
     "core/node/class-002.ttl"
+    "core/node/class-003.ttl" # new (dups, likely for multiple targets)
     "core/node/closed-001.ttl"
     "core/node/closed-002.ttl"
     # "core/node/datatype-001.ttl" # parsing error
@@ -72,10 +88,10 @@ files=(
     "core/node/maxLength-001.ttl"
     "core/node/minExclusive-001.ttl" # fails but seems ok
     "core/node/minInclusive-001.ttl" 
-    "core/node/minInclusive-002.ttl" # differs
+    "core/node/minInclusive-002.ttl" # date without timezone
     # "core/node/minInclusive-003.ttl" # date offset
     "core/node/minLength-001.ttl"
-    "core/node/node-001.ttl" #
+    "core/node/node-001.ttl"
     "core/node/nodeKind-001.ttl"
     "core/node/not-001.ttl"
     "core/node/not-002.ttl"
@@ -83,24 +99,24 @@ files=(
     "core/node/pattern-001.ttl"
     "core/node/pattern-002.ttl"
     "core/node/qualified-001.ttl"
-    "core/node/xone-001.ttl" #
-    "core/node/xone-duplicate.ttl" #
+    "core/node/xone-001.ttl"
+    "core/node/xone-duplicate.ttl"
 
-    "core/path/path-alternative-001.ttl" # missing result path
-    "core/path/path-complex-001.ttl" # missing result path
-    "core/path/path-complex-002.ttl" # missing result path
-    "core/path/path-inverse-001.ttl" # missing result path
-    "core/path/path-oneOrMore-001.ttl" # missing result path
-    "core/path/path-sequence-001.ttl" # missing result path
-    "core/path/path-sequence-002.ttl" # missing result path
-    "core/path/path-sequence-duplicate-001.ttl" #
+    "core/path/path-alternative-001.ttl" # jena rdfdiff says they're equal
+    "core/path/path-complex-001.ttl" 
+    "core/path/path-complex-002.ttl"
+    "core/path/path-inverse-001.ttl"
+    "core/path/path-oneOrMore-001.ttl"
+    "core/path/path-sequence-001.ttl" 
+    "core/path/path-sequence-002.ttl"
+    "core/path/path-sequence-duplicate-001.ttl" # duplicate result
     # "core/path/path-strange-001.ttl" # shoud be skipped (https://github.com/w3c/issues/124)
     # "core/path/path-strange-002.ttl" # shoud be skipped (https://github.com/w3c/issues/124)
     "core/path/path-unused-001.ttl"
-    "core/path/path-zeroOrMore-001.ttl" # missing result path
-    "core/path/path-zeroOrOne-001.ttl" # missing result path
+    "core/path/path-zeroOrMore-001.ttl"
+    "core/path/path-zeroOrOne-001.ttl"
 
-    "core/property/and-001.ttl" #
+    "core/property/and-001.ttl"
     "core/property/class-001.ttl"
     "core/property/datatype-001.ttl" # seems ok
     "core/property/datatype-002.ttl"
@@ -124,8 +140,8 @@ files=(
     "core/property/minExclusive-001.ttl"
     "core/property/minExclusive-002.ttl"
     "core/property/minLength-001.ttl"
-    "core/property/node-001.ttl" #
-    "core/property/node-002.ttl" #
+    "core/property/node-001.ttl" 
+    "core/property/node-002.ttl"
     # "core/property/nodeKind-001.ttl" # check takes forever
     "core/property/not-001.ttl"
     "core/property/or-001.ttl"

@@ -9,73 +9,72 @@
 @prefix string: <http://www.w3.org/2000/10/swap/string#> .
 @prefix this: <http://eye-shacl#> .
 
-# https://www.w3.org/TR/shacl/#core-components-value-type
-sh:class this:constraintComponent sh:ClassConstraintComponent .
-sh:nodeKind this:constraintComponent sh:NodeKindConstraintComponent.
-sh:datatype this:constraintComponent sh:DatatypeConstraintComponent .
-# https://www.w3.org/TR/shacl/#core-components-count
-sh:minCount this:constraintComponent sh:MinCountConstraintComponent .
-sh:maxCount this:constraintComponent sh:MaxCountConstraintComponent .
-# https://www.w3.org/TR/shacl/#core-components-range
-sh:minExclusive this:constraintComponent sh:MinExclusiveConstraintComponent .
-sh:minInclusive this:constraintComponent sh:MinInclusiveConstraintComponent .
-sh:maxExclusive this:constraintComponent sh:MaxExclusiveConstraintComponent .
-sh:maxInclusive this:constraintComponent sh:MaxInclusiveConstraintComponent .
-# https://www.w3.org/TR/shacl/#core-components-string
-sh:minLength this:constraintComponent sh:MinLengthConstraintComponent .
-sh:maxLength this:constraintComponent sh:MaxLengthConstraintComponent .
-sh:pattern this:constraintComponent sh:PatternConstraintComponent .
-sh:languageIn this:constraintComponent sh:LanguageInConstraintComponent .
-sh:uniqueLang this:constraintComponent sh:UniqueLangConstraintComponent .
-# https://www.w3.org/TR/shacl/#core-components-property-pairs
-sh:equals this:constraintComponent sh:EqualsConstraintComponent .
-sh:disjoint this:constraintComponent sh:DisjointConstraintComponent .
-sh:lessThan this:constraintComponent sh:LessThanConstraintComponent .
-sh:lessThanOrEquals this:constraintComponent sh:LessThanOrEqualsConstraintComponent .
-# https://www.w3.org/TR/shacl/#core-components-logical
-sh:not this:constraintComponent sh:NotConstraintComponent .
-sh:and this:constraintComponent sh:AndConstraintComponent .
-sh:or this:constraintComponent sh:OrConstraintComponent .
-sh:xone this:constraintComponent sh:XoneConstraintComponent .
-# https://www.w3.org/TR/shacl/#core-components-shape
-sh:node this:constraintComponent sh:NodeConstraintComponent .
-sh:property this:constraintComponent sh:PropertyConstraintComponent .
-sh:qualifiedValueShape this:constraintComponent sh:QualifiedValueShapeConstraintComponent .
-sh:qualifiedMinCount this:constraintComponent sh:QualifiedMinCountConstraintComponent .
-sh:qualifiedMaxCount this:constraintComponent sh:QualifiedMaxCountConstraintComponent .
-# https://www.w3.org/TR/shacl/#core-components-others
-sh:closed this:constraintComponent sh:ClosedConstraintComponent .
-sh:ignoredProperties this:constraintComponent sh:ClosedConstraintComponent .
-sh:hasValue this:constraintComponent sh:HasValueConstraintComponent .
-sh:in this:constraintComponent sh:InConstraintComponent .
 
 # shapes identification
 
-{ ?shape a this:Shape } <= { 
-    ?shape [ this:constraintComponent []] [].
+{ 
+    ?shape ?constraintParameter [].
+    ?constraintParameter list:in (
+        sh:class sh:nodeKind sh:datatype sh:minCount sh:maxCount 
+        sh:minExclusive sh:minInclusive sh:maxExclusive sh:maxInclusive sh:minLength sh:maxLength 
+        sh:pattern sh:languageIn sh:uniqueLang sh:equals sh:disjoint sh:lessThan sh:lessThanOrEquals
+        sh:not sh:and sh:or sh:xone sh:node sh:property sh:qualifiedValueShape sh:qualifiedMinCount sh:qualifiedMaxCount
+        sh:closed sh:ignoredProperties sh:hasValue sh:in
+    ) .
     ?SCOPE log:notIncludes { ?shape sh:deactivated true }
-} .
+} => { ?shape a this:Shape } .
 
-{ ?shape a this:PropertyShape } <= { ?shape a this:Shape ; sh:path []} .
+{ ?shape a this:Shape ; sh:path []} => { ?shape a this:PropertyShape } .
 
-{ ?shape a this:NodeShape } <= { 
+{
     ?shape a this:Shape .
     ?SCOPE log:notIncludes { ?shape sh:path [] } .
-} .
+} => { ?shape a this:NodeShape } .
 
 # severity
 
 { ?shape this:severity ?severity } <= { ?shape sh:severity ?severity } .
 { ?shape this:severity sh:Violation } <= { ?SCOPE log:notIncludes { ?shape sh:severity [] } }.
 
-###########################################################
+# targets
 
+{ ?shape this:target ?sparql } <= { 
+    ?shape sh:targetClass [ log:uri ?targetClassUri ] .
+    ("?focusNode rdf:type/rdfs:subClassOf* <%s> ." ?targetClassUri) string:format ?sparql .
+} .
+
+{ ?shape this:target ?sparql } <= { 
+    ?shape a sh:NodeShape , rdfs:Class ; log:uri ?shapeUri .
+    ("?focusNode rdf:type/rdfs:subClassOf* <%s> ." ?shapeUri) string:format ?sparql .
+} .
+
+{ ?shape this:target ?sparql } <= { 
+    ?shape sh:targetSubjectsOf [ log:uri ?predicateUri ] .
+    ("{ SELECT DISTINCT ?focusNode WHERE { ?focusNode <%s> [] } }" ?predicateUri) string:format ?sparql .
+} .
+
+{ ?shape this:target ?sparql } <= { 
+    ?shape sh:targetObjectsOf [ log:uri ?predicateUri ] .
+    ("{ SELECT DISTINCT ?focusNode WHERE { [] <%s> ?focusNode } }" ?predicateUri) string:format ?sparql .
+} .
+
+{ ?shape this:target ?sparql } <= { 
+    (?x { ?shape sh:targetNode ?x } ?targetNodes) log:collectAllIn ?SCOPE .
+    ?targetNodes list:length [ math:greaterThan 0 ] .
+    (?targetNodes this:formatNode) list:map ?nodeStrings .
+    (?nodeStrings " " ) string:join ?values .
+    ("VALUES ?focusNode { %s }" ?values) string:format ?sparql .
+} .
+
+{ ?shape this:target ?target } <= { [] a this:Shape ; sh:property ?shape ; this:target ?target } .
 
 
 # generates a SPARQL query for shapes with target definitions
 { 
     ?shape a this:Shape .
     ?shape this:target ?target .
+    ?shape this:severity ?severity .
+    ?shape this:constructResultPath ?constructResultPath .
 
     (?x { ?shape this:constraintClause ?x } ?xs) log:collectAllIn ?SCOPE .
     ?xs list:length [ math:greaterThan 0 ] .
@@ -90,191 +89,224 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
     
 CONSTRUCT {
     ?validationResult a sh:ValidationResult ;
-        sh:resultSeverity ?resultSeverity ;
+        sh:resultSeverity %s ;
+        sh:sourceShape %s ;
         sh:sourceConstraintComponent ?sourceConstraintComponent ;
         sh:focusNode ?focusNode ;
-        sh:resultPath ?resultPath ;
         sh:value ?value ;
-        sh:resultMessage ?resultMessage ;
-        sh:sourceShape ?sourceShape .
+        %s
+        sh:resultMessage ?resultMessage .   
 }
 WHERE {
     %s
 }
-    """ ?constraints) string:format ?sparql .
+    """ ?severity ?shape ?constructResultPath ?constraints) string:format ?sparql .
 } => {  
     ?shape this:sparql ?sparql .
 } .
 
-
-{ ?shape this:constraintClause ?nodeConstraint } <= { 
-    ?shape a this:NodeShape .
-    ?shape this:target ?target .
-    ?shape this:valueConstraint (?constraint ?component) .
-    ?shape this:severity ?severity .
-    ("""
-    {
-        %s
-        BIND(?focusNode AS ?value)
-
-        %s
-
-        BIND(BNODE() AS ?validationResult)
-        BIND(%s AS ?sourceConstraintComponent) 
-        BIND(%s AS ?sourceShape)
-        BIND(%s AS ?resultSeverity)
-    }
-    """ ?target ?constraint ?component ?shape ?severity) string:format ?nodeConstraint .
-} .
-
-
-{ ?shape this:constraintClause ?propertyConstraint } <= { 
+# report the result path for property shapes
+{ ?shape this:constructResultPath "" } <= { ?shape a this:NodeShape} .
+{ ?shape this:constructResultPath ?result } <= {
     ?shape a this:PropertyShape .
-    ?shape this:target ?target .
     ?shape sh:path ?path .
-    ?path this:path ?pathSPARQL .
-    ?path this:pathFormat ?pathFormat .
-    ?shape this:valueConstraint (?constraint ?component) .
-    ?shape this:severity ?severity .
-    ("""
-    {
-        %s
-        ?focusNode %s ?value .
-
-        %s
-
-        BIND(BNODE() AS ?validationResult)
-        BIND(%s AS ?sourceConstraintComponent) 
-        BIND(%s AS ?sourceShape)
-        BIND(%s AS ?resultSeverity)
-        BIND(%s AS ?resultPath)
-    }
-    """ ?target ?pathSPARQL ?constraint ?component ?shape ?severity ?pathFormat) string:format ?propertyConstraint .    
+    ?path this:pathSHACL ?pathSHACL .
+    ("sh:resultPath %s ;" ?pathSHACL) string:format ?result 
 } .
+# for closed shapes, the result path is bound to the predicate that caused the violation
+{ ?shape this:constructResultPath "sh:resultPath ?resultPath ;"} <= { ?shape sh:closed true } .
 
-
-# generate SPARQL target clauses from SHACL target definitions
-
-{ ?shape this:target ?sparql } <= { 
-    ?shape sh:targetClass ?targetClass .
-    ?targetClass log:uri ?targetClassUri .
-    ("?focusNode rdf:type/rdfs:subClassOf* <%s> ." ?targetClassUri) string:format ?sparql .
+# format Path
+{ ?path this:pathSHACL ?result } <= { 
+    ?path this:nodeKind sh:IRI .
+    ?path log:uri ?uri .
+    ("<%s>" ?uri) string:format ?result .
 } .
-
-{ ?shape this:target ?sparql } <= { 
-    ?shape a sh:NodeShape , rdfs:Class .
-    ?shape log:uri ?targetClassUri .
-    ("?focusNode rdf:type/rdfs:subClassOf* <%s> ." ?targetClassUri) string:format ?sparql .
+{ ?path this:pathSHACL ?result } <= { 
+    (?path this:pathSHACL) list:map ?innerFormats .
+    (?innerFormats " ") string:join ?joined .
+    ("(%s)" ?joined) string:format ?result .
 } .
-
-{ ?shape this:target ?sparql } <= { 
-    ?shape sh:targetSubjectsOf ?predicate .
-    ?predicate log:uri ?predicateUri .
-    # ("?focusNode <%s> [] ." ?predicateUri) string:format ?sparql .
-    ("{ SELECT DISTINCT ?focusNode WHERE { ?focusNode <%s> [] } }" ?predicateUri) string:format ?sparql .
+{ ?path this:pathSHACL ?result } <= { 
+    ?path sh:alternativePath ?innerPaths ; this:nodeKind sh:BlankNode .
+    (?innerPaths this:pathSHACL) list:map ?innerFormats .
+    (?innerFormats " ") string:join ?joined .
+    ("[ sh:alternativePath (%s) ]" ?joined) string:format ?result .
 } .
-
-{ ?shape this:target ?sparql } <= { 
-    ?shape sh:targetObjectsOf ?predicate .
-    ?predicate log:uri ?predicateUri .
-    # ("[] <%s> ?focusNode ." ?predicateUri) string:format ?sparql .
-    ("{ SELECT DISTINCT ?focusNode WHERE { [] <%s> ?focusNode } }" ?predicateUri) string:format ?sparql
+{ ?path this:pathSHACL ?result } <= { 
+    ?path sh:inversePath ?innerPath ; this:nodeKind sh:BlankNode .
+    ?innerPath this:pathSHACL ?innerFormat .
+    ("[ sh:inversePath %s ]" ?innerFormat) string:format ?result .
 } .
-
-
-
-
-{ ?shape this:target ?sparql } <= { 
-    (?x { ?shape sh:targetNode ?x } ?targetNodes) log:collectAllIn ?SCOPE .
-    ?targetNodes list:length [ math:greaterThan 0 ] .
-    (?targetNodes this:formatNode) list:map ?nodeStrings .
-    (?nodeStrings " " ) string:join ?values .
-    ("VALUES ?focusNode { %s }" ?values) string:format ?sparql .
+{ ?path this:pathSHACL ?result } <= { 
+    ?path sh:zeroOrMorePath ?innerPath ; this:nodeKind sh:BlankNode .
+    ?innerPath this:pathSHACL ?innerFormat .
+    ("[ sh:zeroOrMorePath %s ]" ?innerFormat) string:format ?result .
 } .
-
-{ ?shape this:target ?target } <= { [] a this:Shape ; sh:property ?shape ; this:target ?target } .
-
-# { ?shape this:valueConstraint (?constraint ?component) } <= { 
-#     ?shape sh:property ?property .
-#     ?property this:valueConstraint (?constraint ?component)
-# } .
-
-{ (?shape ?innerShape) this:innerConstraint ?constraint } <= { 
-    ?innerShape sh:property ?property .
-    (?shape ?property) this:innerConstraint ?constraint .
+{ ?path this:pathSHACL ?result } <= { 
+    ?path sh:oneOrMorePath ?innerPath ; this:nodeKind sh:BlankNode .
+    ?innerPath this:pathSHACL ?innerFormat .
+    ("[ sh:oneOrMorePath %s ]" ?innerFormat) string:format ?result .
+} .
+{ ?path this:pathSHACL ?result } <= { 
+    ?path sh:zeroOrOnePath ?innerPath ; this:nodeKind sh:BlankNode .
+    ?innerPath this:pathSHACL ?innerFormat .
+    ("[ sh:zeroOrOnePath %s ]" ?innerFormat) string:format ?result .
 } .
 
 # generate SPARQL paths from SHACL paths
 
-{ ?path this:path ?sparql } <= { 
-    ?path log:rawType log:Other .
+{ ?path this:pathSPARQL ?result } <= { 
+    ?path this:nodeKind sh:IRI .
     ?path log:uri ?uri .
-    ("<%s>" ?uri) string:format ?sparql .
+    ("<%s>" ?uri) string:format ?result .
 } .
-
-{ ?path this:path ?sparql } <= { 
-    (?path this:path) list:map ?items .
-    (?items "/") string:join ?sparql .
+{ ?path this:pathSPARQL ?result } <= { 
+    (?path this:pathSPARQL) list:map ?items .
+    (?items "/") string:join ?result .
 } .
-
-{ ?path this:path ?sparql } <= { 
+{ ?path this:pathSPARQL ?result } <= { 
     ?path sh:alternativePath ?alternatives .
-    (?alternatives this:path) list:map ?sparqlAlts .
-    (?sparqlAlts " | ") string:join ?sparql .
+    (?alternatives this:pathSPARQL) list:map ?inner .
+    (?inner " | ") string:join ?sparql .
+} .
+{ ?path this:pathSPARQL ?result } <= { 
+    ?path sh:inversePath [this:pathSPARQL ?inner] .
+    ("^%s" ?inner) string:format ?result .
+} .
+{ ?path this:pathSPARQL ?result} <= { 
+    ?path sh:zeroOrMorePath [this:pathSPARQL ?inner] .
+    ("(%s)*" ?inner) string:format ?result .
+} .
+{ ?path this:pathSPARQL ?result} <= { 
+    ?path sh:oneOrMorePath [this:pathSPARQL ?inner] .
+    ("(%s)+" ?inner) string:format ?result .
+} .
+{ ?path this:pathSPARQL ?result} <= { 
+    ?path sh:zeroOrOnePath [this:pathSPARQL ?inner] .
+    ("(%s)?" ?inner) string:format ?result .
 } .
 
-{ ?path this:path ?sparql } <= { 
-    ?path sh:inversePath [this:path ?inner] .
-    ("^%s" ?inner) string:format ?sparql .
+
+# many constraints have the same structure, we can generate them with the same rule
+# relying on a predicate `this:valueConstraint` that checks a value `?x`
+{ ?shape this:constraintClause ?nodeConstraint } <= { 
+    ?shape a this:Shape .
+    ?shape this:target ?target .
+    ?shape this:bindValue ?bindValue .
+    ?shape this:valueConstraint (?constraint ?component) .
+    ("""
+    {
+        %s
+        %s
+        BIND(?value AS ?x)
+
+        %s
+
+        BIND(BNODE() AS ?validationResult)
+        BIND(%s AS ?sourceConstraintComponent) 
+    }
+    """ ?target ?bindValue ?constraint ?component) string:format ?nodeConstraint .
 } .
 
-{ ?path this:path ?sparql} <= { 
-    ?path sh:zeroOrMorePath [this:path ?inner] .
-    ("(%s)*" ?inner) string:format ?sparql .
+# value nodes, see https://www.w3.org/TR/shacl/#value-nodes
+
+{ ?shape this:bindValue "BIND(?focusNode AS ?value)" } <= { ?shape a this:NodeShape } .
+{ ?shape this:bindValue ?bindValue } <= {
+    ?shape a this:PropertyShape .
+    ?shape sh:path ?path .
+    ?path this:pathSPARQL ?pathSPARQL .
+    ("?focusNode %s ?value ." ?pathSPARQL) string:format ?bindValue 
+} .
+
+# for inner constraints (nested in sh:or, sh:node etc..) 
+# we generate SPARQL from the list of nested shapes
+# Bindings for ?x depend on all the `sh:path` in this chain of shapes
+
+# there are no property shapes involved
+{ ?shapes this:bindX "BIND(?value AS ?x)"} <= { (?shapes sh:path) list:map () } .
+
+# only the first shape is a property shape
+{ ?shapes this:bindX "BIND(?value AS ?x)" } <= {
+    ?shapes list:reverse ?reversed .
+    ?reversed list:firstRest (?first ?rest) .
+    ?first sh:path [] .
+    (?rest sh:path) list:map () .
+} .
+
+# there are inner property shapes
+{ ?shapes this:bindX ?bindX } <= {
+    ?shapes list:reverse ?reversed .
+    ?reversed list:firstRest (?first ?rest) .
+    (?rest sh:path) list:map ?innerPaths .
+    ?innerPaths list:length [ math:greaterThan 0 ] .
+    ?innerPaths this:joinPaths ?innerPathString .
+    ("?value %s ?x ." ?innerPathString) string:format ?bindX 
+} .
+
+# collects multiple inner constraints (e.g. in sh:or) into a single SPARQL string with UNIONs
+{ ?shapes this:innerConstraints ?constraints } <= { 
+    ((?shapes) this:innerConstraint) list:map ?innerConstraints .
+    ?innerConstraints list:unique ?unique . # what causes duplicates? (core/property/node-001.ttl)
+    (?unique "UNION") string:join ?constraints .
+    ?joined this:wrapInBraces ?constraints .
 } .
 
 
-{ ?path this:path ?sparql} <= { 
-    ?path sh:oneOrMorePath [this:path ?inner] .
-    ("(%s)+" ?inner) string:format ?sparql .
+{ ?shapes this:innerConstraint ?constraint } <= { 
+    ?shapes list:firstRest (?innerShape ?rest) .
+    ?innerShape this:valueConstraint (?innerConstraint []) .
+    ?shapes list:last ?shape .
+    ?shape this:target ?target .
+    ?shape this:bindValue ?bindValue .
+    ?shapes this:bindX ?bindX .
+
+    ("""
+    {
+        SELECT ?focusNode ?value ?shape 
+        WHERE 
+        {
+            %s
+            %s
+            %s
+            %s
+        }
+    }
+    """ ?target ?bindValue ?bindX ?innerConstraint) string:format ?constraint
 } .
 
-{ ?path this:path ?sparql} <= { 
-    ?path sh:zeroOrOnePath [this:path ?inner] .
-    ("(%s)?" ?inner) string:format ?sparql .
+# inner property shapes
+{ ?shapes this:innerConstraint ?constraint } <= { 
+    ?shapes list:firstRest (?innerShape ?rest) .
+    ?innerShape sh:property ?property .
+    ?nextList list:firstRest (?property ?shapes) .
+    ?nextList this:innerConstraint ?constraint .
 } .
 
-# format Path
-{ ?path this:pathFormat "BNODE()" } <= { 
-    ?path list:first [] . # how to get the list node?
-} .
-
-{ ?path this:pathFormat ?path } <= { 
-    ?path log:rawType [ log:notEqualTo rdf:List ] .
-} .
+## constraint components
 
 
 # ClassConstraintComponent
 { ?shape this:valueConstraint (?constraint sh:ClassConstraintComponent)} <= { 
     ?shape sh:class ?class .
-    ("FILTER NOT EXISTS { ?value rdf:type/rdfs:subClassOf* %s }" ?class) string:format ?constraint .
+    ("FILTER NOT EXISTS { ?x rdf:type/rdfs:subClassOf* %s }" ?class) string:format ?constraint .
 } .
 
 # DatatypeConstraintComponent
 { ?shape this:valueConstraint (?constraint sh:DatatypeConstraintComponent)} <= { 
     ?shape sh:datatype ?datatype . # we should also check that is not ill-typed
-    ("FILTER (!isLiteral(?value) || datatype(?value) != %s)" ?datatype) string:format ?constraint .
+    ("FILTER (!isLiteral(?x) || datatype(?x) != %s)" ?datatype) string:format ?constraint .
 } .
 
 # NodeKindConstraintComponent
 { ?shape this:valueConstraint (?constraint sh:NodeKindConstraintComponent)} <= { ?shape this:nodeKindFilter ?constraint } .
 
-{ ?shape this:nodeKindFilter "FILTER (!isIRI(?value))" } <= { ?shape sh:nodeKind sh:IRI } .
-{ ?shape this:nodeKindFilter "FILTER (!isLiteral(?value))" } <= { ?shape sh:nodeKind sh:Literal } .
-{ ?shape this:nodeKindFilter "FILTER (!isBlank(?value))" } <= { ?shape sh:nodeKind sh:BlankNode } .
-{ ?shape this:nodeKindFilter "FILTER (!isIRI(?value) && !isLiteral(?value))" } <= { ?shape sh:nodeKind sh:IRIOrLiteral } .
-{ ?shape this:nodeKindFilter "FILTER (!isBlank(?value) && !isLiteral(?value))" } <= { ?shape sh:nodeKind sh:BlankNodeOrLiteral } .
-{ ?shape this:nodeKindFilter "FILTER (!isBlank(?value) && !isIRI(?value))" } <= { ?shape sh:nodeKind sh:BlankNodeOrIRI } .
+{ ?shape this:nodeKindFilter "FILTER (!isIRI(?x))" } <= { ?shape sh:nodeKind sh:IRI } .
+{ ?shape this:nodeKindFilter "FILTER (!isLiteral(?x))" } <= { ?shape sh:nodeKind sh:Literal } .
+{ ?shape this:nodeKindFilter "FILTER (!isBlank(?x))" } <= { ?shape sh:nodeKind sh:BlankNode } .
+{ ?shape this:nodeKindFilter "FILTER (!isIRI(?x) && !isLiteral(?x))" } <= { ?shape sh:nodeKind sh:IRIOrLiteral } .
+{ ?shape this:nodeKindFilter "FILTER (!isBlank(?x) && !isLiteral(?x))" } <= { ?shape sh:nodeKind sh:BlankNodeOrLiteral } .
+{ ?shape this:nodeKindFilter "FILTER (!isBlank(?x) && !isIRI(?x))" } <= { ?shape sh:nodeKind sh:BlankNodeOrIRI } .
 
 # MinCountConstraintComponent
 { ?shape this:constraintClause ?constraint } <= { 
@@ -282,38 +314,37 @@ WHERE {
     ?shape this:target ?target .
     ?minCount math:greaterThan 0 .
     ?shape sh:path ?path .
-    ?path this:path ?pathSPARQL .
-    ?path this:pathFormat ?pathFormat .
-    ?shape this:severity ?severity .
+    ?path this:pathSPARQL ?pathSPARQL .
     ("""
     {
         %s
+        BIND(?focusNode AS ?x)
 
-        FILTER NOT EXISTS { ?focusNode %s ?value }
+        FILTER NOT EXISTS { ?x %s [] }
 
         BIND(BNODE() AS ?validationResult)
         BIND(sh:MinCountConstraintComponent AS ?sourceConstraintComponent)
-        BIND(%s AS ?sourceShape)
-        BIND(%s AS ?resultSeverity)
-        BIND(%s AS ?resultPath)   
     }
-    """ ?target ?pathSPARQL ?shape ?severity ?pathFormat) string:format ?constraint .
+    """ ?target ?pathSPARQL) string:format ?constraint .
 } .
 
-{ (?shape ?innerShape) this:innerConstraint ?constraint } <= { 
-    ?shape this:target ?target .
-    ?innerShape sh:minCount ?minCount .
-    ?minCount math:greaterThan 0 .
-    ?innerShape sh:path ?path .
-    ?path this:path ?pathSPARQL .
+{ ?shapes this:innerConstraint ?constraint } <= { 
+    ?shapes list:firstRest (?first ?rest) .
+    ?first sh:minCount [ math:greaterThan 0 ] ; sh:path ?path .
+    ?shapes list:last [ this:target ?target ; this:bindValue ?bindValue ] .
+    ?rest this:bindX ?bindX .
+    ?path this:pathSPARQL ?pathSPARQL .
     ("""
     {
-        SELECT ?focusNode WHERE {
+        SELECT ?focusNode ?value # sh:MinCountConstraintComponent
+        WHERE {
             %s
-            FILTER NOT EXISTS { ?focusNode %s ?value }
+            %s
+            %s
+            FILTER NOT EXISTS { ?x %s [] }
         }
     }
-    """ ?target ?pathSPARQL) string:format ?constraint
+    """ ?target ?bindValue ?bindX ?pathSPARQL) string:format ?constraint .
 } .
 
 { ?shape this:constraintClause ?constraint } <= { 
@@ -321,25 +352,48 @@ WHERE {
     ?shape this:target ?target .
     ?minCount math:greaterThan 1 .
     ?shape sh:path ?path .
-    ?path this:path ?pathSPARQL .
-    ?path this:pathFormat ?pathFormat .
-    ?shape this:severity ?severity .
+    ?path this:pathSPARQL ?pathSPARQL .
     ("""
     {
         %s
+        BIND(?focusNode AS ?x)
+
         {
-            SELECT ?focusNode
-            WHERE { ?focusNode %s ?value } 
-            GROUP BY ?focusNode
+            SELECT ?x
+            WHERE { ?x %s ?value } 
+            GROUP BY ?x
             HAVING (COUNT(?value) < %s)
         }
+
         BIND(BNODE() AS ?validationResult)
         BIND(sh:MinCountConstraintComponent AS ?sourceConstraintComponent)
-        BIND(%s AS ?sourceShape)
-        BIND(%s AS ?resultSeverity)
-        BIND(%s AS ?resultPath)   
     }
-    """ ?target ?pathSPARQL ?minCount ?shape ?severity ?pathFormat) string:format ?constraint .
+    """ ?target ?pathSPARQL ?minCount) string:format ?constraint .
+} .
+
+{ ?shapes this:innerConstraint ?constraint } <= { 
+    ?shapes list:firstRest (?first ?rest) .
+    ?first sh:minCount ?minCount ; sh:path ?path .
+    ?minCount math:greaterThan 1 .
+    ?shapes list:last [ this:target ?target ; this:bindValue ?bindValue ] .
+    ?rest this:bindX ?bindX .
+    ?path this:pathSPARQL ?pathSPARQL .
+    ("""
+    {
+        SELECT ?focusNode ?value # sh:MinCountConstraintComponent
+        WHERE {
+            %s
+            %s
+            %s
+            {
+                SELECT ?x
+                WHERE { ?x %s ?value } 
+                GROUP BY ?x
+                HAVING (COUNT(?value) < %s)
+            }
+        }
+    }
+    """ ?target ?bindValue ?bindX ?pathSPARQL ?minCount) string:format ?constraint .
 } .
 
 # MaxCountConstraintComponent
@@ -347,110 +401,115 @@ WHERE {
     ?shape sh:maxCount ?maxCount .
     ?shape this:target ?target .
     ?shape sh:path ?path .
-    ?path this:path ?pathSPARQL .
-    ?path this:pathFormat ?pathFormat .
-    ?shape this:severity ?severity .
+    ?path this:pathSPARQL ?pathSPARQL .
     ("""
     {
         %s
+        BIND(?focusNode AS ?x)
+
         {
-            SELECT ?focusNode
-            WHERE { ?focusNode %s ?value } 
-            GROUP BY ?focusNode
+            SELECT ?x
+            WHERE { ?x %s ?value } 
+            GROUP BY ?x
             HAVING (COUNT(?value) > %s)
         }
+
         BIND(BNODE() AS ?validationResult)
         BIND(sh:MaxCountConstraintComponent AS ?sourceConstraintComponent)
-        BIND(%s AS ?sourceShape)
-        BIND(%s AS ?resultSeverity)
-        BIND(%s AS ?resultPath)   
     }
-    """ ?target ?pathSPARQL ?maxCount ?shape ?severity ?pathFormat) string:format ?constraint .
+    """ ?target ?pathSPARQL ?maxCount) string:format ?constraint .
 } .
 
-{ (?shape ?innerShape) this:innerConstraint ?constraint } <= { 
-    ?shape this:target ?target .
+{ ?shapes this:innerConstraint ?constraint } <= { 
+    ?shapes list:firstRest (?innerShape ?rest) .
     ?innerShape sh:maxCount ?maxCount .
     ?innerShape sh:path ?path .
-    ?path this:path ?pathSPARQL .
+    ?path this:pathSPARQL ?pathSPARQL .
+    ?shapes list:last ?shape .
+    ?shape this:target ?target .
+    ?shape this:bindValue ?bindValue .
+    ?rest this:bindX ?bindX .
     ("""
     {
-        SELECT ?focusNode WHERE {
+        SELECT ?focusNode ?value # MaxCountConstraintComponent
+        WHERE {
+            %s
+            %s
             %s
             {
-                SELECT ?focusNode
-                WHERE { ?focusNode %s ?value } 
-                GROUP BY ?focusNode
+                SELECT ?x
+                WHERE { ?x %s ?value } 
+                GROUP BY ?x
                 HAVING (COUNT(?value) > %s)
             }
         }
     }
-    """ ?target ?pathSPARQL ?maxCount) string:format ?constraint
+    """ ?target ?bindValue ?bindX ?pathSPARQL ?maxCount) string:format ?constraint .
 } .
 
 # MinInclusiveConstraintComponent
 { ?shape this:valueConstraint (?constraint sh:MinInclusiveConstraintComponent) } <= { 
     ?shape sh:minInclusive [ this:formatNode ?minInclusive ; this:datatype ?datatype ] .
     ?datatype this:compatibleTypes ?types .
-    ("FILTER (!isLiteral(?value) || !(datatype(?value) IN (%s)) || ?value < %s)" ?types ?minInclusive) string:format ?constraint .
+    ("FILTER (!isLiteral(?x) || !(datatype(?x) IN (%s)) || ?x < %s)" ?types ?minInclusive) string:format ?constraint .
 } .
 
 # MaxInclusiveConstraintComponent
 { ?shape this:valueConstraint (?constraint sh:MaxInclusiveConstraintComponent) } <= { 
     ?shape sh:maxInclusive [ this:formatNode ?maxInclusive ; this:datatype ?datatype ] .
     ?datatype this:compatibleTypes ?types .
-    ("FILTER (!isLiteral(?value) || !(datatype(?value) IN (%s)) || ?value > %s)" ?types ?maxInclusive) string:format ?constraint .
+    ("FILTER (!isLiteral(?x) || !(datatype(?x) IN (%s)) || ?x > %s)" ?types ?maxInclusive) string:format ?constraint .
 } .
 
 # MinExclusiveConstraintComponent
 { ?shape this:valueConstraint (?constraint sh:MinExclusiveConstraintComponent) } <= { 
     ?shape sh:minExclusive [ this:formatNode ?minExclusive ; this:datatype ?datatype ] .
     ?datatype this:compatibleTypes ?types .
-    ("FILTER (!isLiteral(?value) || !(datatype(?value) IN (%s)) || ?value <= %s)" ?types ?minExclusive) string:format ?constraint .
+    ("FILTER (!isLiteral(?x) || !(datatype(?x) IN (%s)) || ?x <= %s)" ?types ?minExclusive) string:format ?constraint .
 } .
 
 # MaxExclusiveConstraintComponent
 { ?shape this:valueConstraint (?constraint sh:MaxExclusiveConstraintComponent) } <= { 
     ?shape sh:maxExclusive [ this:formatNode ?maxExclusive ; this:datatype ?datatype ] .
     ?datatype this:compatibleTypes ?types .
-    ("FILTER (!isLiteral(?value) || !(datatype(?value) IN (%s)) || ?value >= %s)" ?types ?maxExclusive) string:format ?constraint .
+    ("FILTER (!isLiteral(?x) || !(datatype(?x) IN (%s)) || ?x >= %s)" ?types ?maxExclusive) string:format ?constraint .
 } .
 
 # MinLengthConstraintComponent
 { ?shape this:valueConstraint (?constraint sh:MinLengthConstraintComponent) } <= { 
     ?shape sh:minLength ?minLength .
-    ("FILTER (isBlank(?value) || strlen(str(?value)) < %s)" ?minLength) string:format ?constraint .
+    ("FILTER (isBlank(?x) || strlen(str(?x)) < %s)" ?minLength) string:format ?constraint .
 } .
 
 # MaxLengthConstraintComponent
 { ?shape this:valueConstraint (?constraint sh:MaxLengthConstraintComponent) } <= { 
     ?shape sh:maxLength ?maxLength .
-    ("FILTER (isBlank(?value) || strlen(str(?value)) > %s)" ?maxLength) string:format ?constraint .
+    ("FILTER (isBlank(?x) || strlen(str(?x)) > %s)" ?maxLength) string:format ?constraint .
 } .
 
 # PatternConstraintComponent
 { ?shape this:valueConstraint (?constraint sh:PatternConstraintComponent) } <= { 
     ?shape sh:pattern ?pattern .
     ?SCOPE log:notIncludes { ?shape sh:flags [] } .
-    ("FILTER (isBlank(?value) || !regex(str(?value), '%s'))" ?pattern) string:format ?constraint .
+    ("""FILTER (isBlank(?x) || !regex(str(?x), "%s"))""" ?pattern) string:format ?constraint .
 } .
 
 { ?shape this:valueConstraint (?constraint sh:PatternConstraintComponent) } <= { 
     ?shape sh:pattern ?pattern .
     ?shape sh:flags ?flags .
-    ("FILTER (isBlank(?value) || !regex(str(?value), '%s', '%s'))" ?pattern ?flags) string:format ?constraint
+    ("FILTER (isBlank(?x) || !regex(str(?x), '%s', '%s'))" ?pattern ?flags) string:format ?constraint .
 } .
 
 # LanguageInConstraintComponent
 { ?lang this:langNotMatches ?clause } <= {  
-    ("langMatches(lang(?value), '%s') = false" ?lang) string:format ?clause
+    ("langMatches(lang(?x), '%s') = false" ?lang) string:format ?clause
 } .
 
 { ?shape this:valueConstraint (?constraint sh:LanguageInConstraintComponent) } <= { 
     ?shape sh:languageIn ?languages .
     (?languages this:langNotMatches) list:map ?clauses .
     (?clauses " && ") string:join ?langs .
-    ("FILTER (!isLiteral(?value) || (%s))" ?langs) string:format ?constraint
+    ("FILTER (!isLiteral(?x) || (%s))" ?langs) string:format ?constraint
 } .
 
 # UniqueLangConstraintComponent
@@ -458,31 +517,58 @@ WHERE {
     ?shape sh:uniqueLang true .
     ?shape this:target ?target .
     ?shape sh:path ?path .
-    ?path this:path ?pathSPARQL .
-    ?path this:pathFormat ?pathFormat .
-    ?shape this:severity ?severity .
+    ?path this:pathSPARQL ?pathSPARQL .
     ("""
     {
         %s
+        BIND(?focusNode AS ?x)
         
-        { 
-            SELECT ?focusNode
-            WHERE {
-                ?focusNode %s ?x.
-                BIND(lang(?x) AS ?lang)
+        {
+            SELECT ?x
+            WHERE { 
+                ?x %s ?o 
+                BIND(lang(?o) AS ?lang)
                 FILTER(?lang != "")
-            }
-            GROUP BY ?focusNode ?lang
+            } 
+            GROUP BY ?x ?lang
             HAVING (COUNT(?lang) > 1)
         }
 
         BIND(BNODE() AS ?validationResult)
         BIND(sh:UniqueLangConstraintComponent AS ?sourceConstraintComponent)
-        BIND(%s AS ?sourceShape)
-        BIND(%s AS ?resultSeverity)
-        BIND(%s AS ?resultPath)   
     }
-    """ ?target ?pathSPARQL ?shape ?severity ?pathFormat) string:format ?constraint .
+    """ ?target ?pathSPARQL) string:format ?constraint .
+} .
+
+{ ?shapes this:innerConstraint ?constraint } <= { 
+    ?shapes list:firstRest (?innerShape ?rest) .
+    ?innerShape sh:uniqueLang true .
+    ?innerShape sh:path ?path .
+    ?path this:pathSPARQL ?pathSPARQL .
+    ?shapes list:last ?shape .
+    ?shape this:target ?target .
+    ?shape this:bindValue ?bindValue .
+    ?rest this:bindX ?bindX .
+    ("""
+    {
+        SELECT ?focusNode ?value # UniqueLangConstraintComponent
+        WHERE {
+            %s
+            %s
+            %s
+            {
+                SELECT ?x
+                WHERE { 
+                    ?x %s ?o 
+                    BIND(lang(?o) AS ?lang)
+                    FILTER(?lang != "")
+                } 
+                GROUP BY ?x ?lang
+                HAVING (COUNT(?lang) > 1)
+            }
+        }
+    }
+    """ ?target ?bindValue ?bindX ?pathSPARQL) string:format ?constraint .
 } .
 
 # EqualsConstraintComponent
@@ -490,35 +576,60 @@ WHERE {
     ?shape sh:equals ?otherPath .
     ?shape this:target ?target .
     ?shape sh:path ?path .
-    ?path this:path ?pathSPARQL .
-    ?path this:pathFormat ?pathFormat .
-    ?shape this:severity ?severity .
+    ?path this:pathSPARQL ?pathSPARQL .
     ("""
     {
         %s
+        BIND(?focusNode AS ?x)
 
         {
-            { ?focusNode %s ?value } MINUS { ?focusNode %s ?value }
+            { ?x %s ?value } MINUS { ?x %s ?value }
         }
         UNION
         {
-            { ?focusNode %s ?value } MINUS { ?focusNode %s ?value } 
+            { ?x %s ?value } MINUS { ?x %s ?value } 
         }
 
         BIND(BNODE() AS ?validationResult)
         BIND(sh:EqualsConstraintComponent AS ?sourceConstraintComponent)
-        BIND(%s AS ?sourceShape)
-        BIND(%s AS ?resultSeverity)
-        BIND(%s AS ?resultPath)   
     }
-    """ ?target ?pathSPARQL ?otherPath ?otherPath ?pathSPARQL ?shape ?severity ?pathFormat) string:format ?constraint
+    """ ?target ?pathSPARQL ?otherPath ?otherPath ?pathSPARQL) string:format ?constraint
+} .
+
+{ ?shapes this:innerConstraint ?constraint } <= { 
+    ?shapes list:firstRest (?innerShape ?rest) .
+    ?innerShape sh:equals ?otherPath .
+    ?innerShape sh:path ?path .
+    ?path this:pathSPARQL ?pathSPARQL .
+    ?shapes list:last ?shape .
+    ?shape this:target ?target .
+    ?shape this:bindValue ?bindValue .
+    ?rest this:bindX ?bindX .
+    ("""
+    {
+        SELECT ?focusNode ?value # EqualsConstraintComponent
+        WHERE {
+            %s
+            %s
+            %s
+            {
+                {
+                    { ?x %s ?o } MINUS { ?x %s ?o }
+                }
+                UNION
+                {
+                    { ?x %s ?o } MINUS { ?x %s ?o } 
+                }
+            }
+        }
+    }
+    """ ?target ?bindValue ?bindX ?pathSPARQL ?otherPath ?otherPath ?pathSPARQL) string:format ?constraint .
 } .
 
 { ?shape this:constraintClause ?constraint } <= { 
     ?shape sh:equals ?otherPath .
     ?shape a this:NodeShape .
     ?shape this:target ?target .
-    ?shape this:severity ?severity .
     ("""
     {
         {
@@ -534,20 +645,49 @@ WHERE {
 
         BIND(BNODE() AS ?validationResult)
         BIND(sh:EqualsConstraintComponent AS ?sourceConstraintComponent)
-        BIND(%s AS ?sourceShape)
-        BIND(%s AS ?resultSeverity)
     }
-    """ ?target ?otherPath ?target ?otherPath?shape ?severity ) string:format ?constraint
+    """ ?target ?otherPath ?target ?otherPath) string:format ?constraint
 } .
+
+{ ?shapes this:innerConstraint ?constraint } <= { 
+    ?shapes list:firstRest (?innerShape ?rest) .
+    ?innerShape sh:equals ?otherPath .
+    ?innerShape a this:NodeShape .
+    ?shapes list:last ?shape .
+    ?shape this:target ?target .
+    ?shape this:bindValue ?bindValue .
+    ?rest this:bindX ?bindX .
+    ("""
+    {
+        SELECT ?focusNode ?value # EqualsConstraintComponent for NodeShape
+        WHERE {
+            {
+                { 
+                    %s
+                    %s
+                    %s
+                    ?x %s ?o . FILTER (?o != ?x)     
+                }
+                UNION
+                {
+                    %s
+                    %s
+                    %s
+                    FILTER NOT EXISTS { ?x %s ?x }
+                }
+            }
+        }
+    }
+    """ ?target ?bindValue ?bindX ?otherPath ?target ?bindValue ?bindX ?otherPath) string:format ?constraint
+} .
+
 
 # DisjointConstraintComponent
 { ?shape this:constraintClause ?constraint } <= { 
     ?shape sh:disjoint ?otherPath .
     ?shape this:target ?target .
     ?shape sh:path ?path .
-    ?path this:path ?pathSPARQL .
-    ?path this:pathFormat ?pathFormat .
-    ?shape this:severity ?severity .
+    ?path this:pathSPARQL ?pathSPARQL .
     ("""
     {
         %s
@@ -557,18 +697,39 @@ WHERE {
     
         BIND(BNODE() AS ?validationResult)
         BIND(sh:DisjointConstraintComponent AS ?sourceConstraintComponent)
-        BIND(%s AS ?sourceShape)
-        BIND(%s AS ?resultSeverity)
-        BIND(%s AS ?resultPath)   
     }
-    """ ?target ?pathSPARQL ?otherPath ?shape ?severity ?pathFormat) string:format ?constraint
+    """ ?target ?pathSPARQL ?otherPath) string:format ?constraint
 } .
+
+{ ?shapes this:innerConstraint ?constraint } <= { 
+    ?shapes list:firstRest (?innerShape ?rest) .
+    ?innerShape sh:disjoint ?otherPath .
+    ?innerShape sh:path ?path .
+    ?path this:pathSPARQL ?pathSPARQL .
+    ?shapes list:last ?shape .
+    ?shape this:target ?target .
+    ?shape this:bindValue ?bindValue .
+    ?rest this:bindX ?bindX .
+    ("""
+    {
+        SELECT ?focusNode ?value # DisjointConstraintComponent
+        WHERE {
+            %s
+            %s
+            %s
+           
+            ?x %s ?o . 
+            ?x %s ?o .
+        }
+    }
+    """ ?target ?bindValue ?bindX ?pathSPARQL ?otherPath) string:format ?constraint .
+} .
+
 
 { ?shape this:constraintClause ?constraint } <= { 
     ?shape sh:disjoint ?otherPath .
     ?shape a this:NodeShape .
     ?shape this:target ?target .
-    ?shape this:severity ?severity .
     ("""
     {
         %s
@@ -578,20 +739,39 @@ WHERE {
     
         BIND(BNODE() AS ?validationResult)
         BIND(sh:DisjointConstraintComponent AS ?sourceConstraintComponent)
-        BIND(%s AS ?sourceShape)
-        BIND(%s AS ?resultSeverity)
     }
-    """ ?target ?otherPath ?shape ?severity) string:format ?constraint
+    """ ?target ?otherPath) string:format ?constraint
 } .
+
+{ ?shapes this:innerConstraint ?constraint } <= { 
+    ?shapes list:firstRest (?innerShape ?rest) .
+    ?innerShape sh:disjoint ?otherPath .
+    ?innerShape a this:NodeShape .
+    ?shapes list:last ?shape .
+    ?shape this:target ?target .
+    ?shape this:bindValue ?bindValue .
+    ?rest this:bindX ?bindX .
+    ("""
+    {
+        SELECT ?focusNode ?value # DisjointConstraintComponent
+        WHERE {
+            %s
+            %s
+            %s
+           
+            ?x %s ?x . 
+        }
+    }
+    """ ?target ?bindValue ?bindX ?otherPath) string:format ?constraint .
+} .
+
 
 # LessThanConstraintComponent
 { ?shape this:constraintClause ?constraint } <= { 
     ?shape sh:lessThan ?otherPath .
     ?shape this:target ?target .
     ?shape sh:path ?path .
-    ?path this:path ?pathSPARQL .
-    ?path this:pathFormat ?pathFormat .
-    ?shape this:severity ?severity .
+    ?path this:pathSPARQL ?pathSPARQL .
     ("""
     {
         %s
@@ -606,11 +786,35 @@ WHERE {
         }
         BIND(BNODE() AS ?validationResult)
         BIND(sh:LessThanConstraintComponent AS ?sourceConstraintComponent)
-        BIND(%s AS ?sourceShape)
-        BIND(%s AS ?resultSeverity)
-        BIND(%s AS ?resultPath)   
     }
-    """ ?target ?pathSPARQL ?otherPath ?shape ?severity ?pathFormat) string:format ?constraint
+    """ ?target ?pathSPARQL ?otherPath) string:format ?constraint
+} .
+
+{ ?shapes this:innerConstraint ?constraint } <= { 
+    ?shapes list:firstRest (?innerShape ?rest) .
+    ?innerShape sh:lessThan ?otherPath .
+    ?innerShape sh:path ?path .
+    ?path this:pathSPARQL ?pathSPARQL .
+    ?shapes list:last ?shape .
+    ?shape this:target ?target .
+    ?shape this:bindValue ?bindValue .
+    ?rest this:bindX ?bindX .
+    ("""
+    {
+        SELECT ?focusNode ?value # LessThanConstraintComponent
+        WHERE {
+            %s
+            %s
+            %s
+           
+            ?x %s ?o1 . 
+            ?x %s ?o2 .
+            FILTER NOT EXISTS {
+                FILTER(?o1 < ?o2)
+            }
+        }
+    }
+    """ ?target ?bindValue ?bindX ?pathSPARQL ?otherPath) string:format ?constraint .
 } .
 
 # LessThanOrEqualsConstraintComponent
@@ -618,9 +822,7 @@ WHERE {
     ?shape sh:lessThanOrEquals ?otherPath .
     ?shape this:target ?target .
     ?shape sh:path ?path .
-    ?path this:path ?pathSPARQL .
-    ?path this:pathFormat ?pathFormat .
-    ?shape this:severity ?severity .
+    ?path this:pathSPARQL ?pathSPARQL .
     ("""
     {
         %s
@@ -635,102 +837,304 @@ WHERE {
         }
         BIND(BNODE() AS ?validationResult)
         BIND(sh:LessThanOrEqualsConstraintComponent AS ?sourceConstraintComponent)
-        BIND(%s AS ?sourceShape)
-        BIND(%s AS ?resultSeverity)
-        BIND(%s AS ?resultPath)   
     }
-    """ ?target ?pathSPARQL ?otherPath ?shape ?severity ?pathFormat) string:format ?constraint
+    """ ?target ?pathSPARQL ?otherPath) string:format ?constraint
+} .
+
+{ ?shapes this:innerConstraint ?constraint } <= { 
+    ?shapes list:firstRest (?innerShape ?rest) .
+    ?innerShape sh:lessThanOrEquals ?otherPath .
+    ?innerShape sh:path ?path .
+    ?path this:pathSPARQL ?pathSPARQL .
+    ?shapes list:last ?shape .
+    ?shape this:target ?target .
+    ?shape this:bindValue ?bindValue .
+    ?rest this:bindX ?bindX .
+    ("""
+    {
+        SELECT ?focusNode ?value # LessThanOrEqualsConstraintComponent
+        WHERE {
+            %s
+            %s
+            %s
+           
+            ?x %s ?o1 . 
+            ?x %s ?o2 .
+            FILTER NOT EXISTS {
+                FILTER(?o1 <= ?o2)
+            }
+        }
+    }
+    """ ?target ?bindValue ?bindX ?pathSPARQL ?otherPath) string:format ?constraint .
 } .
 
 
 # OrConstraintComponent
-{ ?shape this:valueConstraint (?constraint sh:OrConstraintComponent) } <= { 
+{ ?shape this:constraintClause ?constraint } <= { 
     ?shape sh:or ?alternatives .
+    ?shape this:target ?target .
+    ?shape this:bindValue ?bindValue .
     (?shape ?alternatives) this:pairs ?pairs .
     (?pairs this:innerConstraints) list:map ?innerConstraints .
     (?innerConstraints "\n\t\t") string:join ?joined .
     ("""
-    {   SELECT DISTINCT ?focusNode ?value WHERE 
+    {
+        %s
+        %s
+
+        {
+            SELECT DISTINCT ?focusNode ?value WHERE 
+            {
+                %s
+            }
+        }
+        
+        BIND(BNODE() AS ?validationResult)
+        BIND(sh:OrConstraintComponent AS ?sourceConstraintComponent)
+    }
+    """ ?target ?bindValue ?joined) string:format ?constraint
+} .
+
+{ ?shapes this:innerConstraint ?constraint } <= { 
+    ?shapes list:firstRest (?first ?rest). 
+    ?first sh:or ?alternatives .
+    (?x {
+        ?alternatives list:member ?innerShape .
+        ?innerList list:firstRest (?innerShape ?shapes) .
+        ?innerList this:innerConstraints ?x .
+    } ?xs) log:collectAllIn ?SCOPE .
+    (?xs "\n\t\t") string:join ?joined .
+    ("""
+    {
+        SELECT DISTINCT ?focusNode ?value WHERE 
         {
             %s
         }
     }
-    """ ?joined) string:format ?constraint
+    """ ?joined) string:format ?constraint .
 } .
 
 # NotConstraintComponent
-{ ?shape this:valueConstraint (?constraint sh:NotConstraintComponent) } <= { 
+{ ?shape this:constraintClause ?constraint } <= { 
     ?shape sh:not ?innerShape .
-    (?shape ?innerShape) this:innerConstraints ?innerConstraints .
     ?shape this:target ?target .
-
-    
+    ?shape this:bindValue ?bindValue .
+    (?innerShape ?shape) this:innerConstraints ?innerConstraints .
     ("""
+    {
         {
+            %s
             %s
         }
         MINUS
         {
             %s
         }
-    """ ?target ?innerConstraints) string:format ?constraint
+        
+        BIND(BNODE() AS ?validationResult)
+        BIND(sh:NotConstraintComponent AS ?sourceConstraintComponent)
+    }
+    """ ?target ?bindValue ?innerConstraints) string:format ?constraint
 } .
 
-# AndConstraintComponent
-{ ?shape this:valueConstraint (?constraint sh:AndConstraintComponent) } <= { 
-    ?shape sh:and ?shapes .
-    (?shape ?shapes) this:pairs ?pairs .
-    (?pairs this:innerConstraints) list:map ?innerConstraints .
-    (?innerConstraints "UNION") string:join ?constraint .
-} .
-
-# XoneConstraintComponent
-{ ?shape this:valueConstraint (?constraint sh:XoneConstraintComponent) } <= { 
-    ?shape sh:xone ?alternatives .
-    (?shape ?alternatives) this:pairs ?pairs .
-    (?pairs this:innerConstraints) list:map ?innerConstraints .
-    #TODO inject in each inner shape: BIND(ex:innerShape AS ?shape)
-    (?innerConstraints "UNION") string:join ?joined .
+{ ?shapes this:innerConstraint ?constraint } <= { 
+    ?shapes list:firstRest (?innerShape ?rest). 
+    ?innerShape sh:not ?not .
+    ?shapes list:last ?shape .
+    ?shape this:target ?target .
+    ?shape this:bindValue ?bindValue .
+    (?not ?shape) this:innerConstraints ?innerConstraints .
     ("""
-    {   SELECT DISTINCT ?focusNode ?value WHERE 
+    {
+        {
+            %s
+            %s
+        }
+        MINUS
         {
             %s
         }
-        GROUP BY ?focusNode ?value
-        HAVING (COUNT(?shape) != 1)
     }
-    """ ?joined) string:format ?constraint
+    """ ?target ?bindValue ?innerConstraints) string:format ?constraint .
 } .
 
-# NodeConstraintComponent
-{ ?shape this:valueConstraint (?constraint sh:NodeConstraintComponent) } <= { 
-    ?shape sh:node ?innerShape .
-    (?shape ?innerShape) this:innerConstraints ?constraint .
-} .
-
-
-{ (?shape ?innerShape) this:innerConstraints ?constraints } <= { 
-    (((?shape ?innerShape)) this:innerConstraint) list:map ?innerConstraints .
-    (?innerConstraints "UNION") string:join ?constraints .
-    ?joined this:wrapInBraces ?constraints .
-} .
-
-{ (?shape ?innerShape) this:innerConstraint ?constraint } <= { 
+# AndConstraintComponent
+{ ?shape this:constraintClause ?constraint } <= { 
+    ?shape sh:and ?innerShapes .
     ?shape this:target ?target .
-    ?innerShape this:valueConstraint (?innerConstraint []) .
-    (?shape ?innerShape) this:refersPath ?refersPath .
+    ?shape this:bindValue ?bindValue .
+    (?shape ?innerShapes) this:pairs ?pairs .
+    (?pairs this:innerConstraints) list:map ?innerConstraints .
+    (?innerConstraints "UNION") string:join ?joined .
     ("""
     {
-        SELECT ?focusNode ?value ?shape WHERE {
-            %s
-            ?focusNode %s ?value .
+        %s
+        %s
+
+        {
+            SELECT DISTINCT ?focusNode ?value WHERE 
+            {
+                %s
+            }
+        }
+        
+
+        BIND(BNODE() AS ?validationResult)
+        BIND(sh:AndConstraintComponent AS ?sourceConstraintComponent)
+    }
+    """ ?target ?bindValue ?joined) string:format ?constraint
+} .
+
+{ ?shapes this:innerConstraint ?constraint } <= { 
+    ?shapes list:firstRest (?first ?rest). 
+    ?first sh:and ?innerShapes .
+    (?x {
+        ?innerShapes list:member ?innerShape .
+        ?innerList list:firstRest (?innerShape ?shapes) .
+        ?innerList this:innerConstraints ?x .
+    } ?xs) log:collectAllIn ?SCOPE .
+    (?xs "UNION") string:join ?joined .
+    ("""
+    {
+        SELECT DISTINCT ?focusNode ?value WHERE 
+        {
             %s
         }
     }
-    """ ?target ?refersPath ?innerConstraint) string:format ?constraint
+    """ ?joined) string:format ?constraint .
 } .
 
-# TODO more constraint components
+
+# XoneConstraintComponent
+
+{ ?shape this:constraintClause ?constraint } <= { 
+    ?shape sh:xone ?alternatives .
+    ?shape this:target ?target .
+    ?shape this:bindValue ?bindValue .
+
+    (?x {
+        ?alternatives list:member ?innerShape .
+        (?innerShape ?shape) this:innerConstraints ?inner .
+        ("""
+        {
+            BIND(%s AS ?shape)
+            {
+                SELECT DISTINCT ?focusNode ?value 
+                WHERE 
+                {
+                    %s
+                }
+            }
+        }
+        """ ?innerShape ?inner) string:format ?x
+    } ?innerConstraints) log:collectAllIn ?SCOPE .
+
+    #(?pairs this:innerConstraints) list:map ?innerConstraints .
+    (?innerConstraints "UNION") string:join ?joined .
+    ("""
+    {
+        {
+            SELECT ?focusNode ?value
+            WHERE {
+            {
+                %s
+                %s
+            }
+            UNION
+            {
+                %s
+            }
+            }
+            GROUP BY ?focusNode ?value
+            HAVING (COUNT(?shape) != 1)   
+        }
+        BIND(BNODE() AS ?validationResult)
+        BIND(sh:XoneConstraintComponent AS ?sourceConstraintComponent)
+    }
+    """ ?target ?bindValue ?joined) string:format ?constraint
+} .
+
+{ ?shapes this:innerConstraint ?constraint } <= { 
+    ?shapes list:firstRest (?first ?rest). 
+    ?first sh:xone ?alternatives .
+    ?shapes list:last ?shape .
+    ?shape this:target ?target .
+    ?shape this:bindValue ?bindValue .
+
+    (?x {
+        ?alternatives list:member ?innerShape .
+        ?innerList list:firstRest (?innerShape ?shapes) .
+        ?innerList this:innerConstraints ?inner .
+        ("""
+        {
+            BIND(%s AS ?shape)
+            {
+                SELECT DISTINCT ?focusNode ?value 
+                WHERE 
+                {
+                    %s
+                }
+            }
+        }
+        """ ?innerShape ?inner) string:format ?x
+    } ?innerConstraints) log:collectAllIn ?SCOPE .
+    (?innerConstraints "UNION") string:join ?joined .
+
+    ("""
+    {
+        SELECT ?focusNode ?value
+        WHERE {
+        {
+            %s
+            %s
+        }
+        UNION
+        {
+            %s
+        }
+        }
+        GROUP BY ?focusNode ?value
+        HAVING (COUNT(?shape) != 1)   
+        
+    }
+    """ ?target ?bindValue ?joined) string:format ?constraint
+} .
+
+
+# NodeConstraintComponent
+{ ?shape this:constraintClause ?constraint } <= { 
+    ?shape sh:node ?innerShape .
+    (?innerShape ?shape) this:innerConstraints ?innerConstraints .
+    ("""
+    {
+        { 
+            SELECT DISTINCT ?focusNode ?value 
+            WHERE 
+            {
+                %s
+            }
+        }
+        BIND(BNODE() AS ?validationResult)
+        BIND(sh:NodeConstraintComponent AS ?sourceConstraintComponent)
+    }
+    """ ?innerConstraints) string:format ?constraint
+} .
+
+{ ?shapes this:innerConstraint ?constraint } <= { 
+    ?shapes list:firstRest (?innerShape ?rest). 
+    ?innerShape sh:node ?node .
+    ?shapes list:last ?shape .
+    (?node ?shape) this:innerConstraints ?innerConstraints .
+    ("""
+    {
+        SELECT DISTINCT ?focusNode ?value 
+        WHERE 
+        {
+            %s
+        }
+    }
+    """ ?innerConstraints) string:format ?constraint .
+} .
 
 
 
@@ -746,7 +1150,6 @@ WHERE {
 { ?shape this:constraintClause ?constraint } <= { 
     ?shape this:allowedProperties ?allowed .
     ?shape this:target ?target .
-    ?shape this:severity ?severity .
     (?allowed this:formatNode) list:map ?allowedFormat .
     (?allowedFormat ", ") string:join ?allowedValues .
     ("""
@@ -758,11 +1161,34 @@ WHERE {
         
         BIND(BNODE() AS ?validationResult)
         BIND(sh:ClosedConstraintComponent AS ?sourceConstraintComponent)
-        BIND(%s AS ?sourceShape)
-        BIND(%s AS ?resultSeverity)
     }
-    """ ?target ?allowedValues ?shape ?severity) string:format ?constraint
+    """ ?target ?allowedValues) string:format ?constraint
 } .
+
+{ ?shapes this:innerConstraint ?constraint } <= { 
+    ?shapes list:firstRest (?innerShape ?rest). 
+    ?innerShape sh:closed true .
+    ?innerShape this:allowedProperties ?allowed .
+    (?allowed this:formatNode) list:map ?allowedFormat .
+    (?allowedFormat ", ") string:join ?allowedValues .
+    ?shapes list:last ?shape .
+    ?shape this:target ?target .
+    ?shape this:bindValue ?bindValue .
+    ?rest this:bindX ?bindX .
+    
+    ("""
+    {
+        %s
+        %s
+        %s
+
+        ?x ?p [] .
+        FILTER(?p NOT IN (%s))
+
+    }
+    """ ?target ?bindValue ?bindX ?allowedValues) string:format ?constraint .
+} .
+
 
 # HasValueConstraintComponent
 { ?shape this:constraintClause ?constraint } <= { 
@@ -770,30 +1196,51 @@ WHERE {
     ?hasValue this:formatNode ?hasValueFormat .
     ?shape this:target ?target .
     ?shape sh:path ?path .
-    ?path this:path ?pathSPARQL .
-    ?path this:pathFormat ?pathFormat .
-    ?shape this:severity ?severity .
+    ?path this:pathSPARQL ?pathSPARQL .
     ("""
     {
         %s
+        BIND(?focusNode AS ?x)
 
-        FILTER NOT EXISTS { ?focusNode %s %s}
+        FILTER NOT EXISTS { ?x %s %s}
 
         BIND(BNODE() AS ?validationResult)
         BIND(sh:HasValueConstraintComponent AS ?sourceConstraintComponent)
-        BIND(%s AS ?sourceShape)
-        BIND(%s AS ?resultSeverity)
-        BIND(%s AS ?resultPath)   
     }
-    """ ?target ?pathSPARQL ?hasValueFormat ?shape ?severity ?pathFormat) string:format ?constraint
+    """ ?target ?pathSPARQL ?hasValueFormat) string:format ?constraint
 } .
+
+{ ?shapes this:innerConstraint ?constraint } <= { 
+    ?shapes list:firstRest (?innerShape ?rest) .
+    ?innerShape sh:hasValue ?hasValue .
+    ?shapes list:last ?shape .
+    ?shape this:target ?target .
+    ?shape this:bindValue ?bindValue .
+    ?innerShape sh:path ?path .
+    ?path this:pathSPARQL ?pathSPARQL .
+    ?rest this:bindX ?bindX .
+    ?hasValue this:formatNode ?hasValueFormat .
+    
+    ("""
+    {
+        SELECT ?focusNode ?value
+        WHERE {
+            %s
+            %s
+            %s
+
+            FILTER NOT EXISTS { ?x %s %s}
+        }
+    }
+    """ ?target ?bindValue ?bindX ?pathSPARQL ?hasValueFormat) string:format ?constraint
+} .
+
 
 { ?shape this:constraintClause ?constraint } <= { 
     ?shape sh:hasValue ?hasValue .
     ?shape a this:NodeShape .
     ?hasValue this:formatNode ?hasValueFormat .
     ?shape this:target ?target .
-    ?shape this:severity ?severity .
     ("""
     {
         %s
@@ -802,10 +1249,8 @@ WHERE {
 
         BIND(BNODE() AS ?validationResult)
         BIND(sh:HasValueConstraintComponent AS ?sourceConstraintComponent)
-        BIND(%s AS ?sourceShape)
-        BIND(%s AS ?resultSeverity)
     }
-    """ ?target ?hasValueFormat ?shape ?severity) string:format ?constraint
+    """ ?target ?hasValueFormat) string:format ?constraint
 } .
 
 # InConstraintComponent
@@ -813,22 +1258,25 @@ WHERE {
     ?shape sh:in ?items .
     (?items this:formatNode) list:map ?itemStrings .
     (?itemStrings ", ") string:join ?values .
-    ("FILTER (?value NOT IN (%s))" ?values) string:format ?constraint
+    ("FILTER (?x NOT IN (%s))" ?values) string:format ?constraint
 } .
 
 # Utils
 
 { ?value this:nodeKind sh:IRI } <= { ?value log:rawType log:Other . ?value log:uri [] }. 
+{ ?value this:nodeKind sh:BlankNode } <= { ?value log:rawType log:LabeledBlankNode }. 
+{ ?value this:nodeKind sh:BlankNode } <= { ?value log:rawType log:UnlabeledBlankNode }.
+{ ?value this:nodeKind sh:BlankNode } <= { ?value log:rawType log:SkolemIRI }.
 
 { ?value this:datatype ?datatype } <= { ([] ?datatype) log:dtlit ?value }.
 
 xsd:string this:compatibleTypes "xsd:string" .
 xsd:dateTime this:compatibleTypes "xsd:dateTime" .
-xsd:integer this:compatibleTypes "xsd:integer, xsd:decimal, xsd:double, xsd:float" .
-xsd:decimal this:compatibleTypes "xsd:integer, xsd:decimal, xsd:double, xsd:float" .
-xsd:double this:compatibleTypes "xsd:integer, xsd:decimal, xsd:double, xsd:float" .
-xsd:float this:compatibleTypes "xsd:integer, xsd:decimal, xsd:double, xsd:float" .
-#{ ?dataype this:compatibleTypes "xsd:integer, xsd:decimal, xsd:double, xsd:float" } <= { ?datatype list:in (xsd:integer xsd:decimal xsd:double xsd:float) } .
+xsd:integer this:compatibleTypes "xsd:integer, xsd:decimal, xsd:double, xsd:float, xsd:int" .
+xsd:decimal this:compatibleTypes "xsd:integer, xsd:decimal, xsd:double, xsd:float, xsd:int" .
+xsd:double this:compatibleTypes "xsd:integer, xsd:decimal, xsd:double, xsd:float, xsd:int" .
+xsd:float this:compatibleTypes "xsd:integer, xsd:decimal, xsd:double, xsd:float, xsd:int" .
+xsd:int this:compatibleTypes "xsd:integer, xsd:decimal, xsd:double, xsd:float, xsd:int" .
 
 
 # generate SPARQL representations of RDF nodes
@@ -836,79 +1284,70 @@ xsd:float this:compatibleTypes "xsd:integer, xsd:decimal, xsd:double, xsd:float"
     ?node log:rawType log:Other ; log:uri ?uri . 
     ("<%s>" ?uri) string:format ?format 
 } .
-
 { ?value this:formatNode ?format } <= { 
     (?text xsd:string) log:dtlit ?value .
     ('"%s"' ?text) string:format ?format 
 } .
-
 { ?value this:formatNode ?format } <= { 
     (?text xsd:integer) log:dtlit ?value .
     ('%s' ?text) string:format ?format 
 } .
-
 { ?value this:formatNode ?format } <= { 
     (?text xsd:double) log:dtlit ?value .
     ('"%s"^^%s' ?text xsd:decimal) string:format ?format 
 } .
-
 { ?value this:formatNode ?format } <= { 
     (?text ?datatype) log:dtlit ?value .
     ?datatype log:notEqualTo rdf:langString, xsd:string, xsd:integer, xsd:double .
     ('"%s"^^%s' ?text ?datatype) string:format ?format 
 } .
-
 { ?value this:formatNode ?format } <= { 
     ( ?text ?lang) log:langlit ?value .
     ('"%s"@%s' ?text ?lang) string:format ?format 
 } .
 
-# refers relation
-{ ?shape1 this:refers ?shape2 } <= {
-    ?shape1 ?p ?shape2 .
-    ?p list:in (sh:property sh:node sh:not sh:qualifiedValueShape) .
-} .
+{ ?item this:wrapInParents ?wrapped } <= { ("(%s)" ?item) string:format ?wrapped } .
+{ ?item this:wrapInBraces ?wrapped } <= { ("{%s}" ?item) string:format ?wrapped } .
 
-{ ?shape1 this:refers ?shape2 } <= {
-    ?shape1 ?p ?list .
-    ?list list:member ?shape2 .
-    ?p list:in (sh:or sh:xone sh:and) .
-} .
-
-{ (?rootShape ?shape) this:refersList (?rootShape ?shape) } <= { ?rootShape this:refers ?shape } .
-
-{ (?rootShape ?shape) this:refersList ?list } <= { 
-    ?x this:refers ?shape .
-    (?rootShape ?x) this:refersList ?prefix .
-    (?prefix (?shape)) list:append ?list .
-} .
-
-{ (?rootShape ?shape) this:refersPath ?path  } <= { 
-    (?rootShape ?shape) this:refersList ?list .
-    (?list sh:path) list:map ?paths .
-    ?paths this:joinPaths ?path .
-} .
-
-{ ?item this:wrapInParents ?wrapped } <= { ("(" ?item ")") string:concatenation ?wrapped } .
-{ ?item this:wrapInBraces ?wrapped } <= { ("{" ?item "}") string:concatenation ?wrapped } .
-
-
-{ (?path) this:joinPaths ?path } <= { 
-    # (?path) string:concatenation ?result
+{ (?path) this:joinPaths ?result } <= { 
+    ("%s" ?path) string:format ?result
 }.
-
 { ?paths this:joinPaths ?result } <= { 
     ?paths list:length [ math:greaterThan 1 ] .
     (?paths this:wrapInParents) list:map ?wrapped .
     (?wrapped " / ") string:join ?result .
 } .
 
-
 # pairs each element in ?list with the same element ?e
 { (?e ()) this:pairs () } <= {  } .
-
 { (?e ?list) this:pairs ?pairs } <= { 
     ?list list:firstRest (?first ?rest) .
     (?e ?rest) this:pairs ?restPairs .
-    ?pairs list:firstRest ((?e ?first) ?restPairs) .
+    ?pairs list:firstRest ((?first ?e) ?restPairs) .
 } .
+
+# # not implemented yet
+# { ?shape sh:qualifiedValueShape [] } => false .
+
+# see https://www.w3.org/TR/shacl/#shapes-recursion
+{ 
+    ?shape1 [ list:in (sh:property sh:node sh:not sh:qualifiedValueShape) ] ?shape2 .
+} 
+=> 
+{ 
+    ?shape1 this:refers ?shape2.
+} .
+
+{ 
+    ?shape1 [ list:in ( sh:or sh:and sh:xone) ] ?list .
+    ?list list:member ?shape2 .
+} 
+=> 
+{ 
+    ?shape1 this:refers ?shape2 .
+} .
+
+{ ?shape1 this:refersStar ?shape2 } <= { ?shape1 this:refers ?shape2 } .
+{ ?shape1 this:refersStar ?shape2 } <= { ?shape1 this:refers [ this:refersStar ?shape2 ] } .
+
+{ ?shape this:refersStar ?shape } => false . # recursive shapes are not supported in this implementation

@@ -1,0 +1,64 @@
+@prefix shex: <http://www.w3.org/ns/shex#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix ex: <http://example.org/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix sht: <http://www.w3.org/ns/shacl-test#> .
+
+# shapes
+ex:shape
+  sh:targetNode ex:valid , ex:invalid1, ex:invalid2, ex:invalid3 ;
+  sh:node [ sh:equals ex:knows ]
+.
+
+# data
+ex:valid ex:knows ex:valid .
+ex:invalid1 ex:knows ex:foo .
+ex:invalid2 ex:knows ex:invalid2, ex:bar .
+
+<>
+  rdf:type mf:Manifest ;
+  mf:entries (
+      <test32>
+    ) ;
+.
+<test32>
+  rdf:type sht:Validate ;
+  rdfs:label "Test 32" ;
+  rdfs:comment "EqualsConstraintComponent on a node shape inside a node shape";
+  mf:action [
+      sht:dataGraph <> ;
+      sht:shapesGraph <> ;
+    ] ;
+  mf:result [
+      rdf:type sh:ValidationReport ;
+      sh:conforms "false"^^xsd:boolean ;
+      sh:result [
+        a sh:ValidationResult ;
+        sh:resultSeverity sh:Violation ;
+        sh:sourceConstraintComponent sh:NodeConstraintComponent ;
+        sh:sourceShape <http://example.org/shape> ;
+        sh:focusNode <http://example.org/invalid1> ;
+        sh:value <http://example.org/invalid1> ;
+      ] , [
+        a sh:ValidationResult ;
+        sh:resultSeverity sh:Violation ;
+        sh:sourceConstraintComponent sh:NodeConstraintComponent ;
+        sh:sourceShape <http://example.org/shape> ;
+        sh:focusNode <http://example.org/invalid2> ;
+        sh:value <http://example.org/invalid2> ;
+      ] , [
+        a sh:ValidationResult ;
+        sh:resultSeverity sh:Violation ;
+        sh:sourceConstraintComponent sh:NodeConstraintComponent ;
+        sh:sourceShape <http://example.org/shape> ;
+        sh:focusNode <http://example.org/invalid3> ;
+        sh:value <http://example.org/invalid3> ;
+      ] ;
+    ] ;
+  mf:status sht:approved ;
+.

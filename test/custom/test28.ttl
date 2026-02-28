@@ -1,0 +1,130 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix ex: <http:/example.org/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix sht: <http://www.w3.org/ns/shacl-test#> .
+
+# shapes
+
+
+ex:shape
+  sh:targetClass ex:Person ;
+  sh:property ex:addressPropertyShape
+.
+
+ex:addressPropertyShape
+  sh:path ex:address ;
+  sh:minCount 1 ;
+  sh:or (ex:addressShape1 ex:addressShape2)
+.
+  
+ex:addressShape1 
+  sh:class ex:Address1 ;
+  sh:property [
+    sh:path ex:city ;
+    sh:minCount 1 ;
+    sh:class ex:City 
+  ] 
+  .
+
+ex:addressShape2
+  sh:class ex:Address2 ;
+  sh:property [
+    sh:path ex:country ;
+    sh:minCount 1 ;
+    sh:class ex:Country 
+  ] 
+  .
+
+
+# data
+
+ex:valid1 a ex:Person ; ex:address ex:address1 .
+
+ex:valid2 a ex:Person ; ex:address ex:address2 .
+
+
+ex:address1 a ex:Address1 ;
+  ex:city [
+    a ex:City
+  ]
+.
+
+ex:address2 a ex:Address2 ;
+  ex:country [
+    a ex:Country
+  ]
+.
+
+ex:invalid1 a ex:Person .
+
+ex:invalid2 a ex:Person ;
+  ex:address ex:invalidAddress .
+
+ex:invalid3 a ex:Person ;
+  ex:address [
+    a ex:Address1 
+  ] .
+
+ex:invalid4 a ex:Person ;
+  ex:address [
+    a ex:Address2 ;
+    ex:country ex:invalidCountry
+  ] .
+
+
+
+<>
+  rdf:type mf:Manifest ;
+  mf:entries (
+      <test28>
+    ) ;
+.
+<test28>
+  rdf:type sht:Validate ;
+  rdfs:label "Test 28" ;
+  mf:action [
+      sht:dataGraph <> ;
+      sht:shapesGraph <> ;
+    ] ;
+  mf:result [
+      rdf:type sh:ValidationReport ;
+      sh:conforms "false"^^xsd:boolean ;
+      sh:result [
+        a sh:ValidationResult ;
+        sh:resultSeverity sh:Violation ;
+        sh:sourceConstraintComponent sh:MinCountConstraintComponent ;
+        sh:sourceShape <http:/example.org/addressPropertyShape> ;
+        sh:focusNode <http:/example.org/invalid1> ;
+        sh:resultPath <http:/example.org/address> ;
+      ], [
+        a sh:ValidationResult ;
+        sh:resultSeverity sh:Violation ;
+        sh:sourceConstraintComponent sh:OrConstraintComponent ;
+        sh:sourceShape <http:/example.org/addressPropertyShape> ;
+        sh:focusNode <http:/example.org/invalid2> ;
+        sh:value <http:/example.org/invalidAddress> ;
+        sh:resultPath <http:/example.org/address> ;
+      ], [
+        a sh:ValidationResult ;
+        sh:resultSeverity sh:Violation ;
+        sh:sourceConstraintComponent sh:OrConstraintComponent ;
+        sh:sourceShape <http:/example.org/addressPropertyShape> ;
+        sh:focusNode <http:/example.org/invalid3> ;
+        sh:resultPath <http:/example.org/address> ;
+        sh:value [] ;
+      ], [
+        a sh:ValidationResult ;
+        sh:resultSeverity sh:Violation ;
+        sh:sourceConstraintComponent sh:OrConstraintComponent ;
+        sh:sourceShape <http:/example.org/addressPropertyShape> ;
+        sh:focusNode <http:/example.org/invalid4> ;
+        sh:resultPath <http:/example.org/address> ;
+        sh:value [] ;
+      ] ;
+    ] ;
+  mf:status sht:approved ;
+.

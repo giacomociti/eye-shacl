@@ -1,0 +1,64 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix ex: <http://example.org/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix sht: <http://www.w3.org/ns/shacl-test#> .
+
+# shapes
+
+ex:shape
+  sh:targetClass ex:Target ;
+  sh:node [ 
+    sh:closed true ;
+    sh:ignoredProperties ( rdf:type ) ;
+    sh:property 
+      [ sh:path ex:p1 ],
+      [ sh:path ex:p2 ]
+  ]
+.
+
+# data
+ex:valid1 a ex:Target .
+ex:valid2 a ex:Target ; ex:p1 "value1" ; ex:p2 "value2" .
+ex:invalid1 a ex:Target ; ex:p1 "value1" ; ex:p2 "value2" ; ex:p3 "value3" .
+ex:invalid2 a ex:Target ; ex:p3 "value3" .
+
+<>
+  rdf:type mf:Manifest ;
+  mf:entries (
+      <test41>
+    ) ;
+.
+<test41>
+  rdf:type sht:Validate ;
+  rdfs:label "Test 41" ;
+  rdfs:comment "ClosedConstraintComponent inside another shape";
+  mf:action [
+      sht:dataGraph <> ;
+      sht:shapesGraph <> ;
+    ] ;
+  mf:result [
+      rdf:type sh:ValidationReport ;
+      sh:conforms "false"^^xsd:boolean ;
+      sh:result [
+        a sh:ValidationResult ;
+        sh:resultSeverity sh:Violation ;
+        sh:sourceConstraintComponent sh:NodeConstraintComponent ;
+        sh:sourceShape <http://example.org/shape> ;
+        sh:focusNode <http://example.org/invalid1> ;
+        sh:value <http://example.org/invalid1> ;
+    ] ,
+    [
+        a sh:ValidationResult ;
+        sh:resultSeverity sh:Violation ;
+        sh:sourceConstraintComponent sh:NodeConstraintComponent ;
+        sh:sourceShape <http://example.org/shape> ;
+        sh:focusNode <http://example.org/invalid2> ;
+        sh:value <http://example.org/invalid2> ;
+    ]
+  ] ;
+  mf:status sht:approved ;
+.

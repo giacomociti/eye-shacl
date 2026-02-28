@@ -1,0 +1,67 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix ex: <http://example.org/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix sht: <http://www.w3.org/ns/shacl-test#> .
+
+# shapes
+
+
+ex:shape
+  sh:targetClass ex:Event ;
+  sh:node ex:eventShape
+.
+
+ex:eventShape
+  sh:property [
+    sh:path ex:startDate ;
+    sh:lessThan ex:endDate ;
+  ] .
+
+
+# data
+
+ex:invalid1 a ex:Event ; ex:startDate "2024-01-01"^^xsd:date ; ex:endDate "2024-01-01"^^xsd:date .
+ex:invalid2 a ex:Event ; ex:startDate "2024-01-03"^^xsd:date ; ex:endDate "2024-01-02"^^xsd:date .
+ex:valid1 a ex:Event ; ex:startDate "2024-01-01"^^xsd:date ; ex:endDate "2024-01-02"^^xsd:date .
+ex:valid2 a ex:Event ; ex:startDate "2024-01-01"^^xsd:date .
+
+
+<>
+  rdf:type mf:Manifest ;
+  mf:entries (
+      <test35>
+    ) ;
+.
+<test35>
+  rdf:type sht:Validate ;
+  rdfs:label "Test 35" ;
+  rdfs:comment "LessThanConstraintComponent inside a node shape";
+  mf:action [
+      sht:dataGraph <> ;
+      sht:shapesGraph <> ;
+    ] ;
+  mf:result [
+      rdf:type sh:ValidationReport ;
+      sh:conforms "false"^^xsd:boolean ;
+      sh:result [
+        a sh:ValidationResult ;
+        sh:resultSeverity sh:Violation ;
+        sh:sourceConstraintComponent sh:NodeConstraintComponent ;
+        sh:sourceShape <http://example.org/shape> ;
+        sh:focusNode <http://example.org/invalid1> ;
+        sh:value <http://example.org/invalid1> ;
+      ] , [
+        a sh:ValidationResult ;
+        sh:resultSeverity sh:Violation ;
+        sh:sourceConstraintComponent sh:NodeConstraintComponent ;
+        sh:sourceShape <http://example.org/shape> ;
+        sh:focusNode <http://example.org/invalid2> ;
+        sh:value <http://example.org/invalid2> ;
+      ] ;
+    ] ;
+  mf:status sht:approved ;
+.

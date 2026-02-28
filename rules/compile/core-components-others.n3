@@ -15,7 +15,7 @@
 }
 <=
 {
-    ?shape a this:Shape ; sh:closed true .
+    ?shape sh:closed true .
     (?x { ?shape sh:property [ sh:path ?x ] . ?x this:nodeKind sh:IRI } ?existing) log:collectAllIn [] .
     (?x { ?shape sh:ignoredProperties [ list:member ?x ]} ?ignored) log:collectAllIn [] .
     (?existing ?ignored) list:append ?allowed .
@@ -24,6 +24,7 @@
 
 {
     ?shape this:allowedProperties ?allowed .
+    ?shape this:shapeLevel this:topLevelShape .
     ?allowed log:localN3String ?allowedString .
     ("allowed properties are only: %s" ?allowedString) string:format ?message .
 }
@@ -51,6 +52,7 @@
 
 {
     ?shape this:allowedProperties ?allowed .
+    ?shape this:shapeLevel this:innerShape .
 }
 =>
 {
@@ -68,6 +70,7 @@
 # HasValueConstraintComponent
 {
     ?shape a this:PropertyShape ; sh:hasValue ?hasValue ; sh:path ?path .
+    ?shape this:shapeLevel this:topLevelShape .
     ("missing expected value: %s" ?hasValue) string:format ?message .
 } 
 =>
@@ -92,7 +95,8 @@
 }.
 
 {
-   ?shape a this:PropertyShape ; sh:hasValue ?hasValue ; sh:path ?path .
+    ?shape a this:PropertyShape ; sh:hasValue ?hasValue ; sh:path ?path .
+    ?shape this:shapeLevel this:innerShape .
 } 
 =>
 {
@@ -108,6 +112,7 @@
 
 {
     ?shape a this:NodeShape ; sh:hasValue ?hasValue .
+    ?shape this:shapeLevel this:topLevelShape .
     ("missing expected value: %s" ?hasValue) string:format ?message .
 } 
 =>
@@ -131,7 +136,8 @@
 
 {
     ?shape a this:NodeShape ; sh:hasValue ?hasValue .
-    [] log:notIncludes { ?shape sh:deactivated true } .
+    ?shape this:shapeLevel this:innerShape .
+    [] log:notIncludes { ?shape sh:deactivated true } . # ??
 } 
 =>
 {
@@ -147,6 +153,7 @@
 # InConstraintComponent
 {
     ?shape a this:PropertyShape ; sh:in ?in ; sh:path ?path .
+    ?shape this:shapeLevel this:topLevelShape .
 } 
 =>
 {
@@ -175,6 +182,7 @@
 
 {
    ?shape a this:PropertyShape ; sh:in ?in ; sh:path ?path .
+   ?shape this:shapeLevel this:innerShape .
 } 
 =>
 {
@@ -190,6 +198,7 @@
 
 {
     ?shape a this:NodeShape ; sh:in ?in .
+    ?shape this:shapeLevel this:topLevelShape .
 } 
 =>
 {
@@ -212,7 +221,8 @@
 }.
 
 {
-   ?shape a this:NodeShape ; sh:in ?in .
+    ?shape a this:NodeShape ; sh:in ?in .
+    ?shape this:shapeLevel this:innerShape .
 } 
 =>
 {
