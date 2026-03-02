@@ -11,12 +11,14 @@
 
 # shapes
 ex:shape
-  sh:targetNode ex:valid , ex:invalid;
+  sh:targetNode ex:valid , ex:invalid1, ex:invalid2, ex:invalid3 ;
   sh:node [ sh:equals ex:knows ]
 .
 
 # data
 ex:valid ex:knows ex:valid .
+ex:invalid1 ex:knows ex:foo .
+ex:invalid2 ex:knows ex:invalid2, ex:bar .
 
 <>
   rdf:type mf:Manifest ;
@@ -40,8 +42,22 @@ ex:valid ex:knows ex:valid .
         sh:resultSeverity sh:Violation ;
         sh:sourceConstraintComponent sh:NodeConstraintComponent ;
         sh:sourceShape <http://example.org/shape> ;
-        sh:focusNode <http://example.org/invalid> ;
-        sh:value <http://example.org/invalid> ;
+        sh:focusNode <http://example.org/invalid1> ;
+        sh:value <http://example.org/invalid1> ;
+      ] , [
+        a sh:ValidationResult ;
+        sh:resultSeverity sh:Violation ;
+        sh:sourceConstraintComponent sh:NodeConstraintComponent ;
+        sh:sourceShape <http://example.org/shape> ;
+        sh:focusNode <http://example.org/invalid2> ;
+        sh:value <http://example.org/invalid2> ;
+      ] , [
+        a sh:ValidationResult ;
+        sh:resultSeverity sh:Violation ;
+        sh:sourceConstraintComponent sh:NodeConstraintComponent ;
+        sh:sourceShape <http://example.org/shape> ;
+        sh:focusNode <http://example.org/invalid3> ;
+        sh:value <http://example.org/invalid3> ;
       ] ;
     ] ;
   mf:status sht:approved ;

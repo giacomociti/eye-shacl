@@ -94,7 +94,7 @@
     <=
     {
         (?node ?otherPredicate) this:values ?otherValues .
-        ?otherValues list:notMember ?node .
+        (?node) list:setNotEqualTo ?otherValues .
     } .
 } .
 
