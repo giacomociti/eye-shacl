@@ -5,7 +5,7 @@ The ideas of leveraging skolemization and rule-producing rules come from Chapter
 Note: in the following snippets we assume the namespaces:
 
 ```turtle
-@prefix ex: <http:/example.org/> .
+@prefix ex: <http://example.org/> .
 @prefix sh: <http://www.w3.org/ns/shacl#> .
 @prefix this: <http://eye-shacl#> .
 @prefix skolem: <https://eyereasoner.github.io/.well-known/genid/0274bb91-e3b2-439c-b97b-b85adc2b2482#>.

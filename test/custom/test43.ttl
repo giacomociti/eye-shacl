@@ -1,0 +1,60 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix ex: <http://example.org/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix sht: <http://www.w3.org/ns/shacl-test#> .
+
+ex:shape
+	sh:targetClass ex:Target ;
+  sh:not [
+    sh:path ex:value ;
+    sh:qualifiedMinCount 2 ;
+    sh:qualifiedMaxCount 3 ;
+    sh:qualifiedValueShape [
+      sh:nodeKind sh:IRI ;
+    ] ;
+  ]
+.
+
+ex:invalid1 a ex:Target ; ex:value ex:1 , ex:2 , 3, 4 .
+ex:invalid2 a ex:Target ; ex:value ex:1 , ex:2 , ex:3 .
+ex:valid1 a ex:Target ; ex:value ex:1 .
+ex:valid2 a ex:Target ; ex:value ex:1 , ex:2 , ex:3 , ex:4 .
+
+<>
+  rdf:type mf:Manifest ;
+  mf:entries (
+      <test43>
+    ) ;
+.
+<test43>
+  rdf:type sht:Validate ;
+  rdfs:label "Test of sh:qualifiedValueShape inside sh:not" ;
+  mf:action [
+      sht:dataGraph <> ;
+      sht:shapesGraph <> ;
+    ] ;
+  mf:result [
+      rdf:type sh:ValidationReport ;
+      sh:conforms "false"^^xsd:boolean ;
+      sh:result [
+          rdf:type sh:ValidationResult ;
+          sh:focusNode ex:invalid1 ;
+          sh:value ex:invalid1 ;
+          sh:resultSeverity sh:Violation ;
+          sh:sourceConstraintComponent sh:NotConstraintComponent ;
+          sh:sourceShape ex:shape ;
+        ] , [
+          rdf:type sh:ValidationResult ;
+          sh:focusNode ex:invalid2 ;
+          sh:value ex:invalid2 ;
+          sh:resultSeverity sh:Violation ;
+          sh:sourceConstraintComponent sh:NotConstraintComponent ;
+          sh:sourceShape ex:shape ;
+        ] ;
+    ] ;
+  mf:status sht:approved ;
+.
