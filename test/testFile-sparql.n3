@@ -11,7 +11,7 @@
             sht:dataGraph [ log:uri ?dataGraph ] ;
             sht:shapesGraph [ log:uri ?shapesGraph ] ;
         ] .
-    ("node ../sparql/test/index.js main %s %s '../temp/sparql/compiled-sparql' > test-actual.ttl" ?shapesGraph ?dataGraph) string:format ?CMD.
+    ("node ../sparql/test/index.js main %s %s '../sparql/test/output' > test-actual.ttl" ?shapesGraph ?dataGraph) string:format ?CMD.
     ?CMD e:exec 0.
 }
 =>

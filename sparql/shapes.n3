@@ -36,6 +36,10 @@
 { ?shape this:severity ?severity } <= { ?shape sh:severity ?severity } .
 { ?shape this:severity sh:Violation } <= { ?SCOPE log:notIncludes { ?shape sh:severity [] } }.
 
+# result message
+{ (?shape ?defaultMessage) this:resultMessage ?message } <= { ?shape sh:message [ this:quote ?message ] } .
+{ (?shape ?defaultMessage) this:resultMessage ?defaultMessage } <= { ?SCOPE log:notIncludes { ?shape sh:message [] } } .
+
 # targets
 
 { ?shape this:target ?sparql } <= { 
@@ -168,7 +172,7 @@ WHERE {
 { ?path this:pathSPARQL ?result } <= { 
     ?path sh:alternativePath ?alternatives .
     (?alternatives this:pathSPARQL) list:map ?inner .
-    (?inner " | ") string:join ?sparql .
+    (?inner " | ") string:join ?result .
 } .
 { ?path this:pathSPARQL ?result } <= { 
     ?path sh:inversePath [this:pathSPARQL ?inner] .
@@ -194,7 +198,8 @@ WHERE {
     ?shape a this:Shape .
     ?shape this:target ?target .
     ?shape this:bindValue ?bindValue .
-    ?shape this:valueConstraint (?constraint ?component) .
+    ?shape this:valueConstraint (?constraint ?component ?defaultMessage) .
+    (?shape ?defaultMessage) this:resultMessage ?message .
     ("""
     {
         %s
@@ -205,8 +210,9 @@ WHERE {
 
         BIND(BNODE() AS ?validationResult)
         BIND(%s AS ?sourceConstraintComponent) 
+        BIND(%s AS ?resultMessage)
     }
-    """ ?target ?bindValue ?constraint ?component) string:format ?nodeConstraint .
+    """ ?target ?bindValue ?constraint ?component ?message) string:format ?nodeConstraint .
 } .
 
 # value nodes, see https://www.w3.org/TR/shacl/#value-nodes
@@ -255,7 +261,7 @@ WHERE {
 
 { ?shapes this:innerConstraint ?constraint } <= { 
     ?shapes list:firstRest (?innerShape ?rest) .
-    ?innerShape this:valueConstraint (?innerConstraint []) .
+    ?innerShape this:valueConstraint (?innerConstraint [] []) .
     ?shapes list:last ?shape .
     ?shape this:target ?target .
     ?shape this:bindValue ?bindValue .
@@ -287,19 +293,24 @@ WHERE {
 
 
 # ClassConstraintComponent
-{ ?shape this:valueConstraint (?constraint sh:ClassConstraintComponent)} <= { 
+{ ?shape this:valueConstraint (?constraint sh:ClassConstraintComponent ?message)} <= { 
     ?shape sh:class ?class .
     ("FILTER NOT EXISTS { ?x rdf:type/rdfs:subClassOf* %s }" ?class) string:format ?constraint .
+    ("value should be an instance of %s" ?class) string:format [ this:quote ?message] .
 } .
 
 # DatatypeConstraintComponent
-{ ?shape this:valueConstraint (?constraint sh:DatatypeConstraintComponent)} <= { 
+{ ?shape this:valueConstraint (?constraint sh:DatatypeConstraintComponent ?message)} <= { 
     ?shape sh:datatype ?datatype . # we should also check that is not ill-typed
     ("FILTER (!isLiteral(?x) || datatype(?x) != %s)" ?datatype) string:format ?constraint .
+    ("value should have datatype %s" ?datatype) string:format [ this:quote ?message] .
 } .
 
 # NodeKindConstraintComponent
-{ ?shape this:valueConstraint (?constraint sh:NodeKindConstraintComponent)} <= { ?shape this:nodeKindFilter ?constraint } .
+{ ?shape this:valueConstraint (?constraint sh:NodeKindConstraintComponent ?message)} <= { 
+    ?shape this:nodeKindFilter ?constraint .
+    ?shape this:nodeKindMessage [ this:quote ?message ] .
+} .
 
 { ?shape this:nodeKindFilter "FILTER (!isIRI(?x))" } <= { ?shape sh:nodeKind sh:IRI } .
 { ?shape this:nodeKindFilter "FILTER (!isLiteral(?x))" } <= { ?shape sh:nodeKind sh:Literal } .
@@ -308,6 +319,13 @@ WHERE {
 { ?shape this:nodeKindFilter "FILTER (!isBlank(?x) && !isLiteral(?x))" } <= { ?shape sh:nodeKind sh:BlankNodeOrLiteral } .
 { ?shape this:nodeKindFilter "FILTER (!isBlank(?x) && !isIRI(?x))" } <= { ?shape sh:nodeKind sh:BlankNodeOrIRI } .
 
+{ ?shape this:nodeKindMessage "value should be an IRI" } <= { ?shape sh:nodeKind sh:IRI } .
+{ ?shape this:nodeKindMessage "value should be a literal" } <= { ?shape sh:nodeKind sh:Literal } .
+{ ?shape this:nodeKindMessage "value should be a blank node" } <= { ?shape sh:nodeKind sh:BlankNode } .
+{ ?shape this:nodeKindMessage "value should be an IRI or a literal" } <= { ?shape sh:nodeKind sh:IRIOrLiteral } .
+{ ?shape this:nodeKindMessage "value should be a blank node or a literal" } <= { ?shape sh:nodeKind sh:BlankNodeOrLiteral } .
+{ ?shape this:nodeKindMessage "value should be a blank node or an IRI" } <= { ?shape sh:nodeKind sh:BlankNodeOrIRI } .
+
 # MinCountConstraintComponent
 { ?shape this:constraintClause ?constraint } <= { 
     ?shape sh:minCount ?minCount .
@@ -315,6 +333,8 @@ WHERE {
     ?minCount math:greaterThan 0 .
     ?shape sh:path ?path .
     ?path this:pathSPARQL ?pathSPARQL .
+    "no value found" this:quote ?defaultMessage .
+    (?shape ?defaultMessage) this:resultMessage ?resultMessage .
     ("""
     {
         %s
@@ -324,8 +344,9 @@ WHERE {
 
         BIND(BNODE() AS ?validationResult)
         BIND(sh:MinCountConstraintComponent AS ?sourceConstraintComponent)
+        BIND(%s AS ?resultMessage)
     }
-    """ ?target ?pathSPARQL) string:format ?constraint .
+    """ ?target ?pathSPARQL ?resultMessage) string:format ?constraint .
 } .
 
 { ?shapes this:innerConstraint ?constraint } <= { 
@@ -353,13 +374,14 @@ WHERE {
     ?minCount math:greaterThan 1 .
     ?shape sh:path ?path .
     ?path this:pathSPARQL ?pathSPARQL .
+    (?shape """CONCAT("too few values: ", STR(?count))""") this:resultMessage ?resultMessage .
     ("""
     {
         %s
         BIND(?focusNode AS ?x)
 
         {
-            SELECT ?x
+            SELECT ?x (COUNT(?value) AS ?count)
             WHERE { ?x %s ?value } 
             GROUP BY ?x
             HAVING (COUNT(?value) < %s)
@@ -367,8 +389,9 @@ WHERE {
 
         BIND(BNODE() AS ?validationResult)
         BIND(sh:MinCountConstraintComponent AS ?sourceConstraintComponent)
+        BIND(%s AS ?resultMessage)
     }
-    """ ?target ?pathSPARQL ?minCount) string:format ?constraint .
+    """ ?target ?pathSPARQL ?minCount ?resultMessage) string:format ?constraint .
 } .
 
 { ?shapes this:innerConstraint ?constraint } <= { 
@@ -402,13 +425,14 @@ WHERE {
     ?shape this:target ?target .
     ?shape sh:path ?path .
     ?path this:pathSPARQL ?pathSPARQL .
+    (?shape """CONCAT("too many values: ", STR(?count))""") this:resultMessage ?resultMessage .
     ("""
     {
         %s
         BIND(?focusNode AS ?x)
 
         {
-            SELECT ?x
+            SELECT ?x (COUNT(?value) AS ?count)
             WHERE { ?x %s ?value } 
             GROUP BY ?x
             HAVING (COUNT(?value) > %s)
@@ -416,8 +440,9 @@ WHERE {
 
         BIND(BNODE() AS ?validationResult)
         BIND(sh:MaxCountConstraintComponent AS ?sourceConstraintComponent)
+        BIND(%s AS ?resultMessage)
     }
-    """ ?target ?pathSPARQL ?maxCount) string:format ?constraint .
+    """ ?target ?pathSPARQL ?maxCount ?resultMessage) string:format ?constraint .
 } .
 
 { ?shapes this:innerConstraint ?constraint } <= { 
@@ -448,56 +473,79 @@ WHERE {
 } .
 
 # MinInclusiveConstraintComponent
-{ ?shape this:valueConstraint (?constraint sh:MinInclusiveConstraintComponent) } <= { 
-    ?shape sh:minInclusive [ this:formatNode ?minInclusive ; this:datatype ?datatype ] .
+{ ?shape this:valueConstraint (?constraint sh:MinInclusiveConstraintComponent ?message) } <= { 
+    ?shape sh:minInclusive ?minInclusive .
+    ?minInclusive this:formatNode ?minInclusiveFormat ; this:datatype ?datatype .
     ?datatype this:compatibleTypes ?types .
-    ("FILTER (!isLiteral(?x) || !(datatype(?x) IN (%s)) || ?x < %s)" ?types ?minInclusive) string:format ?constraint .
+    ("FILTER (!isLiteral(?x) || !(datatype(?x) IN (%s)) || ?x < %s)" ?types ?minInclusiveFormat) string:format ?constraint .
+    (?literal []) log:dtlit ?minInclusive .
+    ("value should be greater than or equal to %s" ?literal) string:format [ this:quote ?message ] .
 } .
 
 # MaxInclusiveConstraintComponent
-{ ?shape this:valueConstraint (?constraint sh:MaxInclusiveConstraintComponent) } <= { 
-    ?shape sh:maxInclusive [ this:formatNode ?maxInclusive ; this:datatype ?datatype ] .
+{ ?shape this:valueConstraint (?constraint sh:MaxInclusiveConstraintComponent ?message) } <= { 
+    ?shape sh:maxInclusive ?maxInclusive .
+    ?maxInclusive this:formatNode ?maxInclusiveFormat ; this:datatype ?datatype .
     ?datatype this:compatibleTypes ?types .
-    ("FILTER (!isLiteral(?x) || !(datatype(?x) IN (%s)) || ?x > %s)" ?types ?maxInclusive) string:format ?constraint .
+    ("FILTER (!isLiteral(?x) || !(datatype(?x) IN (%s)) || ?x > %s)" ?types ?maxInclusiveFormat) string:format ?constraint .
+    (?literal []) log:dtlit ?maxInclusive .
+    ("value should be less than or equal to %s" ?literal) string:format [ this:quote ?message ] .
 } .
 
 # MinExclusiveConstraintComponent
-{ ?shape this:valueConstraint (?constraint sh:MinExclusiveConstraintComponent) } <= { 
-    ?shape sh:minExclusive [ this:formatNode ?minExclusive ; this:datatype ?datatype ] .
+{ ?shape this:valueConstraint (?constraint sh:MinExclusiveConstraintComponent ?message) } <= { 
+    ?shape sh:minExclusive ?minExclusive .
+    ?minExclusive this:formatNode ?minExclusiveFormat ; this:datatype ?datatype .
     ?datatype this:compatibleTypes ?types .
-    ("FILTER (!isLiteral(?x) || !(datatype(?x) IN (%s)) || ?x <= %s)" ?types ?minExclusive) string:format ?constraint .
+    ("FILTER (!isLiteral(?x) || !(datatype(?x) IN (%s)) || ?x <= %s)" ?types ?minExclusiveFormat) string:format ?constraint .
+    (?literal []) log:dtlit ?minExclusive .
+    ("value should be greater than %s" ?literal) string:format [ this:quote ?message ] .
 } .
 
 # MaxExclusiveConstraintComponent
-{ ?shape this:valueConstraint (?constraint sh:MaxExclusiveConstraintComponent) } <= { 
-    ?shape sh:maxExclusive [ this:formatNode ?maxExclusive ; this:datatype ?datatype ] .
+{ ?shape this:valueConstraint (?constraint sh:MaxExclusiveConstraintComponent ?message) } <= { 
+    ?shape sh:maxExclusive ?maxExclusive .
+    ?maxExclusive this:formatNode ?maxExclusiveFormat ; this:datatype ?datatype .
     ?datatype this:compatibleTypes ?types .
-    ("FILTER (!isLiteral(?x) || !(datatype(?x) IN (%s)) || ?x >= %s)" ?types ?maxExclusive) string:format ?constraint .
+    ("FILTER (!isLiteral(?x) || !(datatype(?x) IN (%s)) || ?x >= %s)" ?types ?maxExclusiveFormat) string:format ?constraint .
+    (?literal []) log:dtlit ?maxExclusive .
+    ("value should be less than %s" ?literal) string:format [ this:quote ?message ] .
 } .
 
 # MinLengthConstraintComponent
-{ ?shape this:valueConstraint (?constraint sh:MinLengthConstraintComponent) } <= { 
+{ ?shape this:valueConstraint (?constraint sh:MinLengthConstraintComponent ?message) } <= { 
     ?shape sh:minLength ?minLength .
     ("FILTER (isBlank(?x) || strlen(str(?x)) < %s)" ?minLength) string:format ?constraint .
+    ("value should have length greater than or equal to %s" ?minLength) string:format [ this:quote ?message ] .
 } .
 
 # MaxLengthConstraintComponent
-{ ?shape this:valueConstraint (?constraint sh:MaxLengthConstraintComponent) } <= { 
+{ ?shape this:valueConstraint (?constraint sh:MaxLengthConstraintComponent ?message) } <= { 
     ?shape sh:maxLength ?maxLength .
     ("FILTER (isBlank(?x) || strlen(str(?x)) > %s)" ?maxLength) string:format ?constraint .
+    ("value should have length less than or equal to %s" ?maxLength) string:format [ this:quote ?message ] .
 } .
 
 # PatternConstraintComponent
-{ ?shape this:valueConstraint (?constraint sh:PatternConstraintComponent) } <= { 
-    ?shape sh:pattern ?pattern .
-    ?SCOPE log:notIncludes { ?shape sh:flags [] } .
-    ("""FILTER (isBlank(?x) || !regex(str(?x), "%s"))""" ?pattern) string:format ?constraint .
+{ ?pattern this:regexEscape ?escaped } <= { 
+    # not clear why this seems to work
+    (?pattern "\\" "\\") string:replace ?escaped
 } .
 
-{ ?shape this:valueConstraint (?constraint sh:PatternConstraintComponent) } <= { 
+{ ?shape this:valueConstraint (?constraint sh:PatternConstraintComponent ?message) } <= { 
     ?shape sh:pattern ?pattern .
+    ?pattern this:regexEscape ?escapedPattern .
+    ?SCOPE log:notIncludes { ?shape sh:flags [] } .
+    ("""FILTER (isBlank(?x) || !regex(str(?x), "%s"))""" ?escapedPattern) string:format ?constraint .
+    "value should match pattern" this:quote [ log:equalTo ?message ] .
+} .
+
+{ ?shape this:valueConstraint (?constraint sh:PatternConstraintComponent ?message) } <= { 
+    ?shape sh:pattern ?pattern .
+    ?pattern this:regexEscape ?escapedPattern .
     ?shape sh:flags ?flags .
-    ("FILTER (isBlank(?x) || !regex(str(?x), '%s', '%s'))" ?pattern ?flags) string:format ?constraint .
+    ("FILTER (isBlank(?x) || !regex(str(?x), '%s', '%s'))" ?escapedPattern ?flags) string:format ?constraint .
+    "value should match pattern" this:quote [ log:equalTo ?message ] .
 } .
 
 # LanguageInConstraintComponent
@@ -505,11 +553,13 @@ WHERE {
     ("langMatches(lang(?x), '%s') = false" ?lang) string:format ?clause
 } .
 
-{ ?shape this:valueConstraint (?constraint sh:LanguageInConstraintComponent) } <= { 
+{ ?shape this:valueConstraint (?constraint sh:LanguageInConstraintComponent ?message) } <= { 
     ?shape sh:languageIn ?languages .
     (?languages this:langNotMatches) list:map ?clauses .
     (?clauses " && ") string:join ?langs .
-    ("FILTER (!isLiteral(?x) || (%s))" ?langs) string:format ?constraint
+    ("FILTER (!isLiteral(?x) || (%s))" ?langs) string:format ?constraint .
+    (?languages ", ") string:join ?messageList .
+    ("value should have one of the language tags: %s" ?messageList) string:format [ this:quote ?message ] .
 } .
 
 # UniqueLangConstraintComponent
@@ -518,13 +568,14 @@ WHERE {
     ?shape this:target ?target .
     ?shape sh:path ?path .
     ?path this:pathSPARQL ?pathSPARQL .
+    (?shape  """CONCAT("language '", ?lang, "' has been used by ", STR(?count), " values")""") this:resultMessage ?resultMessage .
     ("""
     {
         %s
         BIND(?focusNode AS ?x)
         
         {
-            SELECT ?x
+            SELECT ?x ?lang (COUNT(?lang) AS ?count)
             WHERE { 
                 ?x %s ?o 
                 BIND(lang(?o) AS ?lang)
@@ -536,8 +587,9 @@ WHERE {
 
         BIND(BNODE() AS ?validationResult)
         BIND(sh:UniqueLangConstraintComponent AS ?sourceConstraintComponent)
+        BIND(%s AS ?resultMessage)
     }
-    """ ?target ?pathSPARQL) string:format ?constraint .
+    """ ?target ?pathSPARQL ?resultMessage) string:format ?constraint .
 } .
 
 { ?shapes this:innerConstraint ?constraint } <= { 
@@ -577,6 +629,8 @@ WHERE {
     ?shape this:target ?target .
     ?shape sh:path ?path .
     ?path this:pathSPARQL ?pathSPARQL .
+    ("Must have same values as %s" ?otherPath) string:format [ this:quote ?defaultMessage ] .
+    (?shape ?defaultMessage) this:resultMessage ?resultMessage .
     ("""
     {
         %s
@@ -592,8 +646,9 @@ WHERE {
 
         BIND(BNODE() AS ?validationResult)
         BIND(sh:EqualsConstraintComponent AS ?sourceConstraintComponent)
+        BIND(%s AS ?resultMessage)
     }
-    """ ?target ?pathSPARQL ?otherPath ?otherPath ?pathSPARQL) string:format ?constraint
+    """ ?target ?pathSPARQL ?otherPath ?otherPath ?pathSPARQL ?resultMessage) string:format ?constraint
 } .
 
 { ?shapes this:innerConstraint ?constraint } <= { 
@@ -630,6 +685,8 @@ WHERE {
     ?shape sh:equals ?otherPath .
     ?shape a this:NodeShape .
     ?shape this:target ?target .
+    ("Must have same values as %s" ?otherPath) string:format [ this:quote ?defaultMessage ] .
+    (?shape ?defaultMessage) this:resultMessage ?resultMessage .
     ("""
     {
         {
@@ -645,8 +702,9 @@ WHERE {
 
         BIND(BNODE() AS ?validationResult)
         BIND(sh:EqualsConstraintComponent AS ?sourceConstraintComponent)
+        BIND(%s AS ?resultMessage)
     }
-    """ ?target ?otherPath ?target ?otherPath) string:format ?constraint
+    """ ?target ?otherPath ?target ?otherPath ?resultMessage) string:format ?constraint
 } .
 
 { ?shapes this:innerConstraint ?constraint } <= { 
@@ -688,6 +746,8 @@ WHERE {
     ?shape this:target ?target .
     ?shape sh:path ?path .
     ?path this:pathSPARQL ?pathSPARQL .
+    ("Must have no values in common with %s" ?otherPath) string:format [ this:quote ?defaultMessage ] .
+    (?shape ?defaultMessage) this:resultMessage ?resultMessage .
     ("""
     {
         %s
@@ -697,8 +757,9 @@ WHERE {
     
         BIND(BNODE() AS ?validationResult)
         BIND(sh:DisjointConstraintComponent AS ?sourceConstraintComponent)
+        BIND(%s AS ?resultMessage)
     }
-    """ ?target ?pathSPARQL ?otherPath) string:format ?constraint
+    """ ?target ?pathSPARQL ?otherPath ?resultMessage) string:format ?constraint
 } .
 
 { ?shapes this:innerConstraint ?constraint } <= { 
@@ -730,6 +791,8 @@ WHERE {
     ?shape sh:disjoint ?otherPath .
     ?shape a this:NodeShape .
     ?shape this:target ?target .
+    ("Must have no values in common with %s" ?otherPath) string:format [ this:quote ?defaultMessage ] .
+    (?shape ?defaultMessage) this:resultMessage ?resultMessage .
     ("""
     {
         %s
@@ -739,8 +802,9 @@ WHERE {
     
         BIND(BNODE() AS ?validationResult)
         BIND(sh:DisjointConstraintComponent AS ?sourceConstraintComponent)
+        BIND(%s AS ?resultMessage)
     }
-    """ ?target ?otherPath) string:format ?constraint
+    """ ?target ?otherPath ?resultMessage) string:format ?constraint
 } .
 
 { ?shapes this:innerConstraint ?constraint } <= { 
@@ -772,11 +836,12 @@ WHERE {
     ?shape this:target ?target .
     ?shape sh:path ?path .
     ?path this:pathSPARQL ?pathSPARQL .
+    (?shape """CONCAT("value is not less than ", STR(?otherValue))""") this:resultMessage ?resultMessage .
     ("""
     {
         %s
         {
-            SELECT ?focusNode ?value WHERE {
+            SELECT ?focusNode ?value ?otherValue WHERE {
                 ?focusNode %s ?value . 
                 ?focusNode %s ?otherValue .
                 FILTER NOT EXISTS {
@@ -786,8 +851,9 @@ WHERE {
         }
         BIND(BNODE() AS ?validationResult)
         BIND(sh:LessThanConstraintComponent AS ?sourceConstraintComponent)
+        BIND(%s AS ?resultMessage)
     }
-    """ ?target ?pathSPARQL ?otherPath) string:format ?constraint
+    """ ?target ?pathSPARQL ?otherPath ?resultMessage) string:format ?constraint
 } .
 
 { ?shapes this:innerConstraint ?constraint } <= { 
@@ -823,11 +889,12 @@ WHERE {
     ?shape this:target ?target .
     ?shape sh:path ?path .
     ?path this:pathSPARQL ?pathSPARQL .
+    (?shape """CONCAT("value is not less than or equal to ", STR(?otherValue))""") this:resultMessage ?resultMessage .
     ("""
     {
         %s
         {
-            SELECT ?focusNode ?value WHERE {
+            SELECT ?focusNode ?value ?otherValue WHERE {
                 ?focusNode %s ?value . 
                 ?focusNode %s ?otherValue .
                 FILTER NOT EXISTS {
@@ -837,8 +904,9 @@ WHERE {
         }
         BIND(BNODE() AS ?validationResult)
         BIND(sh:LessThanOrEqualsConstraintComponent AS ?sourceConstraintComponent)
+        BIND(%s AS ?resultMessage)
     }
-    """ ?target ?pathSPARQL ?otherPath) string:format ?constraint
+    """ ?target ?pathSPARQL ?otherPath ?resultMessage) string:format ?constraint
 } .
 
 { ?shapes this:innerConstraint ?constraint } <= { 
@@ -877,6 +945,8 @@ WHERE {
     (?shape ?alternatives) this:pairs ?pairs .
     (?pairs this:innerConstraints) list:map ?innerConstraints .
     (?innerConstraints "\n\t\t") string:join ?joined .
+    "all OR alternatives failed" this:quote ?defaultMessage .
+    (?shape ?defaultMessage) this:resultMessage ?resultMessage .
     ("""
     {
         %s
@@ -891,8 +961,9 @@ WHERE {
         
         BIND(BNODE() AS ?validationResult)
         BIND(sh:OrConstraintComponent AS ?sourceConstraintComponent)
+        BIND(%s AS ?resultMessage)
     }
-    """ ?target ?bindValue ?joined) string:format ?constraint
+    """ ?target ?bindValue ?joined ?resultMessage) string:format ?constraint
 } .
 
 { ?shapes this:innerConstraint ?constraint } <= { 
@@ -920,6 +991,8 @@ WHERE {
     ?shape this:target ?target .
     ?shape this:bindValue ?bindValue .
     (?innerShape ?shape) this:innerConstraints ?innerConstraints .
+    "value should not conform to the shape" this:quote ?defaultMessage .
+    (?shape ?defaultMessage) this:resultMessage ?resultMessage .
     ("""
     {
         {
@@ -933,8 +1006,9 @@ WHERE {
         
         BIND(BNODE() AS ?validationResult)
         BIND(sh:NotConstraintComponent AS ?sourceConstraintComponent)
+        BIND(%s AS ?resultMessage)
     }
-    """ ?target ?bindValue ?innerConstraints) string:format ?constraint
+    """ ?target ?bindValue ?innerConstraints ?resultMessage) string:format ?constraint
 } .
 
 { ?shapes this:innerConstraint ?constraint } <= { 
@@ -943,7 +1017,8 @@ WHERE {
     ?shapes list:last ?shape .
     ?shape this:target ?target .
     ?shape this:bindValue ?bindValue .
-    (?not ?shape) this:innerConstraints ?innerConstraints .
+    ?innerList list:firstRest (?not ?shapes) .
+    ?innerList this:innerConstraints ?innerConstraints .
     ("""
     {
         {
@@ -966,6 +1041,8 @@ WHERE {
     (?shape ?innerShapes) this:pairs ?pairs .
     (?pairs this:innerConstraints) list:map ?innerConstraints .
     (?innerConstraints "UNION") string:join ?joined .
+    "value must conform to all shapes in AND" this:quote ?defaultMessage .
+    (?shape ?defaultMessage) this:resultMessage ?resultMessage .
     ("""
     {
         %s
@@ -981,8 +1058,9 @@ WHERE {
 
         BIND(BNODE() AS ?validationResult)
         BIND(sh:AndConstraintComponent AS ?sourceConstraintComponent)
+        BIND(%s AS ?resultMessage)
     }
-    """ ?target ?bindValue ?joined) string:format ?constraint
+    """ ?target ?bindValue ?joined ?resultMessage) string:format ?constraint
 } .
 
 { ?shapes this:innerConstraint ?constraint } <= { 
@@ -1031,10 +1109,14 @@ WHERE {
 
     #(?pairs this:innerConstraints) list:map ?innerConstraints .
     (?innerConstraints "UNION") string:join ?joined .
+
+    ?alternatives list:length ?numAlternatives .
+    ("""CONCAT(STR(%s - ?count), " shapes conforming instead of 1")""" ?numAlternatives) string:format ?defaultMessage .
+    (?shape ?defaultMessage) this:resultMessage ?resultMessage .
     ("""
     {
         {
-            SELECT ?focusNode ?value
+            SELECT ?focusNode ?value (COUNT(?shape) AS ?count)
             WHERE {
             {
                 %s
@@ -1050,8 +1132,9 @@ WHERE {
         }
         BIND(BNODE() AS ?validationResult)
         BIND(sh:XoneConstraintComponent AS ?sourceConstraintComponent)
+        BIND(%s AS ?resultMessage)
     }
-    """ ?target ?bindValue ?joined) string:format ?constraint
+    """ ?target ?bindValue ?joined ?resultMessage) string:format ?constraint
 } .
 
 { ?shapes this:innerConstraint ?constraint } <= { 
@@ -1105,6 +1188,8 @@ WHERE {
 { ?shape this:constraintClause ?constraint } <= { 
     ?shape sh:node ?innerShape .
     (?innerShape ?shape) this:innerConstraints ?innerConstraints .
+    "value should conform to shape" this:quote ?defaultMessage .
+    (?shape ?defaultMessage) this:resultMessage ?resultMessage .
     ("""
     {
         { 
@@ -1116,15 +1201,17 @@ WHERE {
         }
         BIND(BNODE() AS ?validationResult)
         BIND(sh:NodeConstraintComponent AS ?sourceConstraintComponent)
+        BIND(%s AS ?resultMessage)
     }
-    """ ?innerConstraints) string:format ?constraint
+    """ ?innerConstraints ?resultMessage) string:format ?constraint
 } .
 
 { ?shapes this:innerConstraint ?constraint } <= { 
     ?shapes list:firstRest (?innerShape ?rest). 
     ?innerShape sh:node ?node .
     ?shapes list:last ?shape .
-    (?node ?shape) this:innerConstraints ?innerConstraints .
+    ?innerList list:firstRest (?node ?shapes) .
+    ?innerList this:innerConstraints ?innerConstraints .
     ("""
     {
         SELECT DISTINCT ?focusNode ?value 
@@ -1136,6 +1223,87 @@ WHERE {
     """ ?innerConstraints) string:format ?constraint .
 } .
 
+
+# QualifiedValueShapeComponent (todo inner and disjoint)
+
+# QualifiedMinCountConstraintComponent
+{ ?shape this:constraintClause ?constraint } <= { 
+    ?shape sh:qualifiedValueShape ?innerShape .
+    ?shape sh:qualifiedMinCount ?minCount .
+    ?minCount math:greaterThan 0 .
+    ?shape this:target ?target .
+    ?shape this:bindValue ?bindValue .
+    (?innerShape ?shape) this:innerConstraints ?innerConstraints .    
+    ("""
+    {
+        %s
+        FILTER NOT EXISTS { 
+            %s
+            %s
+            MINUS {
+                %s
+            }
+        }
+       
+        BIND(BNODE() AS ?validationResult)
+        BIND(sh:QualifiedMinCountConstraintComponent AS ?sourceConstraintComponent)
+    }
+    """ ?target ?target ?bindValue ?innerConstraints) string:format ?constraint
+} .
+
+# QualifiedMinCountConstraintComponent
+{ ?shape this:constraintClause ?constraint } <= { 
+    ?shape sh:qualifiedValueShape ?innerShape .
+    ?shape sh:qualifiedMinCount ?minCount .
+    ?shape this:target ?target .
+    ?shape this:bindValue ?bindValue .
+    (?innerShape ?shape) this:innerConstraints ?innerConstraints .    
+    ("""
+    {
+        { 
+            SELECT ?focusNode
+            WHERE {
+                %s
+                %s
+            MINUS
+                %s
+            }
+            GROUP BY ?focusNode
+            HAVING (COUNT(?value) < %s)
+            
+        }
+        BIND(BNODE() AS ?validationResult)
+        BIND(sh:QualifiedMinCountConstraintComponent AS ?sourceConstraintComponent)
+    }
+    """ ?target ?bindValue ?innerConstraints ?minCount) string:format ?constraint
+} .
+
+# QualifiedMaxCountConstraintComponent
+{ ?shape this:constraintClause ?constraint } <= { 
+    ?shape sh:qualifiedValueShape ?innerShape .
+    ?shape sh:qualifiedMaxCount ?maxCount .
+    ?shape this:target ?target .
+    ?shape this:bindValue ?bindValue .
+    (?innerShape ?shape) this:innerConstraints ?innerConstraints .    
+    ("""
+    {
+        { 
+            SELECT ?focusNode
+            WHERE {
+                %s
+                %s
+            MINUS
+                %s
+            }
+            GROUP BY ?focusNode
+            HAVING (COUNT(?value) > %s)
+            
+        }
+        BIND(BNODE() AS ?validationResult)
+        BIND(sh:QualifiedMaxCountConstraintComponent AS ?sourceConstraintComponent)
+    }
+    """ ?target ?bindValue ?innerConstraints ?maxCount) string:format ?constraint
+} .
 
 
 # ClosedConstraintComponent
@@ -1152,6 +1320,8 @@ WHERE {
     ?shape this:target ?target .
     (?allowed this:formatNode) list:map ?allowedFormat .
     (?allowedFormat ", ") string:join ?allowedValues .
+    "only allowed predicates should be used" this:quote ?defaultMessage .
+    (?shape ?defaultMessage) this:resultMessage ?resultMessage .
     ("""
     {
         %s
@@ -1161,8 +1331,9 @@ WHERE {
         
         BIND(BNODE() AS ?validationResult)
         BIND(sh:ClosedConstraintComponent AS ?sourceConstraintComponent)
+        BIND(%s AS ?resultMessage)
     }
-    """ ?target ?allowedValues) string:format ?constraint
+    """ ?target ?allowedValues ?resultMessage) string:format ?constraint
 } .
 
 { ?shapes this:innerConstraint ?constraint } <= { 
@@ -1197,6 +1368,8 @@ WHERE {
     ?shape this:target ?target .
     ?shape sh:path ?path .
     ?path this:pathSPARQL ?pathSPARQL .
+    "missing expected value" this:quote ?defaultMessage .
+    (?shape ?defaultMessage) this:resultMessage ?resultMessage .
     ("""
     {
         %s
@@ -1206,8 +1379,9 @@ WHERE {
 
         BIND(BNODE() AS ?validationResult)
         BIND(sh:HasValueConstraintComponent AS ?sourceConstraintComponent)
+        BIND(%s AS ?resultMessage)
     }
-    """ ?target ?pathSPARQL ?hasValueFormat) string:format ?constraint
+    """ ?target ?pathSPARQL ?hasValueFormat ?resultMessage) string:format ?constraint
 } .
 
 { ?shapes this:innerConstraint ?constraint } <= { 
@@ -1241,6 +1415,8 @@ WHERE {
     ?shape a this:NodeShape .
     ?hasValue this:formatNode ?hasValueFormat .
     ?shape this:target ?target .
+    "unexpected value" this:quote ?defaultMessage .
+    (?shape ?defaultMessage) this:resultMessage ?resultMessage .
     ("""
     {
         %s
@@ -1249,19 +1425,23 @@ WHERE {
 
         BIND(BNODE() AS ?validationResult)
         BIND(sh:HasValueConstraintComponent AS ?sourceConstraintComponent)
+        BIND(%s AS ?resultMessage)
     }
-    """ ?target ?hasValueFormat) string:format ?constraint
+    """ ?target ?hasValueFormat ?resultMessage) string:format ?constraint
 } .
 
 # InConstraintComponent
-{ ?shape this:valueConstraint (?constraint sh:InConstraintComponent) } <= { 
+{ ?shape this:valueConstraint (?constraint sh:InConstraintComponent ?message) } <= { 
     ?shape sh:in ?items .
     (?items this:formatNode) list:map ?itemStrings .
     (?itemStrings ", ") string:join ?values .
-    ("FILTER (?x NOT IN (%s))" ?values) string:format ?constraint
+    ("FILTER (?x NOT IN (%s))" ?values) string:format ?constraint .
+    "value should be one of the values in the list" this:quote [ log:equalTo ?message ] .
 } .
 
 # Utils
+
+{ ?text this:quote ?quoted } <= { ('"%s"' ?text) string:format ?quoted } . # consider escaping quotes in the text
 
 { ?value this:nodeKind sh:IRI } <= { ?value log:rawType log:Other . ?value log:uri [] }. 
 { ?value this:nodeKind sh:BlankNode } <= { ?value log:rawType log:LabeledBlankNode }. 
@@ -1325,9 +1505,6 @@ xsd:int this:compatibleTypes "xsd:integer, xsd:decimal, xsd:double, xsd:float, x
     (?e ?rest) this:pairs ?restPairs .
     ?pairs list:firstRest ((?first ?e) ?restPairs) .
 } .
-
-# # not implemented yet
-# { ?shape sh:qualifiedValueShape [] } => false .
 
 # see https://www.w3.org/TR/shacl/#shapes-recursion
 { 

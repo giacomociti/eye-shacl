@@ -78,6 +78,20 @@ function saveQueries(queries, outputDirectory) {
         const shape = shapeIRI.split('/').pop()
         fs.writeFileSync(`${outputDirectory}/${shape}.rq`, query)
     }
+    // write a JSON file (SPARQL notebook) listing file names
+    const notebook = []
+    for (const shapeIRI of queries.keys()) {
+        const shape = shapeIRI.split('/').pop()
+        notebook.push({ 
+            kind: 2,
+            language: "sparql",
+            value: "",
+            metadata: {
+                file: `${shape}.rq`
+            }
+        })
+    }
+    fs.writeFileSync(`${outputDirectory}/shapes.sparqlbook`, JSON.stringify(notebook, null, 2))
 }
 
 

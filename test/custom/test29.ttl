@@ -1,5 +1,5 @@
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
-@prefix ex: <http:/example.org/> .
+@prefix ex: <http://example.org/> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
@@ -49,16 +49,16 @@ ex:invalid2 a ex:Person .
         a sh:ValidationResult ;
         sh:resultSeverity sh:Violation ;
         sh:sourceConstraintComponent sh:NodeConstraintComponent ;
-        sh:sourceShape <http:/example.org/shape> ;
-        sh:focusNode <http:/example.org/invalid1> ;
-        sh:value <http:/example.org/invalid1> ;
+        sh:sourceShape <http://example.org/shape> ;
+        sh:focusNode <http://example.org/invalid1> ;
+        sh:value <http://example.org/invalid1> ;
       ] , [
         a sh:ValidationResult ;
         sh:resultSeverity sh:Violation ;
         sh:sourceConstraintComponent sh:NodeConstraintComponent ;
-        sh:sourceShape <http:/example.org/shape> ;
-        sh:focusNode <http:/example.org/invalid2> ;
-        sh:value <http:/example.org/invalid2> ;
+        sh:sourceShape <http://example.org/shape> ;
+        sh:focusNode <http://example.org/invalid2> ;
+        sh:value <http://example.org/invalid2> ;
       ] ;
     ] ;
   mf:status sht:approved ;
