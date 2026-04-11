@@ -1,21 +1,28 @@
 import fs from 'fs'
 import n3 from 'n3';
 import path from 'path';
-import { n3reasoner } from 'eyereasoner';
+// import { n3reasoner } from 'eyereasoner';
+import eyeling from 'eyeling';
 import oxigraph from 'oxigraph';
 
 const __dirname = path.dirname(new URL(import.meta.url).pathname);
 
-const shapeRules = fs.readFileSync(path.join(__dirname, '..', 'shapes.n3'), 'utf8')
+// npx eyeling --ast ../shapes.n3 > shapes.json
+const rules = JSON.parse(fs.readFileSync(path.join(__dirname, 'shapes.json'), 'utf8'))
 
 async function compile(shapesFile) {
-    const shapes = fs.readFileSync(shapesFile, 'utf8')
-    const ruleResults = await n3reasoner([shapes, shapeRules])  
-    const store = new n3.Store(new n3.Parser().parse(ruleResults))
+   
+    const shapesData = fs.readFileSync(shapesFile, 'utf8')
+    const quads = new n3.Parser().parse(shapesData)
     const result = new Map()
-    store.match(null, n3.DataFactory.namedNode('http://eye-shacl#sparql')).forEach(triple => {
-        result.set(triple.subject.value, triple.object.value)
-    })
+
+    const streamResult = eyeling.reasonStream({ quads, rules })
+    for (const triple of streamResult.derived) {
+        if (triple.fact.p.value === 'http://eye-shacl#sparql') {
+            const query = JSON.parse(triple.fact.o.value)
+            result.set(triple.fact.s.value ?? triple.fact.s.label.slice(2), query)
+        }
+    }
     return result
 }
 

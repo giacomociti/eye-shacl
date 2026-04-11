@@ -10,6 +10,46 @@
 @prefix this: <http://eye-shacl#> .
 
 
+### list:unique
+{ () this:unique () } <= { } .
+
+{ ?list this:unique ?result } <= { 
+    ?list list:firstRest (?first ?rest) .
+    ?first list:in ?rest .
+    ?rest this:unique ?result .
+} .
+
+{ ?list this:unique ?result } <= { 
+    ?list list:firstRest (?first ?rest) .
+    ?rest list:notMember ?first .
+    ?rest this:unique ?uniqueRest .
+    ?result list:firstRest (?first ?uniqueRest) .
+} .
+
+### string:join
+{ (() ?sep) this:join "" } <= { } .
+{ ((?x) ?sep) this:join ?x } <= { } .
+{ (?list ?sep) this:join ?joined } <= { 
+    ?list list:firstRest (?first ?rest) .
+    ?rest list:first ?second .
+    (?rest ?sep) this:join ?restJoined .
+    (?first ?sep ?restJoined) string:concatenation ?joined
+} .
+
+
+### nodeKind
+{ ?term this:nodeKind sh:Literal } <= { ?term log:rawType log:Literal } .
+
+{ ?term this:nodeKind sh:IRI } <= { 
+    ?term log:rawType log:Other . 
+    ?term log:uri ?x . 
+    ?x log:rawType log:Literal . # necessary to exclude blank nodes (why?)
+} .
+{ ?term this:nodeKind sh:BlankNode } <= { 
+    ?term log:rawType log:Other. 
+    ((?term) log:uri) list:map () .
+} .
+
 # shapes identification
 
 { 
@@ -66,7 +106,7 @@
     (?x { ?shape sh:targetNode ?x } ?targetNodes) log:collectAllIn ?SCOPE .
     ?targetNodes list:length [ math:greaterThan 0 ] .
     (?targetNodes this:formatNode) list:map ?nodeStrings .
-    (?nodeStrings " " ) string:join ?values .
+    (?nodeStrings " " ) this:join ?values .
     ("VALUES ?focusNode { %s }" ?values) string:format ?sparql .
 } .
 
@@ -77,13 +117,14 @@
 { 
     ?shape a this:Shape .
     ?shape this:target ?target .
-    ?shape this:severity ?severity .
+    ?shape this:formatNode ?shapeString .
+    ?shape this:severity [ this:formatNode ?severity ] .
     ?shape this:constructResultPath ?constructResultPath .
 
     (?x { ?shape this:constraintClause ?x } ?xs) log:collectAllIn ?SCOPE .
     ?xs list:length [ math:greaterThan 0 ] .
-    ?xs list:unique ?unique . # why sometimes we have duplicates?
-    (?unique "UNION" ) string:join ?constraints .
+    ?xs this:unique ?unique . # why sometimes we have duplicates?
+    (?unique "UNION" ) this:join ?constraints .
 
     ("""
 PREFIX sh: <http://www.w3.org/ns/shacl#>    
@@ -104,7 +145,7 @@ CONSTRUCT {
 WHERE {
     %s
 }
-    """ ?severity ?shape ?constructResultPath ?constraints) string:format ?sparql .
+    """ ?severity ?shapeString ?constructResultPath ?constraints) string:format ?sparql .
 } => {  
     ?shape this:sparql ?sparql .
 } .
@@ -128,13 +169,13 @@ WHERE {
 } .
 { ?path this:pathSHACL ?result } <= { 
     (?path this:pathSHACL) list:map ?innerFormats .
-    (?innerFormats " ") string:join ?joined .
+    (?innerFormats " ") this:join ?joined .
     ("(%s)" ?joined) string:format ?result .
 } .
 { ?path this:pathSHACL ?result } <= { 
     ?path sh:alternativePath ?innerPaths ; this:nodeKind sh:BlankNode .
     (?innerPaths this:pathSHACL) list:map ?innerFormats .
-    (?innerFormats " ") string:join ?joined .
+    (?innerFormats " ") this:join ?joined .
     ("[ sh:alternativePath (%s) ]" ?joined) string:format ?result .
 } .
 { ?path this:pathSHACL ?result } <= { 
@@ -167,12 +208,12 @@ WHERE {
 } .
 { ?path this:pathSPARQL ?result } <= { 
     (?path this:pathSPARQL) list:map ?items .
-    (?items "/") string:join ?result .
+    (?items "/") this:join ?result .
 } .
 { ?path this:pathSPARQL ?result } <= { 
     ?path sh:alternativePath ?alternatives .
     (?alternatives this:pathSPARQL) list:map ?inner .
-    (?inner " | ") string:join ?result .
+    (?inner " | ") this:join ?result .
 } .
 { ?path this:pathSPARQL ?result } <= { 
     ?path sh:inversePath [this:pathSPARQL ?inner] .
@@ -200,6 +241,7 @@ WHERE {
     ?shape this:bindValue ?bindValue .
     ?shape this:valueConstraint (?constraint ?component ?defaultMessage) .
     (?shape ?defaultMessage) this:resultMessage ?message .
+    ?component this:formatNode ?componentString .
     ("""
     {
         %s
@@ -212,7 +254,7 @@ WHERE {
         BIND(%s AS ?sourceConstraintComponent) 
         BIND(%s AS ?resultMessage)
     }
-    """ ?target ?bindValue ?constraint ?component ?message) string:format ?nodeConstraint .
+    """ ?target ?bindValue ?constraint ?componentString ?message) string:format ?nodeConstraint .
 } .
 
 # value nodes, see https://www.w3.org/TR/shacl/#value-nodes
@@ -246,15 +288,17 @@ WHERE {
     ?reversed list:firstRest (?first ?rest) .
     (?rest sh:path) list:map ?innerPaths .
     ?innerPaths list:length [ math:greaterThan 0 ] .
-    ?innerPaths this:joinPaths ?innerPathString .
+    ## to check, maybe this:pathSPARQL should be used instead of this:formatNode
+    (?innerPaths this:formatNode) list:map ?innerPathsFormatted .
+    ?innerPathsFormatted this:joinPaths ?innerPathString .
     ("?value %s ?x ." ?innerPathString) string:format ?bindX 
 } .
 
 # collects multiple inner constraints (e.g. in sh:or) into a single SPARQL string with UNIONs
 { ?shapes this:innerConstraints ?constraints } <= { 
     ((?shapes) this:innerConstraint) list:map ?innerConstraints .
-    ?innerConstraints list:unique ?unique . # what causes duplicates? (core/property/node-001.ttl)
-    (?unique "UNION") string:join ?constraints .
+    ?innerConstraints this:unique ?unique . # what causes duplicates? (core/property/node-001.ttl)
+    (?unique "UNION") this:join ?joined .
     ?joined this:wrapInBraces ?constraints .
 } .
 
@@ -294,14 +338,14 @@ WHERE {
 
 # ClassConstraintComponent
 { ?shape this:valueConstraint (?constraint sh:ClassConstraintComponent ?message)} <= { 
-    ?shape sh:class ?class .
+    ?shape sh:class [ this:formatNode ?class ] .
     ("FILTER NOT EXISTS { ?x rdf:type/rdfs:subClassOf* %s }" ?class) string:format ?constraint .
     ("value should be an instance of %s" ?class) string:format [ this:quote ?message] .
 } .
 
 # DatatypeConstraintComponent
 { ?shape this:valueConstraint (?constraint sh:DatatypeConstraintComponent ?message)} <= { 
-    ?shape sh:datatype ?datatype . # we should also check that is not ill-typed
+    ?shape sh:datatype [ this:formatNode ?datatype ] . # we should also check that is not ill-typed
     ("FILTER (!isLiteral(?x) || datatype(?x) != %s)" ?datatype) string:format ?constraint .
     ("value should have datatype %s" ?datatype) string:format [ this:quote ?message] .
 } .
@@ -529,7 +573,7 @@ WHERE {
 # PatternConstraintComponent
 { ?pattern this:regexEscape ?escaped } <= { 
     # not clear why this seems to work
-    (?pattern "\\" "\\") string:replace ?escaped
+    (?pattern "\\\\" "\\\\") string:replace ?escaped
 } .
 
 { ?shape this:valueConstraint (?constraint sh:PatternConstraintComponent ?message) } <= { 
@@ -556,9 +600,9 @@ WHERE {
 { ?shape this:valueConstraint (?constraint sh:LanguageInConstraintComponent ?message) } <= { 
     ?shape sh:languageIn ?languages .
     (?languages this:langNotMatches) list:map ?clauses .
-    (?clauses " && ") string:join ?langs .
+    (?clauses " && ") this:join ?langs .
     ("FILTER (!isLiteral(?x) || (%s))" ?langs) string:format ?constraint .
-    (?languages ", ") string:join ?messageList .
+    (?languages ", ") this:join ?messageList .
     ("value should have one of the language tags: %s" ?messageList) string:format [ this:quote ?message ] .
 } .
 
@@ -625,7 +669,7 @@ WHERE {
 
 # EqualsConstraintComponent
 { ?shape this:constraintClause ?constraint } <= { 
-    ?shape sh:equals ?otherPath .
+    ?shape sh:equals [ this:formatNode ?otherPath] .
     ?shape this:target ?target .
     ?shape sh:path ?path .
     ?path this:pathSPARQL ?pathSPARQL .
@@ -653,7 +697,7 @@ WHERE {
 
 { ?shapes this:innerConstraint ?constraint } <= { 
     ?shapes list:firstRest (?innerShape ?rest) .
-    ?innerShape sh:equals ?otherPath .
+    ?innerShape sh:equals [ this:formatNode ?otherPath] .
     ?innerShape sh:path ?path .
     ?path this:pathSPARQL ?pathSPARQL .
     ?shapes list:last ?shape .
@@ -682,7 +726,7 @@ WHERE {
 } .
 
 { ?shape this:constraintClause ?constraint } <= { 
-    ?shape sh:equals ?otherPath .
+    ?shape sh:equals [ this:formatNode ?otherPath ] .
     ?shape a this:NodeShape .
     ?shape this:target ?target .
     ("Must have same values as %s" ?otherPath) string:format [ this:quote ?defaultMessage ] .
@@ -709,7 +753,7 @@ WHERE {
 
 { ?shapes this:innerConstraint ?constraint } <= { 
     ?shapes list:firstRest (?innerShape ?rest) .
-    ?innerShape sh:equals ?otherPath .
+    ?innerShape sh:equals [ this:formatNode ?otherPath ] .
     ?innerShape a this:NodeShape .
     ?shapes list:last ?shape .
     ?shape this:target ?target .
@@ -742,7 +786,7 @@ WHERE {
 
 # DisjointConstraintComponent
 { ?shape this:constraintClause ?constraint } <= { 
-    ?shape sh:disjoint ?otherPath .
+    ?shape sh:disjoint [ this:formatNode ?otherPath ] .
     ?shape this:target ?target .
     ?shape sh:path ?path .
     ?path this:pathSPARQL ?pathSPARQL .
@@ -764,7 +808,7 @@ WHERE {
 
 { ?shapes this:innerConstraint ?constraint } <= { 
     ?shapes list:firstRest (?innerShape ?rest) .
-    ?innerShape sh:disjoint ?otherPath .
+    ?innerShape sh:disjoint [ this:formatNode ?otherPath ] .
     ?innerShape sh:path ?path .
     ?path this:pathSPARQL ?pathSPARQL .
     ?shapes list:last ?shape .
@@ -788,7 +832,7 @@ WHERE {
 
 
 { ?shape this:constraintClause ?constraint } <= { 
-    ?shape sh:disjoint ?otherPath .
+    ?shape sh:disjoint [ this:formatNode ?otherPath ] .
     ?shape a this:NodeShape .
     ?shape this:target ?target .
     ("Must have no values in common with %s" ?otherPath) string:format [ this:quote ?defaultMessage ] .
@@ -809,7 +853,7 @@ WHERE {
 
 { ?shapes this:innerConstraint ?constraint } <= { 
     ?shapes list:firstRest (?innerShape ?rest) .
-    ?innerShape sh:disjoint ?otherPath .
+    ?innerShape sh:disjoint [ this:formatNode ?otherPath ] .
     ?innerShape a this:NodeShape .
     ?shapes list:last ?shape .
     ?shape this:target ?target .
@@ -832,7 +876,7 @@ WHERE {
 
 # LessThanConstraintComponent
 { ?shape this:constraintClause ?constraint } <= { 
-    ?shape sh:lessThan ?otherPath .
+    ?shape sh:lessThan [ this:formatNode ?otherPath ] .
     ?shape this:target ?target .
     ?shape sh:path ?path .
     ?path this:pathSPARQL ?pathSPARQL .
@@ -858,7 +902,7 @@ WHERE {
 
 { ?shapes this:innerConstraint ?constraint } <= { 
     ?shapes list:firstRest (?innerShape ?rest) .
-    ?innerShape sh:lessThan ?otherPath .
+    ?innerShape sh:lessThan [ this:formatNode ?otherPath ] .
     ?innerShape sh:path ?path .
     ?path this:pathSPARQL ?pathSPARQL .
     ?shapes list:last ?shape .
@@ -885,7 +929,7 @@ WHERE {
 
 # LessThanOrEqualsConstraintComponent
 { ?shape this:constraintClause ?constraint } <= { 
-    ?shape sh:lessThanOrEquals ?otherPath .
+    ?shape sh:lessThanOrEquals [ this:formatNode ?otherPath ] .
     ?shape this:target ?target .
     ?shape sh:path ?path .
     ?path this:pathSPARQL ?pathSPARQL .
@@ -911,7 +955,7 @@ WHERE {
 
 { ?shapes this:innerConstraint ?constraint } <= { 
     ?shapes list:firstRest (?innerShape ?rest) .
-    ?innerShape sh:lessThanOrEquals ?otherPath .
+    ?innerShape sh:lessThanOrEquals [ this:formatNode ?otherPath ] .
     ?innerShape sh:path ?path .
     ?path this:pathSPARQL ?pathSPARQL .
     ?shapes list:last ?shape .
@@ -944,7 +988,7 @@ WHERE {
     ?shape this:bindValue ?bindValue .
     (?shape ?alternatives) this:pairs ?pairs .
     (?pairs this:innerConstraints) list:map ?innerConstraints .
-    (?innerConstraints "\n\t\t") string:join ?joined .
+    (?innerConstraints "\n\t\t") this:join ?joined .
     "all OR alternatives failed" this:quote ?defaultMessage .
     (?shape ?defaultMessage) this:resultMessage ?resultMessage .
     ("""
@@ -974,7 +1018,7 @@ WHERE {
         ?innerList list:firstRest (?innerShape ?shapes) .
         ?innerList this:innerConstraints ?x .
     } ?xs) log:collectAllIn ?SCOPE .
-    (?xs "\n\t\t") string:join ?joined .
+    (?xs "\n\t\t") this:join ?joined .
     ("""
     {
         SELECT DISTINCT ?focusNode ?value WHERE 
@@ -1040,7 +1084,7 @@ WHERE {
     ?shape this:bindValue ?bindValue .
     (?shape ?innerShapes) this:pairs ?pairs .
     (?pairs this:innerConstraints) list:map ?innerConstraints .
-    (?innerConstraints "UNION") string:join ?joined .
+    (?innerConstraints "UNION") this:join ?joined .
     "value must conform to all shapes in AND" this:quote ?defaultMessage .
     (?shape ?defaultMessage) this:resultMessage ?resultMessage .
     ("""
@@ -1071,7 +1115,7 @@ WHERE {
         ?innerList list:firstRest (?innerShape ?shapes) .
         ?innerList this:innerConstraints ?x .
     } ?xs) log:collectAllIn ?SCOPE .
-    (?xs "UNION") string:join ?joined .
+    (?xs "UNION") this:join ?joined .
     ("""
     {
         SELECT DISTINCT ?focusNode ?value WHERE 
@@ -1093,6 +1137,7 @@ WHERE {
     (?x {
         ?alternatives list:member ?innerShape .
         (?innerShape ?shape) this:innerConstraints ?inner .
+        ?innerShape this:formatNode ?innerShapeFormat .
         ("""
         {
             BIND(%s AS ?shape)
@@ -1104,11 +1149,11 @@ WHERE {
                 }
             }
         }
-        """ ?innerShape ?inner) string:format ?x
+        """ ?innerShapeFormat ?inner) string:format ?x
     } ?innerConstraints) log:collectAllIn ?SCOPE .
 
     #(?pairs this:innerConstraints) list:map ?innerConstraints .
-    (?innerConstraints "UNION") string:join ?joined .
+    (?innerConstraints "UNION") this:join ?joined .
 
     ?alternatives list:length ?numAlternatives .
     ("""CONCAT(STR(%s - ?count), " shapes conforming instead of 1")""" ?numAlternatives) string:format ?defaultMessage .
@@ -1148,6 +1193,7 @@ WHERE {
         ?alternatives list:member ?innerShape .
         ?innerList list:firstRest (?innerShape ?shapes) .
         ?innerList this:innerConstraints ?inner .
+        ?innerShape this:formatNode ?innerShapeFormat .
         ("""
         {
             BIND(%s AS ?shape)
@@ -1159,9 +1205,9 @@ WHERE {
                 }
             }
         }
-        """ ?innerShape ?inner) string:format ?x
+        """ ?innerShapeFormat ?inner) string:format ?x
     } ?innerConstraints) log:collectAllIn ?SCOPE .
-    (?innerConstraints "UNION") string:join ?joined .
+    (?innerConstraints "UNION") this:join ?joined .
 
     ("""
     {
@@ -1319,7 +1365,7 @@ WHERE {
     ?shape this:allowedProperties ?allowed .
     ?shape this:target ?target .
     (?allowed this:formatNode) list:map ?allowedFormat .
-    (?allowedFormat ", ") string:join ?allowedValues .
+    (?allowedFormat ", ") this:join ?allowedValues .
     "only allowed predicates should be used" this:quote ?defaultMessage .
     (?shape ?defaultMessage) this:resultMessage ?resultMessage .
     ("""
@@ -1341,7 +1387,7 @@ WHERE {
     ?innerShape sh:closed true .
     ?innerShape this:allowedProperties ?allowed .
     (?allowed this:formatNode) list:map ?allowedFormat .
-    (?allowedFormat ", ") string:join ?allowedValues .
+    (?allowedFormat ", ") this:join ?allowedValues .
     ?shapes list:last ?shape .
     ?shape this:target ?target .
     ?shape this:bindValue ?bindValue .
@@ -1434,7 +1480,7 @@ WHERE {
 { ?shape this:valueConstraint (?constraint sh:InConstraintComponent ?message) } <= { 
     ?shape sh:in ?items .
     (?items this:formatNode) list:map ?itemStrings .
-    (?itemStrings ", ") string:join ?values .
+    (?itemStrings ", ") this:join ?values .
     ("FILTER (?x NOT IN (%s))" ?values) string:format ?constraint .
     "value should be one of the values in the list" this:quote [ log:equalTo ?message ] .
 } .
@@ -1443,10 +1489,10 @@ WHERE {
 
 { ?text this:quote ?quoted } <= { ('"%s"' ?text) string:format ?quoted } . # consider escaping quotes in the text
 
-{ ?value this:nodeKind sh:IRI } <= { ?value log:rawType log:Other . ?value log:uri [] }. 
-{ ?value this:nodeKind sh:BlankNode } <= { ?value log:rawType log:LabeledBlankNode }. 
-{ ?value this:nodeKind sh:BlankNode } <= { ?value log:rawType log:UnlabeledBlankNode }.
-{ ?value this:nodeKind sh:BlankNode } <= { ?value log:rawType log:SkolemIRI }.
+# { ?value this:nodeKind sh:IRI } <= { ?value log:rawType log:Other . ?value log:uri [] }. 
+# { ?value this:nodeKind sh:BlankNode } <= { ?value log:rawType log:LabeledBlankNode }. 
+# { ?value this:nodeKind sh:BlankNode } <= { ?value log:rawType log:UnlabeledBlankNode }.
+# { ?value this:nodeKind sh:BlankNode } <= { ?value log:rawType log:SkolemIRI }.
 
 { ?value this:datatype ?datatype } <= { ([] ?datatype) log:dtlit ?value }.
 
@@ -1461,8 +1507,14 @@ xsd:int this:compatibleTypes "xsd:integer, xsd:decimal, xsd:double, xsd:float, x
 
 # generate SPARQL representations of RDF nodes
 { ?node this:formatNode ?format } <= { 
-    ?node log:rawType log:Other ; log:uri ?uri . 
+    ?node this:nodeKind sh:IRI ; log:uri ?uri . 
     ("<%s>" ?uri) string:format ?format 
+} .
+{ ?node this:formatNode ?format } <= { 
+    ?node this:nodeKind sh:BlankNode  . 
+    ?node log:skolem ?skolem .
+    ?skolem log:uri ?uri .
+    ("<%s>" ?uri) string:format ?format .
 } .
 { ?value this:formatNode ?format } <= { 
     (?text xsd:string) log:dtlit ?value .
@@ -1479,7 +1531,9 @@ xsd:int this:compatibleTypes "xsd:integer, xsd:decimal, xsd:double, xsd:float, x
 { ?value this:formatNode ?format } <= { 
     (?text ?datatype) log:dtlit ?value .
     ?datatype log:notEqualTo rdf:langString, xsd:string, xsd:integer, xsd:double .
-    ('"%s"^^%s' ?text ?datatype) string:format ?format 
+    ?datatype log:uri ?datatypeURI .
+    ("'" ?text "'" "^^<"  ?datatypeURI ">") string:concatenation ?format .
+    # ('%s^^%s' ?text ?datatypeFormat) string:format ?format 
 } .
 { ?value this:formatNode ?format } <= { 
     ( ?text ?lang) log:langlit ?value .
@@ -1495,7 +1549,7 @@ xsd:int this:compatibleTypes "xsd:integer, xsd:decimal, xsd:double, xsd:float, x
 { ?paths this:joinPaths ?result } <= { 
     ?paths list:length [ math:greaterThan 1 ] .
     (?paths this:wrapInParents) list:map ?wrapped .
-    (?wrapped " / ") string:join ?result .
+    (?wrapped " / ") this:join ?result .
 } .
 
 # pairs each element in ?list with the same element ?e
