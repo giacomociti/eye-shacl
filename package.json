@@ -1,0 +1,27 @@
+{
+  "name": "eye-shacl",
+  "version": "1.0.0",
+  "description": "A [SHACL](https://www.w3.org/TR/shacl/) implementation using the [EYE](https://eyereasoner.github.io/eye/) reasoner.",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/giacomociti/eye-shacl.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/giacomociti/eye-shacl/issues"
+  },
+  "homepage": "https://github.com/giacomociti/eye-shacl#readme",
+  "dependencies": {
+    "eyeling": "^1.21.10"
+  }
+}

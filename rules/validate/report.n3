@@ -4,24 +4,40 @@
 
 this: this:report [] .
 
-{
+# {
+#     this: this:report ?report .
+#     [] log:notIncludes { ?report sh:conforms [] } .
+# }
+# =>
+# {
+#     ?report a sh:ValidationReport .
+#     ?report sh:conforms true .
+# } .
+
+# {
+#     this: this:report ?report .
+#     ?report sh:conforms true ; sh:result [] .
+#     { ?report sh:conforms true } log:becomes { ?report sh:conforms false }.
+# }
+# =>
+# {
+ 
+# } .
+
+{ 
     this: this:report ?report .
-    [] log:notIncludes { ?report sh:conforms [] } .
-}
-=>
-{
+    ?SCOPE log:notIncludes { ?report sh:result [] } .
+} => { 
     ?report a sh:ValidationReport .
     ?report sh:conforms true .
 } .
 
-{
+{ 
     this: this:report ?report .
-    ?report sh:conforms true ; sh:result [] .
-    { ?report sh:conforms true } log:becomes { ?report sh:conforms false }.
-}
-=>
-{
- 
+     ?report sh:result []  .
+} => { 
+    ?report a sh:ValidationReport .
+    ?report sh:conforms false .
 } .
 
 {

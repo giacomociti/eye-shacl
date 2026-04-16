@@ -10,7 +10,7 @@
 <=
 {
     (?x { (?focusNode ?path) this:value ?x } ?xs) log:collectAllIn [] .
-    ?xs list:unique ?values
+    ?xs this:unique ?values
 } .
 
 # predicate path 
