@@ -16,7 +16,7 @@
       "sh": "http://www.w3.org/ns/shacl#",
       "this": "http://eye-shacl#"
     },
-    "baseIri": ""
+    "baseIri": "file:///home/giacomo/repo/giacomociti/eye-shacl/sparql/shapes.n3"
   },
   [
     {
@@ -434,8 +434,8 @@
                   "value": "http://www.w3.org/ns/shacl#path"
                 },
                 "o": {
-                  "_type": "Var",
-                  "name": "_b1"
+                  "_type": "Blank",
+                  "label": "_:b3"
                 }
               }
             ]
@@ -562,42 +562,27 @@
             "_type": "ListTerm",
             "elems": [
               {
-                "_type": "Var",
-                "name": "x"
-              },
-              {
-                "_type": "GraphTerm",
-                "triples": [
+                "_type": "ListTerm",
+                "elems": [
                   {
-                    "_type": "Triple",
-                    "s": {
-                      "_type": "Var",
-                      "name": "shape"
-                    },
-                    "p": {
-                      "_type": "Iri",
-                      "value": "http://eye-shacl#constraintClause"
-                    },
-                    "o": {
-                      "_type": "Var",
-                      "name": "x"
-                    }
+                    "_type": "Var",
+                    "name": "shape"
                   }
                 ]
               },
               {
-                "_type": "Var",
-                "name": "xs"
+                "_type": "Iri",
+                "value": "http://eye-shacl#constraintClause"
               }
             ]
           },
           "p": {
             "_type": "Iri",
-            "value": "http://www.w3.org/2000/10/swap/log#collectAllIn"
+            "value": "http://www.w3.org/2000/10/swap/list#map"
           },
           "o": {
             "_type": "Var",
-            "name": "SCOPE"
+            "name": "xs"
           }
         },
         {
@@ -1556,8 +1541,8 @@
                   "value": "http://www.w3.org/ns/shacl#severity"
                 },
                 "o": {
-                  "_type": "Var",
-                  "name": "_b1"
+                  "_type": "Blank",
+                  "label": "_:b4"
                 }
               }
             ]
@@ -1676,8 +1661,8 @@
                   "value": "http://www.w3.org/ns/shacl#message"
                 },
                 "o": {
-                  "_type": "Var",
-                  "name": "_b1"
+                  "_type": "Blank",
+                  "label": "_:b6"
                 }
               }
             ]
@@ -2054,42 +2039,27 @@
             "_type": "ListTerm",
             "elems": [
               {
-                "_type": "Var",
-                "name": "x"
-              },
-              {
-                "_type": "GraphTerm",
-                "triples": [
+                "_type": "ListTerm",
+                "elems": [
                   {
-                    "_type": "Triple",
-                    "s": {
-                      "_type": "Var",
-                      "name": "shape"
-                    },
-                    "p": {
-                      "_type": "Iri",
-                      "value": "http://www.w3.org/ns/shacl#targetNode"
-                    },
-                    "o": {
-                      "_type": "Var",
-                      "name": "x"
-                    }
+                    "_type": "Var",
+                    "name": "shape"
                   }
                 ]
               },
               {
-                "_type": "Var",
-                "name": "targetNodes"
+                "_type": "Iri",
+                "value": "http://www.w3.org/ns/shacl#targetNode"
               }
             ]
           },
           "p": {
             "_type": "Iri",
-            "value": "http://www.w3.org/2000/10/swap/log#collectAllIn"
+            "value": "http://www.w3.org/2000/10/swap/list#map"
           },
           "o": {
             "_type": "Var",
-            "name": "SCOPE"
+            "name": "targetNodes"
           }
         },
         {
@@ -7730,8 +7700,8 @@
                   "value": "http://www.w3.org/ns/shacl#flags"
                 },
                 "o": {
-                  "_type": "Var",
-                  "name": "_b1"
+                  "_type": "Blank",
+                  "label": "_:b40"
                 }
               }
             ]
@@ -7773,14 +7743,14 @@
           },
           "o": {
             "_type": "Var",
-            "name": "_b2"
+            "name": "_b1"
           }
         },
         {
           "_type": "Triple",
           "s": {
             "_type": "Var",
-            "name": "_b2"
+            "name": "_b1"
           },
           "p": {
             "_type": "Iri",
@@ -13416,15 +13386,15 @@
                       "value": "http://www.w3.org/ns/shacl#property"
                     },
                     "o": {
-                      "_type": "Var",
-                      "name": "_b1"
+                      "_type": "Blank",
+                      "label": "_:b60"
                     }
                   },
                   {
                     "_type": "Triple",
                     "s": {
-                      "_type": "Var",
-                      "name": "_b1"
+                      "_type": "Blank",
+                      "label": "_:b60"
                     },
                     "p": {
                       "_type": "Iri",
@@ -13464,7 +13434,7 @@
           },
           "o": {
             "_type": "Var",
-            "name": "_b2"
+            "name": "_b1"
           }
         },
         {
@@ -13490,15 +13460,15 @@
                       "value": "http://www.w3.org/ns/shacl#ignoredProperties"
                     },
                     "o": {
-                      "_type": "Var",
-                      "name": "_b3"
+                      "_type": "Blank",
+                      "label": "_:b62"
                     }
                   },
                   {
                     "_type": "Triple",
                     "s": {
-                      "_type": "Var",
-                      "name": "_b3"
+                      "_type": "Blank",
+                      "label": "_:b62"
                     },
                     "p": {
                       "_type": "Iri",
@@ -13523,7 +13493,7 @@
           },
           "o": {
             "_type": "Var",
-            "name": "_b4"
+            "name": "_b2"
           }
         },
         {

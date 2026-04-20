@@ -103,7 +103,8 @@
 } .
 
 { ?shape this:target ?sparql } <= { 
-    (?x { ?shape sh:targetNode ?x } ?targetNodes) log:collectAllIn ?SCOPE .
+    ((?shape) sh:targetNode) list:map ?targetNodes . # to remove duplicates
+
     ?targetNodes list:length [ math:greaterThan 0 ] .
     (?targetNodes this:formatNode) list:map ?nodeStrings .
     (?nodeStrings " " ) this:join ?values .
@@ -121,7 +122,8 @@
     ?shape this:severity [ this:formatNode ?severity ] .
     ?shape this:constructResultPath ?constructResultPath .
 
-    (?x { ?shape this:constraintClause ?x } ?xs) log:collectAllIn ?SCOPE .
+    ((?shape) this:constraintClause) list:map ?xs .
+
     ?xs list:length [ math:greaterThan 0 ] .
     ?xs this:unique ?unique . # why sometimes we have duplicates?
     (?unique "UNION" ) this:join ?constraints .

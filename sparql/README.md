@@ -88,8 +88,31 @@ find ../sparql/test/output -type f ! -name '.gitignore' -delete
 ```
 
 
+### SHACL server
+In the [server](./server/) directory there is a NodeJS express server that accepts POST
+requests with SAHCL shapes in the turtle payload. It converts shapes to SPARQL queries and
+run them on a SPARQL endpoint. After `npm install`, start the server passing the URL of
+the endpoint you want to test, for example:
 
+```sh
+node index.js https://qlever.dev/api/olympics
+```
 
+create a simple shapes file, for example `phelps_shapes.ttl`:
 
+```turtle
+@prefix sh: <http://www.w3.org/ns/shacl#> .
 
+[] sh:targetNode <http://wallscope.co.uk/resource/olympics/athlete/MichaelFredPhelpsII> ;
+    sh:property [
+      sh:path <http://dbpedia.org/ontology/height>;
+      sh:hasValue 194 # actual value is 193, but we want to test the validation result
+    ] .
+```
+
+and use `curl` to perform validation:
+
+```sh
+curl -i -X POST --data-binary @phelps_shapes.ttl http://localhost:3000/shacl
+```
 

@@ -1,14 +1,12 @@
 import fs from 'fs'
 import n3 from 'n3';
 import path from 'path';
-// import { n3reasoner } from 'eyereasoner';
 import eyeling from 'eyeling';
 import oxigraph from 'oxigraph';
 
 const __dirname = path.dirname(new URL(import.meta.url).pathname);
 
-// npx eyeling --ast ../shapes.n3 > shapes.json
-const rules = JSON.parse(fs.readFileSync(path.join(__dirname, 'shapes.json'), 'utf8'))
+const rules = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'shapes.json'), 'utf8'))
 
 async function compile(shapesFile) {
    

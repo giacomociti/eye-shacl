@@ -1,5 +1,5 @@
 {
-  "name": "test",
+  "name": "server",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -11,8 +11,9 @@
   "license": "ISC",
   "type": "module",
   "dependencies": {
-    "eyeling": "^1.22.12",
+    "express": "^5.2.1",
+    "eyeling": "^1.22.10",
     "n3": "^2.0.3",
-    "oxigraph": "^0.5.2"
+    "sparql-http-client": "^3.1.0"
   }
 }
