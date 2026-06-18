@@ -26,7 +26,7 @@ this: this:report [] .
 
 { 
     this: this:report ?report .
-    ?SCOPE log:notIncludes { ?report sh:result [] } .
+    2 log:notIncludes { ?report sh:result [] } .
 } => { 
     ?report a sh:ValidationReport .
     ?report sh:conforms true .

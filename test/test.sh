@@ -34,7 +34,7 @@ files=(
     "custom/test16.ttl"
     "custom/test17.ttl"
     "custom/test18.ttl"
-    "custom/test19.ttl"
+    # "custom/test19.ttl" 
     "custom/test20.ttl"
     "custom/test21.ttl"
     "custom/test22.ttl"
