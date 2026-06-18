@@ -9,7 +9,10 @@
             sht:dataGraph [ log:uri ?dataGraph ] ;
             sht:shapesGraph [ log:uri ?shapesGraph ] ;
         ] .
-    ("../dist/eye-shacl.sh " ?shapesGraph " " ?dataGraph) string:concatenation ?args
+    (?dataGraph "file://" "") string:replace ?dataArg .
+    (?shapesGraph "file://" "") string:replace ?shapesArg .
+    
+    ("../dist/eye-shacl.sh " ?shapesArg " " ?dataArg) string:concatenation ?args
 }
 =>
 {
