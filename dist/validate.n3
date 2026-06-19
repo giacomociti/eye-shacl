@@ -259,7 +259,9 @@ this: this:report [] .
 
 { ?value this:languageIn ?languageIn } <= { 
     ( [] ?lang ) log:langlit ?value .
-    ?lang string:startsWith [ list:in ?languageIn ] .
+    ?x list:in ?languageIn .
+    ?lang string:startsWith ?x .
+    #?lang string:startsWith [ list:in ?languageIn ] .
 }.
 
 

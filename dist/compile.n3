@@ -351,9 +351,12 @@ sh:in this:constraint sh:InConstraintComponent .
     {
         ?shape this:focusNode ?focusNode .
 
-        (?focusNode ?path) this:values ?values .
-        (?values ?in) func:except ?except . # checking all values at once improves performance
-        ?except list:member ?value .
+        # (?focusNode ?path) this:values ?values .
+        # (?values ?in) func:except ?except . # checking all values at once improves performance
+        # ?except list:member ?value .
+
+         (?focusNode ?path) this:value ?value .
+         ?in list:notMember ?value .
         
         this: this:report ?report .
     }

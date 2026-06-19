@@ -5,7 +5,7 @@
 @prefix log: <http://www.w3.org/2000/10/swap/log#> .
 @prefix sh: <http://www.w3.org/ns/shacl#>.
 @prefix this: <http://eye-shacl#> .
-@prefix func: <http://www.w3.org/2007/rif-builtin-function#>.
+# @prefix func: <http://www.w3.org/2007/rif-builtin-function#>.
 
 { ?value this:nodeKind sh:IRI } <= { ?value log:rawType log:Other . ?value log:uri [] }. 
 
@@ -160,9 +160,12 @@
     {
         ?shape this:focusNode ?focusNode .
 
-        (?focusNode ?path) this:values ?values .
-        (?values ?in) func:except ?except . # checking all values at once improves performance
-        ?except list:member ?value .
+        # (?focusNode ?path) this:values ?values .
+        # (?values ?in) func:except ?except . # checking all values at once improves performance
+        # ?except list:member ?value .
+
+         (?focusNode ?path) this:value ?value .
+         ?in list:notMember ?value .
         
         this: this:report ?report .
     }

@@ -4,7 +4,9 @@
 {
     <test-expected.ttl> log:semantics ?expected .
     <test-actual-report.ttl> log:semantics ?actual .
-    ?expected log:isomorphic ?actual .
+    # ?expected log:isomorphic ?actual .
+    ?expected log:includes ?actual .
+    ?actual log:includes ?expected .
 }
 =>
 {
