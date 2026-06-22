@@ -11,8 +11,8 @@
 { 
     ?shape a this:PropertyShape ; sh:equals ?otherPredicate ; sh:path ?path .
     ?shape this:shapeLevel this:topLevelShape .
-    ?otherPredicate log:localN3String ?otherPredicateString .
-    ("Must have same values as %s" ?otherPredicateString) string:format ?message .
+    # ?otherPredicate log:localN3String ?otherPredicateString .
+    ("Must have same values as %s" ?otherPredicate) string:format ?message .
 } 
 => 
 {
@@ -41,8 +41,8 @@
 { 
     ?shape a this:NodeShape ; sh:equals ?otherPredicate .
     ?shape this:shapeLevel this:topLevelShape .
-    ?otherPredicate log:localN3String ?otherPredicateString .
-    ("Must be value of %s" ?otherPredicateString) string:format ?message .
+    # ?otherPredicate log:localN3String ?otherPredicateString .
+    ("Must be value of %s" ?otherPredicate) string:format ?message .
 } 
 => 
 {
@@ -102,8 +102,8 @@
 { 
     ?shape a this:PropertyShape ; sh:disjoint ?otherPredicate ; sh:path ?path .
     ?shape this:shapeLevel this:topLevelShape .
-    ?otherPredicate log:localN3String ?otherPredicateString .
-    ("Must have different values than %s" ?otherPredicateString) string:format ?message .
+    # ?otherPredicate log:localN3String ?otherPredicateString .
+    ("Must have different values than %s" ?otherPredicate) string:format ?message .
 } 
 => 
 {
@@ -130,8 +130,8 @@
 { 
     ?shape a this:NodeShape ; sh:disjoint ?otherPredicate .
     ?shape this:shapeLevel this:topLevelShape .
-    ?otherPredicate log:localN3String ?otherPredicateString .
-    ("Must not be a value of %s" ?otherPredicateString) string:format ?message .
+    # ?otherPredicate log:localN3String ?otherPredicateString .
+    ("Must not be a value of %s" ?otherPredicate) string:format ?message .
 } 
 => 
 {
@@ -188,8 +188,8 @@
 { 
     ?shape a this:PropertyShape ; sh:lessThan ?otherPredicate ; sh:path ?path .
     ?shape this:shapeLevel this:topLevelShape .
-    ?otherPredicate log:localN3String ?otherPredicateString .
-    ("Value is not less than value of %s" ?otherPredicateString) string:format ?message .
+    # ?otherPredicate log:localN3String ?otherPredicateString .
+    ("Value is not less than value of %s" ?otherPredicate) string:format ?message .
 } 
 => 
 {
@@ -237,8 +237,8 @@
 { 
     ?shape a this:PropertyShape ; sh:lessThanOrEquals ?otherPredicate ; sh:path ?path .
     ?shape this:shapeLevel this:topLevelShape .
-    ?otherPredicate log:localN3String ?otherPredicateString .
-    ("Value is not less than or equal to value of %s" ?otherPredicateString) string:format ?message .
+    # ?otherPredicate log:localN3String ?otherPredicateString .
+    ("Value is not less than or equal to value of %s" ?otherPredicate) string:format ?message .
 } 
 => 
 {

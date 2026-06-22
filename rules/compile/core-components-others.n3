@@ -25,8 +25,8 @@
 {
     ?shape this:allowedProperties ?allowed .
     ?shape this:shapeLevel this:topLevelShape .
-    ?allowed log:localN3String ?allowedString .
-    ("allowed properties are only: %s" ?allowedString) string:format ?message .
+    # ?allowed log:localN3String ?allowedString .
+    ("allowed properties are only: %s" ?allowed) string:format ?message .
 }
 =>
 {

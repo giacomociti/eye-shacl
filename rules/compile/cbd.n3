@@ -7,7 +7,10 @@
 { ?value this:nodeKind sh:BlankNode } <= { ?value log:rawType log:LabeledBlankNode }. 
 { ?value this:nodeKind sh:BlankNode } <= { ?value log:rawType log:UnlabeledBlankNode }.
 { ?value this:nodeKind sh:BlankNode } <= { ?value log:rawType log:SkolemIRI }.
-
+{ ?term this:nodeKind sh:BlankNode } <= { 
+    ?term log:rawType log:Other. 
+    ((?term) log:uri) list:map () .
+} .
 
 {
     { ?s ?p ?o } this:cbd ?s 

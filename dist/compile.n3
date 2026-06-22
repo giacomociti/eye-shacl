@@ -7,7 +7,10 @@
 { ?value this:nodeKind sh:BlankNode } <= { ?value log:rawType log:LabeledBlankNode }. 
 { ?value this:nodeKind sh:BlankNode } <= { ?value log:rawType log:UnlabeledBlankNode }.
 { ?value this:nodeKind sh:BlankNode } <= { ?value log:rawType log:SkolemIRI }.
-
+{ ?term this:nodeKind sh:BlankNode } <= { 
+    ?term log:rawType log:Other. 
+    ((?term) log:uri) list:map () .
+} .
 
 {
     { ?s ?p ?o } this:cbd ?s 
@@ -196,7 +199,7 @@ sh:in this:constraint sh:InConstraintComponent .
 @prefix log: <http://www.w3.org/2000/10/swap/log#> .
 @prefix sh: <http://www.w3.org/ns/shacl#>.
 @prefix this: <http://eye-shacl#> .
-@prefix func: <http://www.w3.org/2007/rif-builtin-function#>.
+# @prefix func: <http://www.w3.org/2007/rif-builtin-function#>.
 
 { ?value this:nodeKind sh:IRI } <= { ?value log:rawType log:Other . ?value log:uri [] }. 
 
@@ -216,8 +219,8 @@ sh:in this:constraint sh:InConstraintComponent .
 {
     ?shape this:allowedProperties ?allowed .
     ?shape this:shapeLevel this:topLevelShape .
-    ?allowed log:localN3String ?allowedString .
-    ("allowed properties are only: %s" ?allowedString) string:format ?message .
+    # ?allowed log:localN3String ?allowedString .
+    ("allowed properties are only: %s" ?allowed) string:format ?message .
 }
 =>
 {
@@ -440,8 +443,8 @@ sh:in this:constraint sh:InConstraintComponent .
 { 
     ?shape a this:PropertyShape ; sh:equals ?otherPredicate ; sh:path ?path .
     ?shape this:shapeLevel this:topLevelShape .
-    ?otherPredicate log:localN3String ?otherPredicateString .
-    ("Must have same values as %s" ?otherPredicateString) string:format ?message .
+    # ?otherPredicate log:localN3String ?otherPredicateString .
+    ("Must have same values as %s" ?otherPredicate) string:format ?message .
 } 
 => 
 {
@@ -470,8 +473,8 @@ sh:in this:constraint sh:InConstraintComponent .
 { 
     ?shape a this:NodeShape ; sh:equals ?otherPredicate .
     ?shape this:shapeLevel this:topLevelShape .
-    ?otherPredicate log:localN3String ?otherPredicateString .
-    ("Must be value of %s" ?otherPredicateString) string:format ?message .
+    # ?otherPredicate log:localN3String ?otherPredicateString .
+    ("Must be value of %s" ?otherPredicate) string:format ?message .
 } 
 => 
 {
@@ -531,8 +534,8 @@ sh:in this:constraint sh:InConstraintComponent .
 { 
     ?shape a this:PropertyShape ; sh:disjoint ?otherPredicate ; sh:path ?path .
     ?shape this:shapeLevel this:topLevelShape .
-    ?otherPredicate log:localN3String ?otherPredicateString .
-    ("Must have different values than %s" ?otherPredicateString) string:format ?message .
+    # ?otherPredicate log:localN3String ?otherPredicateString .
+    ("Must have different values than %s" ?otherPredicate) string:format ?message .
 } 
 => 
 {
@@ -559,8 +562,8 @@ sh:in this:constraint sh:InConstraintComponent .
 { 
     ?shape a this:NodeShape ; sh:disjoint ?otherPredicate .
     ?shape this:shapeLevel this:topLevelShape .
-    ?otherPredicate log:localN3String ?otherPredicateString .
-    ("Must not be a value of %s" ?otherPredicateString) string:format ?message .
+    # ?otherPredicate log:localN3String ?otherPredicateString .
+    ("Must not be a value of %s" ?otherPredicate) string:format ?message .
 } 
 => 
 {
@@ -617,8 +620,8 @@ sh:in this:constraint sh:InConstraintComponent .
 { 
     ?shape a this:PropertyShape ; sh:lessThan ?otherPredicate ; sh:path ?path .
     ?shape this:shapeLevel this:topLevelShape .
-    ?otherPredicate log:localN3String ?otherPredicateString .
-    ("Value is not less than value of %s" ?otherPredicateString) string:format ?message .
+    # ?otherPredicate log:localN3String ?otherPredicateString .
+    ("Value is not less than value of %s" ?otherPredicate) string:format ?message .
 } 
 => 
 {
@@ -666,8 +669,8 @@ sh:in this:constraint sh:InConstraintComponent .
 { 
     ?shape a this:PropertyShape ; sh:lessThanOrEquals ?otherPredicate ; sh:path ?path .
     ?shape this:shapeLevel this:topLevelShape .
-    ?otherPredicate log:localN3String ?otherPredicateString .
-    ("Value is not less than or equal to value of %s" ?otherPredicateString) string:format ?message .
+    # ?otherPredicate log:localN3String ?otherPredicateString .
+    ("Value is not less than or equal to value of %s" ?otherPredicate) string:format ?message .
 } 
 => 
 {
@@ -1264,8 +1267,8 @@ sh:languageIn this:validator this:languageIn ; this:messageFormat "value should 
    ?shape this:shapeLevel this:topLevelShape .
    ?shape a this:NodeShape ; ?param ?paramValue .
    ?param this:constraint ?constraint ; this:validator ?validator ; this:messageFormat ?messageFormat .
-   ?paramValue log:localN3String ?paramValueString .
-   (?messageFormat ?paramValueString) string:format ?message .
+   # ?paramValue log:localN3String ?paramValueString .
+   (?messageFormat ?paramValue) string:format ?message .
 }
 => 
 {
@@ -1308,8 +1311,8 @@ sh:languageIn this:validator this:languageIn ; this:messageFormat "value should 
    ?shape this:shapeLevel this:topLevelShape .
    ?shape a this:PropertyShape ; sh:path ?path ; ?param ?paramValue .
    ?param this:constraint ?constraint ; this:validator ?validator ; this:messageFormat ?messageFormat .
-   ?paramValue log:localN3String ?paramValueString .
-   (?messageFormat ?paramValueString) string:format ?message .
+   # ?paramValue log:localN3String ?paramValueString .
+   (?messageFormat ?paramValue) string:format ?message .
 }
 => 
 {
