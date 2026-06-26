@@ -1,30 +1,16 @@
 # eye-shacl
 
-A [SHACL](https://www.w3.org/TR/shacl/) implementation using the [EYE](https://eyereasoner.github.io/eye/) reasoner.
+A [SHACL](https://www.w3.org/TR/shacl/) implementation using the [eyeling](https://github.com/eyereasoner/eyeling) reasoner.
 
-### Installation
-[Install](https://github.com/eyereasoner/eye?tab=readme-ov-file#installation) the eye reasoner, download the [dist](/dist) folder and use the bash scripts like in the following examples.
 
 ### Usage
-```bash
-# validate data.ttl against shapes.ttl
-./eye-shacl.sh shapes.ttl data.ttl
-```
 
-Since the shapes are first compiled into rules, you can compile them once:
-```bash
-./eye-shacl-compile.sh shapes.ttl > shapes.n3
-```
+Call `eyeling` passing the [eye-shacl rules](https://raw.githubusercontent.com/giacomociti/eye-shacl/refs/heads/eyeling/rules/eye-shacl.n3), the shapes and the data to validate.
 
-and reuse multiple times:
-```bash
-./eye-shacl-validate.sh shapes.n3 data1.ttl
-./eye-shacl-validate.sh shapes.n3 data2.ttl
-```
+The following is a validation example from the SHACL test suite (`personexample.ttl` includes shapes and data)
 
-Online resources are allowed as input, like in the following example from the official test suite:
 ```bash
-./eye-shacl.sh \
-https://raw.githubusercontent.com/w3c/data-shapes/gh-pages/data-shapes-test-suite/tests/core/complex/personexample.ttl \
+npx eyeling \
+https://raw.githubusercontent.com/giacomociti/eye-shacl/refs/heads/eyeling/rules/eye-shacl.n3 \
 https://raw.githubusercontent.com/w3c/data-shapes/gh-pages/data-shapes-test-suite/tests/core/complex/personexample.ttl
 ```
