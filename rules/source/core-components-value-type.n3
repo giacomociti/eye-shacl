@@ -29,7 +29,7 @@
         sh:sourceShape ?shape ;
         sh:focusNode ?node ;
         sh:value ?value ;
-        sh:resultPath ?path ;
+        # sh:resultPath ?path ;
         sh:resultMessage ?message ;
     ] .
 } .

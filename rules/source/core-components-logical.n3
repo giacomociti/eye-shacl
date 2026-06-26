@@ -40,8 +40,10 @@
 { ?value this:violates ?skolem } <= { 
     ?shape this:skolem ?skolem .
     ?shape sh:not ?not .
+    ?shape this:path ?path .
+    (?value ?path) this:value ?x .
     ?not this:skolem ?innerSkolem .
-    [] log:notIncludes { ?value this:violates ?innerSkolem } .
+    [] log:notIncludes { ?x this:violates ?innerSkolem } .
 } .
 
 
@@ -81,10 +83,12 @@
 { ?value this:violates ?skolem } <= { 
     ?shape this:skolem ?skolem .
     ?shape sh:or ?or .
+    ?shape this:path ?path .
+    (?value ?path) this:value ?x .
     (?or this:skolem) list:map ?skolems .
     (
-        { ?x list:in ?skolems}
-        { ?value this:violates ?x }
+        { ?sk list:in ?skolems}
+        { ?x this:violates ?sk }
     ) log:forAllIn [] .
 } .
 
@@ -123,9 +127,11 @@
 { ?value this:violates ?skolem } <= { 
     ?shape this:skolem ?skolem .
     ?shape sh:and ?and .
+    ?shape this:path ?path .
+    (?value ?path) this:value ?x .
     (?and this:skolem) list:map ?skolems .
     ?sk list:in ?skolems . 
-    ?value this:violates ?sk 
+    ?x this:violates ?sk 
 } .
 
 
@@ -164,8 +170,10 @@
 { ?value this:violates ?skolem } <= { 
     ?shape this:skolem ?skolem .
     ?shape sh:xone ?xone .
+    ?shape this:path ?path .
+    (?value ?path) this:value ?v .
     (?xone this:skolem) list:map ?skolems .
-    (?x { ?x list:in ?skolems . ?value this:violates ?x } ?failed) log:collectAllIn [] .
+    (?x { ?x list:in ?skolems . ?v this:violates ?x } ?failed) log:collectAllIn [] .
     (?x { ?x list:in ?skolems . ?failed list:notMember ?x } ?valid) log:collectAllIn [] .
     ?valid list:length [ log:notEqualTo 1 ].
 } .

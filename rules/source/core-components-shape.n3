@@ -65,10 +65,9 @@
 
 # qualifiedValueShape
  
-
 {
     ?shape sh:qualifiedMinCount ?minCount .
-    ?shape sh:qualifiedValueShape ?valueShape ; sh:path ?path .
+    ?shape sh:path ?path .
     
     ?shape this:focusNode ?node .
     ?node this:qualifiedCount (?shape ?length) .
@@ -96,7 +95,7 @@
 
 {
     ?shape sh:qualifiedMaxCount ?maxCount .
-    ?shape sh:qualifiedValueShape ?valueShape ; sh:path ?path .
+    ?shape sh:path ?path .
     
     ?shape this:focusNode ?node .
     ?node this:qualifiedCount (?shape ?length) .
@@ -124,29 +123,32 @@
 
 
 {
-    ?node this:qualifiedCount (?skolem ?length)
+    # should we use the skolem of the shape instead?
+    ?node this:qualifiedCount (?shape ?length)
 }
 <=
 {
-    ?shape this:skolem ?skolem .
+    #?shape this:skolem ?skolem .
     ?shape sh:qualifiedValueShape ?valueShape ; sh:path ?path .
-    # (
-    #     ?x {
-    #         ?shape sh:qualifiedValueShapesDisjoint true .
-    #         ?parent sh:property ?shape, ?other .
-    #         ?shape log:notEqualTo ?other .
-    #         ?other sh:qualifiedValueShape ?x
-    #     } ?siblings
-    # ) log:collectAllIn [] .
+    ?valueShape this:skolem ?valueShapeSkolem .
+    (
+        ?x {
+            ?shape sh:qualifiedValueShapesDisjoint true .
+            ?parent sh:property ?shape, ?other .
+            ?shape log:notEqualTo ?other .
+            ?other sh:qualifiedValueShape ?q .
+            ?q this:skolem ?x .
+        } ?siblings
+    ) log:collectAllIn [] .
     
     (?node ?path) this:values ?values .
     (?x { 
         ?x list:in ?values . 
-        [] log:notIncludes { ?x this:violates ?valueShape } .
-        # (
-        #     { ?sibling list:in ?siblings }
-        #     { ?x this:violates ?sibling }
-        # ) log:forAllIn [] .
+        [] log:notIncludes { ?x this:violates ?valueShapeSkolem } .
+        (
+            { ?sibling list:in ?siblings }
+            { ?x this:violates ?sibling }
+        ) log:forAllIn [] .
     } ?xs) log:collectAllIn [] .
             
     ?xs list:length ?length .
@@ -156,16 +158,14 @@
 
 
 {
-
-    
     ?node this:violates ?skolem .
 }
 <=
 {
-    ?shape sh:qualifiedMinCount ?minCount .
-    ?shape sh:qualifiedValueShape ?valueShape ; sh:path ?path .
     ?shape this:skolem ?skolem .
-    ?node this:qualifiedCount (?skolem ?length) .
+    ?shape sh:qualifiedMinCount ?minCount .
+    ?shape sh:path ?path .
+    ?node this:qualifiedCount (?shape ?length) .
     ?length math:lessThan ?minCount .
 } .
 
@@ -176,9 +176,9 @@
 }
 <=
 {
-    ?shape sh:qualifiedMaxCount ?maxCount .
-    ?shape sh:qualifiedValueShape ?valueShape ; sh:path ?path .
     ?shape this:skolem ?skolem .
-    ?node this:qualifiedCount (?skolem ?length) .
+    ?shape sh:qualifiedMaxCount ?maxCount .
+    ?shape sh:path ?path .
+    ?node this:qualifiedCount (?shape ?length) .
     ?length math:greaterThan ?maxCount .
 } .

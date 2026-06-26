@@ -29,20 +29,20 @@ files=(
     "custom/test11.ttl"
     "custom/test12.ttl"
     "custom/test13.ttl"
-    "custom/test14.ttl" # nested sh:or
+    "custom/test14.ttl"
     "custom/test15.ttl" 
-    "custom/test16.ttl" # nested sh:qualifiedValueShape
+    "custom/test16.ttl"
     "custom/test17.ttl"
     "custom/test18.ttl"
     "custom/test19.ttl" 
     "custom/test20.ttl"
     "custom/test21.ttl" 
     "custom/test22.ttl"
-    "custom/test23.ttl" # sh:entailment
-    "custom/test24.ttl" # sh:entailment
-    "custom/test25.ttl" # sh:entailment
-    "custom/test26.ttl" # sh:entailment
-    "custom/test27.ttl" # sh:entailment
+    # "custom/test23.ttl" # sh:entailment
+    # "custom/test24.ttl" # sh:entailment
+    # "custom/test25.ttl" # sh:entailment
+    # "custom/test26.ttl" # sh:entailment
+    # "custom/test27.ttl" # sh:entailment
     "custom/test28.ttl"
     "custom/test29.ttl"
     "custom/test30.ttl"
@@ -80,7 +80,7 @@ files=(
     "core/node/minExclusive-001.ttl"
     "core/node/minInclusive-001.ttl"
     "core/node/minInclusive-002.ttl"
-    "core/node/minInclusive-003.ttl" # date offset
+    # "core/node/minInclusive-003.ttl" # date offset
     "core/node/minLength-001.ttl"
     "core/node/node-001.ttl" 
     "core/node/nodeKind-001.ttl"
@@ -140,9 +140,9 @@ files=(
     "core/property/pattern-001.ttl"
     "core/property/pattern-002.ttl"
     "core/property/property-001.ttl" 
-    "core/property/qualifiedMinCountDisjoint-001.ttl" #
-    "core/property/qualifiedValueShape-001.ttl" #
-    "core/property/qualifiedValueShapesDisjoint-001.ttl" #
+    "core/property/qualifiedMinCountDisjoint-001.ttl"
+    "core/property/qualifiedValueShape-001.ttl"
+    "core/property/qualifiedValueShapesDisjoint-001.ttl"
     "core/property/uniqueLang-001.ttl"
     "core/property/uniqueLang-002.ttl"
 

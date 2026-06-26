@@ -228,8 +228,10 @@ this: this:report [] .
 { ?value this:violates ?skolem } <= { 
     ?shape this:skolem ?skolem .
     ?shape sh:not ?not .
+    ?shape this:path ?path .
+    (?value ?path) this:value ?x .
     ?not this:skolem ?innerSkolem .
-    [] log:notIncludes { ?value this:violates ?innerSkolem } .
+    [] log:notIncludes { ?x this:violates ?innerSkolem } .
 } .
 
 
@@ -269,10 +271,12 @@ this: this:report [] .
 { ?value this:violates ?skolem } <= { 
     ?shape this:skolem ?skolem .
     ?shape sh:or ?or .
+    ?shape this:path ?path .
+    (?value ?path) this:value ?x .
     (?or this:skolem) list:map ?skolems .
     (
-        { ?x list:in ?skolems}
-        { ?value this:violates ?x }
+        { ?sk list:in ?skolems}
+        { ?x this:violates ?sk }
     ) log:forAllIn [] .
 } .
 
@@ -311,9 +315,11 @@ this: this:report [] .
 { ?value this:violates ?skolem } <= { 
     ?shape this:skolem ?skolem .
     ?shape sh:and ?and .
+    ?shape this:path ?path .
+    (?value ?path) this:value ?x .
     (?and this:skolem) list:map ?skolems .
     ?sk list:in ?skolems . 
-    ?value this:violates ?sk 
+    ?x this:violates ?sk 
 } .
 
 
@@ -352,8 +358,10 @@ this: this:report [] .
 { ?value this:violates ?skolem } <= { 
     ?shape this:skolem ?skolem .
     ?shape sh:xone ?xone .
+    ?shape this:path ?path .
+    (?value ?path) this:value ?v .
     (?xone this:skolem) list:map ?skolems .
-    (?x { ?x list:in ?skolems . ?value this:violates ?x } ?failed) log:collectAllIn [] .
+    (?x { ?x list:in ?skolems . ?v this:violates ?x } ?failed) log:collectAllIn [] .
     (?x { ?x list:in ?skolems . ?failed list:notMember ?x } ?valid) log:collectAllIn [] .
     ?valid list:length [ log:notEqualTo 1 ].
 } .
@@ -762,10 +770,9 @@ this: this:report [] .
 
 # qualifiedValueShape
  
-
 {
     ?shape sh:qualifiedMinCount ?minCount .
-    ?shape sh:qualifiedValueShape ?valueShape ; sh:path ?path .
+    ?shape sh:path ?path .
     
     ?shape this:focusNode ?node .
     ?node this:qualifiedCount (?shape ?length) .
@@ -793,7 +800,7 @@ this: this:report [] .
 
 {
     ?shape sh:qualifiedMaxCount ?maxCount .
-    ?shape sh:qualifiedValueShape ?valueShape ; sh:path ?path .
+    ?shape sh:path ?path .
     
     ?shape this:focusNode ?node .
     ?node this:qualifiedCount (?shape ?length) .
@@ -821,29 +828,32 @@ this: this:report [] .
 
 
 {
-    ?node this:qualifiedCount (?skolem ?length)
+    # should we use the skolem of the shape instead?
+    ?node this:qualifiedCount (?shape ?length)
 }
 <=
 {
-    ?shape this:skolem ?skolem .
+    #?shape this:skolem ?skolem .
     ?shape sh:qualifiedValueShape ?valueShape ; sh:path ?path .
-    # (
-    #     ?x {
-    #         ?shape sh:qualifiedValueShapesDisjoint true .
-    #         ?parent sh:property ?shape, ?other .
-    #         ?shape log:notEqualTo ?other .
-    #         ?other sh:qualifiedValueShape ?x
-    #     } ?siblings
-    # ) log:collectAllIn [] .
+    ?valueShape this:skolem ?valueShapeSkolem .
+    (
+        ?x {
+            ?shape sh:qualifiedValueShapesDisjoint true .
+            ?parent sh:property ?shape, ?other .
+            ?shape log:notEqualTo ?other .
+            ?other sh:qualifiedValueShape ?q .
+            ?q this:skolem ?x .
+        } ?siblings
+    ) log:collectAllIn [] .
     
     (?node ?path) this:values ?values .
     (?x { 
         ?x list:in ?values . 
-        [] log:notIncludes { ?x this:violates ?valueShape } .
-        # (
-        #     { ?sibling list:in ?siblings }
-        #     { ?x this:violates ?sibling }
-        # ) log:forAllIn [] .
+        [] log:notIncludes { ?x this:violates ?valueShapeSkolem } .
+        (
+            { ?sibling list:in ?siblings }
+            { ?x this:violates ?sibling }
+        ) log:forAllIn [] .
     } ?xs) log:collectAllIn [] .
             
     ?xs list:length ?length .
@@ -853,16 +863,14 @@ this: this:report [] .
 
 
 {
-
-    
     ?node this:violates ?skolem .
 }
 <=
 {
-    ?shape sh:qualifiedMinCount ?minCount .
-    ?shape sh:qualifiedValueShape ?valueShape ; sh:path ?path .
     ?shape this:skolem ?skolem .
-    ?node this:qualifiedCount (?skolem ?length) .
+    ?shape sh:qualifiedMinCount ?minCount .
+    ?shape sh:path ?path .
+    ?node this:qualifiedCount (?shape ?length) .
     ?length math:lessThan ?minCount .
 } .
 
@@ -873,10 +881,10 @@ this: this:report [] .
 }
 <=
 {
-    ?shape sh:qualifiedMaxCount ?maxCount .
-    ?shape sh:qualifiedValueShape ?valueShape ; sh:path ?path .
     ?shape this:skolem ?skolem .
-    ?node this:qualifiedCount (?skolem ?length) .
+    ?shape sh:qualifiedMaxCount ?maxCount .
+    ?shape sh:path ?path .
+    ?node this:qualifiedCount (?shape ?length) .
     ?length math:greaterThan ?maxCount .
 } .
 # https://www.w3.org/TR/shacl/#core-components-string
@@ -1178,7 +1186,7 @@ sh:languageIn this:constraint sh:LanguageInConstraintComponent ; this:validator 
         sh:sourceShape ?shape ;
         sh:focusNode ?node ;
         sh:value ?value ;
-        sh:resultPath ?path ;
+        # sh:resultPath ?path ;
         sh:resultMessage ?message ;
     ] .
 } .
