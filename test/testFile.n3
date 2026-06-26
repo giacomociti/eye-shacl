@@ -11,8 +11,24 @@
         ] .
     (?dataGraph "file://" "") string:replace ?dataArg .
     (?shapesGraph "file://" "") string:replace ?shapesArg .
+    ?dataArg log:notEqualTo ?shapesArg .
+
+    ("npm --silent test " ?shapesArg " " ?dataArg) string:concatenation ?args
+}
+=>
+{
+    [] log:outputString ?args.
+} .
+
+{
+    ?validate a sht:Validate ;
+        mf:action [
+            sht:dataGraph [ log:uri ?dataAndShapesGraph ] ;
+            sht:shapesGraph [ log:uri ?dataAndShapesGraph ] ;
+        ] .
+    (?dataAndShapesGraph "file://" "") string:replace ?arg .
     
-    ("../dist/eye-shacl.sh " ?shapesArg " " ?dataArg) string:concatenation ?args
+    ("npm --silent test " ?arg) string:concatenation ?args
 }
 =>
 {

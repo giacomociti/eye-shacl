@@ -1,0 +1,194 @@
+# https://www.w3.org/TR/shacl/#core-components-property-pairs
+
+@prefix list: <http://www.w3.org/2000/10/swap/list#> .
+@prefix log: <http://www.w3.org/2000/10/swap/log#> .
+@prefix math: <http://www.w3.org/2000/10/swap/math#> .
+@prefix string: <http://www.w3.org/2000/10/swap/string#> .
+@prefix sh: <http://www.w3.org/ns/shacl#>.
+@prefix this: <http://eye-shacl#> .
+
+# EqualsConstraintComponent
+
+{
+    ?shape sh:equals ?otherPredicate .
+    ?shape this:path ?path .
+
+    ?shape this:focusNode ?focusNode .
+    (?focusNode ?path) this:values ?thisValues .
+    (?focusNode ?otherPredicate) this:values ?otherValues .
+    (?thisValues ?otherValues) this:notInBoth ?value .
+
+    ("Must have same values as %s" ?otherPredicate) string:format ?defaultMessage .
+    ?shape this:message (?message ?defaultMessage) .
+    ?shape this:severity ?severity .
+    this: this:report ?report .
+}
+=>
+{
+    ?report sh:result [
+        a sh:ValidationResult ;
+        sh:resultSeverity ?severity ;
+        sh:sourceConstraintComponent sh:EqualsConstraintComponent ;
+        sh:sourceShape ?shape ;
+        sh:focusNode ?focusNode ;
+        # sh:resultPath ?path ;
+        sh:value ?value ;
+        sh:resultMessage ?message ;
+    ]
+} .
+
+
+{
+   (?thisValues ?otherValues) this:notInBoth ?value .
+}
+<=
+{
+    (?thisValues ?otherValues) list:append ?union .
+    (?x { ?x list:in ?thisValues , ?otherValues } ?intersection) log:collectAllIn [] .    
+    ?union list:member ?value .
+    ?intersection list:notMember ?value .
+} .
+
+
+{
+    ?node this:violates ?skolem .
+}
+<=
+{
+    ?shape this:skolem ?skolem .
+    ?shape sh:equals ?otherPredicate ; this:path ?path .
+    (?node ?path) this:values ?thisValues .
+    (?node ?otherPredicate) this:values ?otherValues .
+    ?thisValues this:setNotEqualTo ?otherValues .
+} .
+
+
+
+# DisjointConstraintComponent
+
+{
+    ?shape sh:disjoint ?otherPredicate  .
+    ?shape this:path ?path .
+
+    ?shape this:focusNode ?focusNode .
+    (?focusNode ?path) this:value ?value .
+    (?focusNode ?otherPredicate) this:value ?value .
+
+    ("Must have different values than %s" ?otherPredicate) string:format ?defaultMessage .
+    ?shape this:message (?message ?defaultMessage) .
+    ?shape this:severity ?severity .
+    this: this:report ?report .
+}
+=>
+{
+    ?report sh:result [
+        a sh:ValidationResult ;
+        sh:resultSeverity ?severity ;
+        sh:sourceConstraintComponent sh:DisjointConstraintComponent ;
+        sh:sourceShape ?shape ;
+        sh:focusNode ?focusNode ;
+        sh:value ?value ;
+        # sh:resultPath ?path ;
+        sh:resultMessage ?message ;
+    ]
+} .
+
+{
+    ?node this:violates ?skolem .
+}
+<=
+{
+    ?shape this:skolem ?skolem .
+    ?shape sh:disjoint ?otherPredicate ; this:path ?path .
+    (?node ?path) this:value ?value .
+    (?node ?otherPredicate) this:value ?value .
+} .
+
+
+# LessThanConstraintComponent
+
+{
+    ?shape sh:lessThan ?otherPredicate  .
+    ?shape sh:path ?path .
+    
+    ?shape this:focusNode ?focusNode .
+    (?focusNode ?path) this:value ?value .
+    (?focusNode ?otherPredicate) this:value ?otherValue .
+    [] log:notIncludes { ?value this:maxExclusive ?otherValue } .
+
+    ("Value is not less than value of %s" ?otherPredicate) string:format ?defaultMessage .
+    ?shape this:message (?message ?defaultMessage) .
+    ?shape this:severity ?severity .
+    this: this:report ?report .
+}
+=>
+{
+    ?report sh:result [
+        a sh:ValidationResult ;
+        sh:resultSeverity ?severity ;
+        sh:sourceConstraintComponent sh:LessThanConstraintComponent ;
+        sh:sourceShape ?shape ;
+        sh:focusNode ?focusNode ;
+        sh:value ?value ;
+        sh:resultPath ?path ;
+        sh:resultMessage ?message ;
+    ]
+} .
+
+{
+    ?node this:violates ?skolem .
+}
+<=
+{
+    ?shape this:skolem ?skolem .
+    ?shape sh:lessThan ?otherPredicate ; sh:path ?path .
+    (?node ?path) this:value ?value .
+    (?node ?otherPredicate) this:value ?otherValue .
+    [] log:notIncludes { ?value this:maxExclusive ?otherValue } .
+} .
+
+
+
+# LessThanOrEqualsConstraintComponent
+
+{
+    ?shape sh:lessThanOrEquals ?otherPredicate.
+    ?shape sh:path ?path .
+
+    ?shape this:focusNode ?focusNode .
+    (?focusNode ?path) this:value ?value .
+    (?focusNode ?otherPredicate) this:value ?otherValue .
+    [] log:notIncludes { ?value this:maxInclusive ?otherValue } .
+
+    ("Value is not less than or equal to value of %s" ?otherPredicate) string:format ?defaultMessage .
+    ?shape this:message (?message ?defaultMessage) .
+    ?shape this:severity ?severity .
+    this: this:report ?report .
+}
+=>
+{
+    ?report sh:result [
+        a sh:ValidationResult ;
+        sh:resultSeverity ?severity ;
+        sh:sourceConstraintComponent sh:LessThanOrEqualsConstraintComponent ;
+        sh:sourceShape ?shape ;
+        sh:focusNode ?focusNode ;
+        sh:value ?value ;
+        sh:resultPath ?path ;
+        sh:resultMessage ?message ;
+    ]
+} .
+
+
+{
+    ?node this:violates ?skolem .
+}
+<=
+{
+    ?shape this:skolem ?skolem .
+    ?shape sh:lessThanOrEquals ?otherPredicate ; sh:path ?path .
+    (?node ?path) this:value ?value .
+    (?node ?otherPredicate) this:value ?otherValue .
+    [] log:notIncludes { ?value this:maxInclusive ?otherValue } .
+} .
+

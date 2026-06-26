@@ -1,0 +1,171 @@
+# https://www.w3.org/TR/shacl/#core-components-logical
+
+@prefix log: <http://www.w3.org/2000/10/swap/log#> .
+@prefix string: <http://www.w3.org/2000/10/swap/string#> .
+@prefix math: <http://www.w3.org/2000/10/swap/math#> .
+@prefix list: <http://www.w3.org/2000/10/swap/list#> .
+@prefix sh: <http://www.w3.org/ns/shacl#>.
+@prefix this: <http://eye-shacl#> .
+
+# NotConstraintComponent
+
+{
+    ?shape sh:not ?not .
+    ?shape this:path ?path .
+    ?not this:skolem ?skolem .
+    
+    ?shape this:focusNode ?focusNode .
+    (?focusNode ?path) this:value ?value .
+    1 log:notIncludes { ?value this:violates ?skolem } .
+
+    ("value should not satisfy shape %s " ?not) string:format ?defaultMessage .
+    ?shape this:message (?message ?defaultMessage) .
+    ?shape this:severity ?severity .
+    this: this:report ?report .
+}
+=>
+{
+    ?report sh:result [
+        a sh:ValidationResult ;
+        sh:resultSeverity ?severity ;
+        sh:sourceConstraintComponent sh:NotConstraintComponent ;
+        sh:sourceShape ?shape ;
+        sh:focusNode ?focusNode ;
+        sh:value ?value ;
+        # sh:resultPath ?path ;
+        sh:resultMessage ?message ;
+    ] .
+} .
+
+{ ?value this:violates ?skolem } <= { 
+    ?shape this:skolem ?skolem .
+    ?shape sh:not ?not .
+    ?not this:skolem ?innerSkolem .
+    [] log:notIncludes { ?value this:violates ?innerSkolem } .
+} .
+
+
+# OrConstraintComponent
+
+{
+    ?shape sh:or ?or .
+    ?shape this:path ?path .
+    (?or this:skolem) list:map ?skolems .
+    
+    ?shape this:focusNode ?focusNode .
+    (?focusNode ?path) this:value ?value .
+    (
+        { ?x list:in ?skolems}
+        { ?value this:violates ?x }
+    ) log:forAllIn 1 .
+
+    ("value should satisfy at least one shape in: %s " ?or) string:format ?defaultMessage .
+    ?shape this:message (?message ?defaultMessage) .
+    ?shape this:severity ?severity .
+    this: this:report ?report .
+}
+=>
+{
+    ?report sh:result [
+        a sh:ValidationResult ;
+        sh:resultSeverity ?severity ;
+        sh:sourceConstraintComponent sh:OrConstraintComponent ;
+        sh:sourceShape ?shape ;
+        sh:focusNode ?focusNode ;
+        sh:value ?value ;
+        # sh:resultPath ?path ;
+        sh:resultMessage ?message ;
+    ] .
+} .
+
+{ ?value this:violates ?skolem } <= { 
+    ?shape this:skolem ?skolem .
+    ?shape sh:or ?or .
+    (?or this:skolem) list:map ?skolems .
+    (
+        { ?x list:in ?skolems}
+        { ?value this:violates ?x }
+    ) log:forAllIn [] .
+} .
+
+# AndConstraintComponent
+
+{
+    ?shape sh:and ?and .
+    ?shape this:path ?path .
+    (?and this:skolem) list:map ?skolems .
+    
+    ?shape this:focusNode ?focusNode .
+    (?focusNode ?path) this:value ?value .
+
+    ?sk list:in ?skolems . 
+    ?value this:violates ?sk .
+
+    ("value should satisfy all shapes in: %s " ?and) string:format ?defaultMessage .
+    ?shape this:message (?message ?defaultMessage) .
+    ?shape this:severity ?severity .
+    this: this:report ?report .
+}
+=>
+{
+    ?report sh:result [
+        a sh:ValidationResult ;
+        sh:resultSeverity ?severity ;
+        sh:sourceConstraintComponent sh:AndConstraintComponent ;
+        sh:sourceShape ?shape ;
+        sh:focusNode ?focusNode ;
+        sh:value ?value ;
+        # sh:resultPath ?path ;
+        sh:resultMessage ?message ;
+    ] .
+} .
+
+{ ?value this:violates ?skolem } <= { 
+    ?shape this:skolem ?skolem .
+    ?shape sh:and ?and .
+    (?and this:skolem) list:map ?skolems .
+    ?sk list:in ?skolems . 
+    ?value this:violates ?sk 
+} .
+
+
+# XoneConstraintComponent
+
+{
+    ?shape sh:xone ?xone .
+    ?shape this:path ?path .
+    (?xone this:skolem) list:map ?skolems .
+    
+    ?shape this:focusNode ?focusNode .
+    (?focusNode ?path) this:value ?value .
+    (?x { ?x list:in ?skolems . ?value this:violates ?x } ?failed) log:collectAllIn 1 .
+    (?x { ?x list:in ?skolems . ?failed list:notMember ?x } ?valid) log:collectAllIn 1 .
+    ?valid list:length [ log:notEqualTo 1 ].
+
+    ("value should satisfy exactly one shape in: %s " ?xone) string:format ?defaultMessage .
+    ?shape this:message (?message ?defaultMessage) .
+    ?shape this:severity ?severity .
+    this: this:report ?report .
+}
+=>
+{
+    ?report sh:result [
+        a sh:ValidationResult ;
+        sh:resultSeverity ?severity ;
+        sh:sourceConstraintComponent sh:XoneConstraintComponent ;
+        sh:sourceShape ?shape ;
+        sh:focusNode ?focusNode ;
+        sh:value ?value ;
+        # sh:resultPath ?path ;
+        sh:resultMessage ?message ;
+    ] .
+} .
+
+{ ?value this:violates ?skolem } <= { 
+    ?shape this:skolem ?skolem .
+    ?shape sh:xone ?xone .
+    (?xone this:skolem) list:map ?skolems .
+    (?x { ?x list:in ?skolems . ?value this:violates ?x } ?failed) log:collectAllIn [] .
+    (?x { ?x list:in ?skolems . ?failed list:notMember ?x } ?valid) log:collectAllIn [] .
+    ?valid list:length [ log:notEqualTo 1 ].
+} .

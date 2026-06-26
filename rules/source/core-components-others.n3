@@ -1,0 +1,144 @@
+# https://www.w3.org/TR/shacl/#core-components-others
+
+@prefix list: <http://www.w3.org/2000/10/swap/list#> .
+@prefix string: <http://www.w3.org/2000/10/swap/string#> .
+@prefix log: <http://www.w3.org/2000/10/swap/log#> .
+@prefix sh: <http://www.w3.org/ns/shacl#>.
+@prefix this: <http://eye-shacl#> .
+
+
+# ClosedConstraintComponent
+
+{
+    ?shape sh:closed true .
+    ?shape this:allowedProperties ?allowed .
+
+    ?shape this:focusNode ?node .
+    ?node ?property ?value .
+    ?allowed list:notMember ?property .
+
+    ("%s not allowed. allowed properties are only: %s" ?property ?allowed) string:format ?defaultMessage .
+    ?shape this:message (?message ?defaultMessage) .
+    ?shape this:severity ?severity .
+    this: this:report ?report .
+}
+=>
+{
+    ?report sh:result [
+        a sh:ValidationResult ;
+        sh:resultSeverity ?severity ;
+        sh:sourceConstraintComponent sh:ClosedConstraintComponent;
+        sh:sourceShape ?shape ;
+        sh:focusNode ?node ;
+        sh:value ?value ;
+        sh:resultPath ?property ;
+        sh:resultMessage ?message ;
+    ] .
+} .
+
+{
+    ?node this:violates ?skolem .
+}
+<=
+{
+    ?shape this:skolem ?skolem .
+    ?shape sh:closed true .
+    ?shape this:allowedProperties ?allowed .
+    ?node ?property [] .
+    ?allowed list:notMember ?property .
+} .
+
+
+{
+    ?shape this:allowedProperties ?allowed
+}
+<=
+{
+    (?x { ?shape sh:property [ sh:path ?x ] . ?x this:nodeKind sh:IRI } ?existing) log:collectAllIn [] .
+    (?x { ?shape sh:ignoredProperties [ list:member ?x ]} ?ignored) log:collectAllIn [] .
+    (?existing ?ignored) list:append ?allowed .
+} .
+
+
+# HasValueConstraintComponent
+{
+    ?shape sh:hasValue ?hasValue .
+    ?shape this:path ?path .
+
+    ?shape this:focusNode ?focusNode .
+    (?focusNode ?path) this:values ?values .
+    ?values list:notMember ?hasValue .
+
+    ("missing expected value: %s" ?hasValue) string:format ?defaultMessage .
+    ?shape this:message (?message ?defaultMessage) .
+    ?shape this:severity ?severity .
+    this: this:report ?report .
+}
+=>
+{
+    ?report sh:result [
+        a sh:ValidationResult ;
+        sh:resultSeverity ?severity ;
+        sh:sourceConstraintComponent sh:HasValueConstraintComponent ;
+        sh:sourceShape ?shape ;
+        sh:focusNode ?focusNode ;
+        # sh:resultPath ?path ;
+        sh:resultMessage ?message ;
+    ] .
+} .
+
+{
+    ?node this:violates ?skolem .
+}
+<=
+{
+    ?shape this:skolem ?skolem .
+    ?shape sh:hasValue ?hasValue .
+    ?shape this:path ?path .
+    (?node ?path) this:values ?values .
+    ?values list:notMember ?hasValue .
+} .
+
+
+# InConstraintComponent
+
+{
+    ?shape sh:in ?in .
+    ?shape this:path ?path .
+
+    ?shape this:focusNode ?focusNode .
+    # (?focusNode ?path) this:values ?values .
+    # (?values ?in) func:except ?except . # checking all values at once improves performance
+    # ?except list:member ?value .
+    (?focusNode ?path) this:value ?value .
+    ?in list:notMember ?value .
+    
+    ?shape this:severity ?severity .
+    ?shape this:message (?message "value is not in the list of allowed values") .
+    this: this:report ?report .
+}
+=>
+{
+    ?report sh:result [
+        a sh:ValidationResult ;
+        sh:resultSeverity ?severity ;
+        sh:sourceConstraintComponent sh:InConstraintComponent ;
+        sh:sourceShape ?shape ;
+        sh:focusNode ?focusNode ;
+        sh:value ?value ;
+        # sh:resultPath ?path ;
+        sh:resultMessage ?message ;
+    ] .
+} .
+
+{
+    ?node this:violates ?skolem .
+}
+<=
+{
+    ?shape this:skolem ?skolem .
+    ?shape sh:in ?in ; this:path ?path .
+    (?node ?path) this:value ?value .
+    ?in list:notMember ?value .
+} .
+

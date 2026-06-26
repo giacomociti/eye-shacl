@@ -7,7 +7,7 @@
     "test": "test"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "validate": "eyeling rules/eye-shacl.n3"
   },
   "repository": {
     "type": "git",
@@ -22,6 +22,6 @@
   },
   "homepage": "https://github.com/giacomociti/eye-shacl#readme",
   "dependencies": {
-    "eyeling": "^1.21.10"
+    "eyeling": "^2.35.0"
   }
 }

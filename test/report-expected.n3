@@ -1,68 +1,28 @@
-@prefix sh: <http://www.w3.org/ns/shacl#>.
+@prefix log: <http://www.w3.org/2000/10/swap/log#> .
 @prefix list: <http://www.w3.org/2000/10/swap/list#> .
-@prefix this: <http://eye-shacl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix sh: <http://www.w3.org/ns/shacl#>.
 @prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
 @prefix sht: <http://www.w3.org/ns/shacl-test#> .
 
-# Rules used as a query to extract the relevant information to compare SHACL validation reports.
-
-# SHACL Test Suite definition of full compliance:
-# https://w3c.github.io/data-shapes/data-shapes-test-suite/#Validate
-
-{ 
-    [] a sht:Validate ; mf:result ?result . 
-    ?result a sh:ValidationReport 
-} 
-=> 
-{ 
-    ?result a sh:ValidationReport 
-} .
-
-{ 
-    [] a sht:Validate ; mf:result [ sh:result ?result ] .
-    ?result a sh:ValidationResult 
-} 
-=> 
-{ 
-    ?result a sh:ValidationResult 
-} .
-
-
+# extract the expected validation results from the test manifest
+# ignoring sh:resultPath and sh:resultMessage
 {
-    [] a sht:Validate ; mf:result ?result . 
-    {?s ?p ?o} this:cbd ?result .
+    [] a sht:Validate ; mf:result ?report . 
+    ?report sh:result ?result .
+    ?result ?p ?o .
     ?p list:in (
-        sh:result
-        sh:conforms
-        sh:focusNode
-        sh:resultPath
+        rdf:type
         sh:resultSeverity
-        sh:sourceConstraint
-        sh:sourceConstraintComponent
         sh:sourceShape
+        sh:sourceConstraintComponent
+        sh:focusNode
         sh:value
-        #sh:resultMessage
+        # sh:resultPath
+        # sh:resultMessage
     )
 }
-=>
+log:query
 {
-    ?s ?p ?o
-} .
-
-
-{
-    [] a sht:Validate ; mf:result [ sh:result ?result ] .
-    ?result sh:resultPath ?path .
-    {?s ?p ?o} this:cbd ?path .
-    ?p list:in (
-        sh:inversePath
-        sh:alternativePath
-        sh:zeroOrMorePath
-        sh:zeroOrOnePath
-        sh:oneOrMorePath
-    )
-}
-=>
-{ 
-    ?s ?p ?o
+    ?result ?p ?o
 } .

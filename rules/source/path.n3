@@ -1,0 +1,133 @@
+@prefix log: <http://www.w3.org/2000/10/swap/log#> .
+@prefix list: <http://www.w3.org/2000/10/swap/list#> .
+@prefix sh: <http://www.w3.org/ns/shacl#>.
+@prefix this: <http://eye-shacl#> .
+
+# path
+
+# values
+{
+    (?focusNode ?path) this:values ?values
+}
+<=
+{
+    (?x { (?focusNode ?path) this:value ?x } ?xs) log:collectAllIn [] .
+    ?xs this:unique ?values
+} .
+
+# predicate path 
+{ 
+    (?focusNode ?path) this:value ?value 
+} 
+<= 
+{ 
+    ?focusNode ?path ?value
+} .
+
+
+# sequence path
+
+{ (?focusNode ()) this:value ?focusNode } <= { } .
+
+{
+    (?focusNode (?path)) this:value ?value 
+}
+<=
+{
+    (?focusNode ?path) this:value ?value
+} .
+
+{
+    (?focusNode ?path) this:value ?value 
+}
+<=
+{
+    ?path list:firstRest (?first ?rest) .
+    (?focusNode ?first) this:value ?v .
+    (?v ?rest) this:value ?value
+} .
+
+# inverse path
+{
+    (?node ?path) this:value ?value .
+}
+<=
+{
+    ?path sh:inversePath ?inversePath .
+    (?value ?inversePath) this:value ?node .
+} .
+
+# alternative path
+{
+    (?node ?path) this:value ?value .
+}
+<=
+{
+    ?path sh:alternativePath ?alternatives .
+    ?alternatives list:member ?alt .
+
+    (?node ?alt) this:value ?value .
+} .
+
+# zeroOrMore path
+{
+    (?node ?path) this:value ?value .
+}
+<=
+{
+    ?path sh:zeroOrMorePath ?zeroOrMorePath .
+    ?node log:equalTo ?value .
+} .
+
+{
+    (?node ?path) this:value ?value .
+}
+<=
+{
+    ?path sh:zeroOrMorePath ?zeroOrMorePath .
+
+    (?node ?zeroOrMorePath) this:value ?v .
+    (?v ?path) this:value ?value .
+} .
+
+
+# oneOrMore path
+{
+    (?node ?path) this:value ?value .
+}
+<=
+{
+    ?path sh:oneOrMorePath ?oneOrMorePath .
+    (?node ?oneOrMorePath) this:value ?value .
+} .
+
+{
+    (?node ?path) this:value ?value .
+}
+<=
+{
+    ?path sh:oneOrMorePath ?oneOrMorePath .
+    (?node ?oneOrMorePath) this:value ?v .
+    (?v ?path) this:value ?value .
+} .
+
+
+# zeroOrOne path
+{
+    (?node ?path) this:value ?value .
+}
+<=
+{
+    ?path sh:zeroOrOnePath ?zeroOrOnePath .
+    ?node log:equalTo ?value .
+} .
+
+{
+    (?node ?path) this:value ?value .
+}
+<=
+{
+    ?path sh:zeroOrOnePath ?zeroOrOnePath .
+    (?node ?zeroOrOnePath) this:value ?value .
+} .
+

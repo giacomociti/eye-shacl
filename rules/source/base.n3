@@ -1,0 +1,93 @@
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix list: <http://www.w3.org/2000/10/swap/list#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix log: <http://www.w3.org/2000/10/swap/log#> .
+@prefix this: <http://eye-shacl#> .
+
+this: this:report [] .
+
+{ [] owl:imports [ log:semantics ?semantics ] } => ?semantics .
+{ [] sh:shapesGraph [ log:semantics ?semantics ] } => ?semantics .
+
+{ ?innerShape this:shapeLevel this:innerShape ; log:skolem ?skolem } => { ?innerShape this:skolem ?skolem } .
+
+# resultPath
+{
+    this: this:report ?report .
+    ?report sh:result ?result .
+    ?result sh:sourceShape ?shape .
+    ?shape sh:path ?path .
+} 
+=> 
+{ 
+    ?result sh:resultPath ?path 
+} .
+
+# path
+{ ?shape this:path ?path } <= { ?shape sh:path ?path } .
+{ ?shape this:path () } <= { [] log:notIncludes { ?shape sh:path [] } } .
+
+# severity
+{ ?shape this:severity ?severity } <= { ?shape sh:severity ?severity } .
+{ ?shape this:severity sh:Violation } <= { [] log:notIncludes { ?shape sh:severity [] } } .
+
+# message
+{ ?shape this:message (?message ?defaultMessage) } <= { ?shape sh:message ?message } .
+{ ?shape this:message (?defaultMessage ?defaultMessage) } <= { [] log:notIncludes { ?shape sh:message [] } } .
+
+
+
+# see https://www.w3.org/TR/shacl/#shapes-recursion
+
+{ ?shape1 this:refers ?shape2 } <= { 
+    ?shape1 [ list:in (sh:property sh:node sh:not sh:qualifiedValueShape) ] ?shape2 .
+} .
+
+{ ?shape1 this:refers ?shape2 } <= { 
+    ?shape1 [ list:in (sh:or sh:and sh:xone) ] ?list .
+    ?list list:member ?shape2 .
+} .
+
+# shape levels
+{ ?innerShape this:shapeLevel this:innerShape } <= { 
+    # [] log:notIncludes { ?innerShape sh:deactivated true } .
+    ?shape this:refers ?innerShape .
+    # exclude sh:property
+    ?shape [ list:in (sh:node sh:not sh:qualifiedValueShape sh:or sh:and sh:xone)] [] .
+} .
+
+{ ?innerShape this:shapeLevel this:innerShape } <= { 
+    # [] log:notIncludes { ?innerShape sh:deactivated true } .
+    ?shape this:refers ?innerShape .
+    ?shape this:shapeLevel this:innerShape .
+} .
+
+
+# polyfill for list:unique and list:setNotEqualTo
+# (likely they are inefficient)
+
+{ () this:unique () } <= { } .
+
+{ ?list this:unique ?result } <= { 
+    ?list list:firstRest (?first ?rest) .
+    ?first list:in ?rest .
+    ?rest this:unique ?result .
+} .
+
+{ ?list this:unique ?result } <= { 
+    ?list list:firstRest (?first ?rest) .
+    ?rest list:notMember ?first .
+    ?rest this:unique ?uniqueRest .
+    ?result list:firstRest (?first ?uniqueRest) .
+} .
+
+{ ?list this:setNotEqualTo ?other } <= { 
+    ?x list:in ?list .
+    ?other list:notMember ?x .
+} .
+
+{ ?list this:setNotEqualTo ?other } <= { 
+    ?x list:in ?other .
+    ?list list:notMember ?x .
+} .

@@ -1,0 +1,184 @@
+# https://www.w3.org/TR/shacl/#core-components-shape
+
+@prefix log: <http://www.w3.org/2000/10/swap/log#> .
+@prefix string: <http://www.w3.org/2000/10/swap/string#> .
+@prefix math: <http://www.w3.org/2000/10/swap/math#> .
+@prefix list: <http://www.w3.org/2000/10/swap/list#> .
+@prefix sh: <http://www.w3.org/ns/shacl#>.
+@prefix this: <http://eye-shacl#> .
+
+# NodeShapeComponent
+
+{
+    ?shape sh:node ?node .
+    ?shape this:path ?path .
+    ?node this:skolem ?skolem .
+    
+    ?shape this:focusNode ?focusNode .
+    (?focusNode ?path) this:value ?value .
+    ?value this:violates ?skolem .
+
+    ("value should satisfy shape %s " ?node) string:format ?defaultMessage .
+    ?shape this:message (?message ?defaultMessage) .
+    ?shape this:severity ?severity .
+    this: this:report ?report .
+}
+=>
+{
+    ?report sh:result [
+        a sh:ValidationResult ;
+        sh:resultSeverity ?severity ;
+        sh:sourceConstraintComponent sh:NodeConstraintComponent ;
+        sh:sourceShape ?shape ;
+        sh:focusNode ?focusNode ;
+        sh:value ?value ;
+        # sh:resultPath ?path ;
+        sh:resultMessage ?message ;
+    ] .
+} .
+
+{ ?value this:violates ?skolem } <= { 
+    ?shape this:skolem ?skolem .
+    ?shape sh:node ?node .
+    ?node this:skolem ?innerSkolem .
+    ?shape this:path ?path .
+    (?value ?path) this:value ?x .
+    ?x this:violates ?innerSkolem .
+} .
+
+
+# PropertyShapeComponent
+
+{ 
+    ?node this:violates ?skolem 
+} 
+<=
+{ 
+    ?shape this:skolem ?skolem .
+    ?shape sh:property ?propertyShape .
+    ?propertyShape this:skolem ?innerSkolem .
+    ?shape this:path ?path .
+    (?node ?path) this:value ?value .
+    ?value this:violates ?innerSkolem .
+} .
+
+
+# qualifiedValueShape
+ 
+
+{
+    ?shape sh:qualifiedMinCount ?minCount .
+    ?shape sh:qualifiedValueShape ?valueShape ; sh:path ?path .
+    
+    ?shape this:focusNode ?node .
+    ?node this:qualifiedCount (?shape ?length) .
+    ?length math:lessThan ?minCount .
+
+    ("%s values passed, expected at least %s" ?length ?minCount) string:format ?defaultMessage .
+    ?shape this:message (?message ?defaultMessage) .
+    ?shape this:severity ?severity .
+    this: this:report ?report .
+}
+=>
+{
+    ?report sh:result [
+        a sh:ValidationResult ;
+        sh:resultSeverity ?severity ;
+        sh:sourceConstraintComponent sh:QualifiedMinCountConstraintComponent;
+        sh:sourceShape ?shape ;
+        sh:focusNode ?node ;
+        sh:resultPath ?path ;
+        sh:resultMessage ?message ;
+    ] .
+} .
+
+
+
+{
+    ?shape sh:qualifiedMaxCount ?maxCount .
+    ?shape sh:qualifiedValueShape ?valueShape ; sh:path ?path .
+    
+    ?shape this:focusNode ?node .
+    ?node this:qualifiedCount (?shape ?length) .
+    ?length math:greaterThan ?maxCount .
+
+    ("%s values passed, expected at most %s" ?length ?maxCount) string:format ?defaultMessage .
+    ?shape this:message (?message ?defaultMessage) .
+    ?shape this:severity ?severity .
+    this: this:report ?report .
+}
+=>
+{
+    ?report sh:result [
+        a sh:ValidationResult ;
+        sh:resultSeverity ?severity ;
+        sh:sourceConstraintComponent sh:QualifiedMaxCountConstraintComponent;
+        sh:sourceShape ?shape ;
+        sh:focusNode ?node ;
+        sh:resultPath ?path ;
+        sh:resultMessage ?message ;
+    ] .
+} .
+
+
+
+
+{
+    ?node this:qualifiedCount (?skolem ?length)
+}
+<=
+{
+    ?shape this:skolem ?skolem .
+    ?shape sh:qualifiedValueShape ?valueShape ; sh:path ?path .
+    # (
+    #     ?x {
+    #         ?shape sh:qualifiedValueShapesDisjoint true .
+    #         ?parent sh:property ?shape, ?other .
+    #         ?shape log:notEqualTo ?other .
+    #         ?other sh:qualifiedValueShape ?x
+    #     } ?siblings
+    # ) log:collectAllIn [] .
+    
+    (?node ?path) this:values ?values .
+    (?x { 
+        ?x list:in ?values . 
+        [] log:notIncludes { ?x this:violates ?valueShape } .
+        # (
+        #     { ?sibling list:in ?siblings }
+        #     { ?x this:violates ?sibling }
+        # ) log:forAllIn [] .
+    } ?xs) log:collectAllIn [] .
+            
+    ?xs list:length ?length .
+} .
+
+
+
+
+{
+
+    
+    ?node this:violates ?skolem .
+}
+<=
+{
+    ?shape sh:qualifiedMinCount ?minCount .
+    ?shape sh:qualifiedValueShape ?valueShape ; sh:path ?path .
+    ?shape this:skolem ?skolem .
+    ?node this:qualifiedCount (?skolem ?length) .
+    ?length math:lessThan ?minCount .
+} .
+
+
+
+{   
+    ?node this:violates ?skolem .
+}
+<=
+{
+    ?shape sh:qualifiedMaxCount ?maxCount .
+    ?shape sh:qualifiedValueShape ?valueShape ; sh:path ?path .
+    ?shape this:skolem ?skolem .
+    ?node this:qualifiedCount (?skolem ?length) .
+    ?length math:greaterThan ?maxCount .
+} .

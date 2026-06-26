@@ -1,0 +1,43 @@
+@prefix log: <http://www.w3.org/2000/10/swap/log#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix sh: <http://www.w3.org/ns/shacl#>.
+@prefix this: <http://eye-shacl#> .
+
+# focus nodes
+
+{ ?shape this:focusNode ?x } <= { 
+    ?shape sh:targetClass ?targetClass .
+    [] log:notIncludes { ?shape sh:deactivated true } .
+    ?x this:class ?targetClass .  
+} .
+
+{ ?shape this:focusNode ?x } <= { 
+    ?shape a sh:NodeShape , rdfs:Class .
+    [] log:notIncludes { ?shape sh:deactivated true } .
+    ?x this:class ?shape 
+} .
+
+{ ?shape this:focusNode ?targetNode } <= {
+    ?shape sh:targetNode ?targetNode .
+    [] log:notIncludes { ?shape sh:deactivated true } .
+}.
+
+{  ?shape this:focusNode ?x  } <= { 
+    ?shape sh:targetObjectsOf ?predicate .
+    [] log:notIncludes { ?shape sh:deactivated true } .
+    [] ?predicate ?x 
+} .
+
+{ ?shape this:focusNode ?x } <= { 
+    ?shape sh:targetSubjectsOf ?predicate .
+    [] log:notIncludes { ?shape sh:deactivated true } .
+    ?x ?predicate [] 
+} .
+
+{ ?propertyShape this:focusNode ?value } <=  {
+    ?shape sh:property ?propertyShape .
+    [] log:notIncludes { ?propertyShape sh:deactivated true } .
+    ?shape this:path ?path .
+    ?shape this:focusNode ?node .
+    (?node ?path) this:value ?value 
+} .

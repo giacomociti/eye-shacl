@@ -1,0 +1,17 @@
+{
+  "name": "test",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test:expected": "eyeling report-expected.n3",
+    "test:actual": "eyeling report-actual.n3",
+    "test:create": "eyeling testFile.n3",
+    "test": "eyeling ../rules/eye-shacl.n3",
+    "test:check": "eyeling check.n3"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs"
+}

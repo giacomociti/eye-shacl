@@ -1,0 +1,54 @@
+# https://www.w3.org/TR/shacl/#core-components-value-type
+
+@prefix log: <http://www.w3.org/2000/10/swap/log#> .
+@prefix string: <http://www.w3.org/2000/10/swap/string#> .
+@prefix dt: <https://eyereasoner.github.io/eyeling/datatype#> .
+@prefix sh: <http://www.w3.org/ns/shacl#>.
+@prefix this: <http://eye-shacl#> .
+
+# DatatypeConstraintComponent
+{
+    ?shape sh:datatype ?datatype .
+    ?shape this:path ?path .
+
+    ?shape this:focusNode ?node .
+    (?node ?path) this:value ?value .
+    ?value this:violatesDatatype ?datatype .
+
+    ("value %s should be of datatype %s" ?value ?datatype) string:format ?defaultMessage .
+    ?shape this:message (?message ?defaultMessage) .
+    ?shape this:severity ?severity .
+    this: this:report ?report .
+}
+=>
+{
+    ?report sh:result [
+        a sh:ValidationResult ;
+        sh:resultSeverity ?severity ;
+        sh:sourceConstraintComponent sh:DatatypeConstraintComponent ;
+        sh:sourceShape ?shape ;
+        sh:focusNode ?node ;
+        sh:value ?value ;
+        sh:resultPath ?path ;
+        sh:resultMessage ?message ;
+    ] .
+} .
+
+
+{
+    ?node this:violates ?skolem .
+}
+<=
+{
+    ?shape this:skolem ?skolem .
+    ?shape sh:datatype ?datatype .
+    ?shape this:path ?path .
+    (?node ?path) this:value ?value .
+    ?value this:violatesDatatype ?datatype .
+} .
+
+
+{ ?x this:violatesDatatype ?datatype } <= { ?x log:rawType [ log:notEqualTo log:Literal ] } .
+{ ?x this:violatesDatatype ?datatype } <= { ?x dt:datatype [ log:notEqualTo ?datatype ] } .
+{ ?x this:violatesDatatype ?datatype } <= { ?x dt:invalidForDatatype ?datatype } .
+

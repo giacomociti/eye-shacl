@@ -1,0 +1,119 @@
+# https://www.w3.org/TR/shacl/#core-components-string
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix string: <http://www.w3.org/2000/10/swap/string#> .
+@prefix log: <http://www.w3.org/2000/10/swap/log#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix this: <http://eye-shacl#> .
+@prefix dt: <https://eyereasoner.github.io/eyeling/datatype#> .
+
+# UniqueLangConstraintComponent
+
+{
+    ?shape sh:uniqueLang ?uniqueLang .
+    ?uniqueLang dt:lexicalForm "true" . # "1" is ignored, see test uniqueLang-002.ttl
+    ?uniqueLang dt:datatype xsd:boolean .
+    ?shape sh:path ?path .
+
+    ?shape this:focusNode ?focusNode .
+    (?focusNode ?path) this:hasDuplicateLanguage ?lang .
+
+    ("Language \"%s\" has been used more than once" ?lang) string:format ?defaultMessage .
+    ?shape this:message (?message ?defaultMessage) .
+    ?shape this:severity ?severity .
+    this: this:report ?report .
+}
+=>
+{
+    ?report sh:result [
+        a sh:ValidationResult ;
+        sh:resultSeverity ?severity ;
+        sh:sourceConstraintComponent sh:UniqueLangConstraintComponent ;
+        sh:sourceShape ?shape ;
+        sh:focusNode ?focusNode ;
+        sh:resultPath ?path ;
+        sh:resultMessage ?message ;
+    ] .
+} .
+
+{ ?node this:violates ?skolem } <= { 
+    ?shape this:skolem ?skolem .
+    ?shape sh:uniqueLang ?uniqueLang .
+    ?uniqueLang dt:lexicalForm "true" . # "1" is ignored, see test uniqueLang-002.ttl
+    ?uniqueLang dt:datatype xsd:boolean .
+    ?shape sh:path ?path .
+    (?node ?path) this:hasDuplicateLanguage [] 
+} .
+
+
+{
+    (?node ?path) this:hasDuplicateLanguage ?lang .
+}
+<=
+{
+    (?node ?path) this:value ?x, ?y .
+    ?x log:notEqualTo ?y .
+    ([] ?lang) log:langlit ?x .
+    ([] ?lang) log:langlit ?y .
+} .
+
+
+# PatternConstraintComponent
+
+# sh:flags values made only of i/m/s are translated to JavaScript
+# inline regex modifiers; the XPath-style x flag remains unsupported.
+# (thanks to Pieter Colpaert)
+
+{
+    ?shape this:pattern ?pattern .
+    ?shape this:path ?path .
+
+    ?shape this:focusNode ?focusNode .
+    (?focusNode ?path) this:value ?value .
+    # ?use string:format (instead of dt:lexicalForm) to include also non-literals
+    ("%s" ?value) string:format ?x .
+    ?x string:notMatches ?pattern .
+
+    ("Value %s does not match pattern %s" ?x ?pattern) string:format ?defaultMessage .
+    ?shape this:message (?message ?defaultMessage) .
+    ?shape this:severity ?severity .
+    this: this:report ?report .
+}
+=>
+{
+    ?report sh:result [
+        a sh:ValidationResult ;
+        sh:resultSeverity ?severity ;
+        sh:sourceConstraintComponent sh:PatternConstraintComponent ;
+        sh:sourceShape ?shape ;
+        sh:focusNode ?focusNode ;
+        sh:value ?value ;
+        # sh:resultPath ?path ;
+        sh:resultMessage ?message ;
+    ] .
+} .
+
+{
+    ?node this:violates ?skolem .
+}
+<=
+{
+    ?shape this:skolem ?skolem .
+    ?shape this:pattern ?pattern .
+    ?shape this:path ?path .
+    (?node ?path) this:value ?value .
+    ("%s" ?value) string:format ?x .
+    ?x string:notMatches ?pattern .
+} .
+
+{ ?shape this:pattern ?pattern } <= { 
+    ?shape sh:pattern ?pattern .
+    1 log:notIncludes { ?shape sh:flags [] } .
+} .
+
+{ ?shape this:pattern ?flaggedPattern } <= { 
+    ?shape sh:pattern ?pattern .
+    ?shape sh:flags ?flags .
+    ?flags string:notMatches "[^ims]" .
+    ("(?" ?flags ":" ?pattern ")") string:concatenation ?flaggedPattern .
+} .
+
