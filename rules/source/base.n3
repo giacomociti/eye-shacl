@@ -1,0 +1,92 @@
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix list: <http://www.w3.org/2000/10/swap/list#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix log: <http://www.w3.org/2000/10/swap/log#> .
+@prefix this: <http://eye-shacl#> .
+
+this: this:report [] .
+
+{ [] owl:imports [ log:semantics ?semantics ] } => ?semantics .
+{ [] sh:shapesGraph [ log:semantics ?semantics ] } => ?semantics .
+
+# skolemize inner shapes
+{ 
+    [] ?p ?shape .
+    ?p list:in (sh:node sh:property sh:not sh:qualifiedValueShape) .
+    ?shape log:skolem ?skolem .
+} 
+=> 
+{ 
+    ?shape this:skolem ?skolem
+} .
+
+{ 
+    [] ?p ?list .
+    ?p list:in (sh:or sh:and sh:xone) .
+    ?list list:member ?shape .
+    ?shape log:skolem ?skolem .
+} 
+=> 
+{ 
+    ?shape this:skolem ?skolem
+} .
+
+
+# resultPath
+{
+    this: this:report ?report .
+    ?report sh:result ?result .
+    ?result sh:sourceShape ?shape .
+    ?shape sh:path ?path .
+} 
+=> 
+{ 
+    ?result sh:resultPath ?path 
+} .
+
+# path
+{ ?shape this:path ?path } <= { ?shape sh:path ?path } .
+{ ?shape this:path () } <= { [] log:notIncludes { ?shape sh:path [] } } .
+
+# severity
+{ ?shape this:severity ?severity } <= { ?shape sh:severity ?severity } .
+{ ?shape this:severity sh:Violation } <= { [] log:notIncludes { ?shape sh:severity [] } } .
+
+# message
+{ (?shape ?defaultMessage) this:message ?message } <= { ?shape sh:message ?message } .
+{ (?shape ?defaultMessage) this:message ?defaultMessage } <= { [] log:notIncludes { ?shape sh:message [] } } .
+
+
+
+# eye has list:unique but eyeling lacks it, so we define it here
+{ () this:unique () } <= { } .
+
+{ ?list this:unique ?result } <= { 
+    ?list list:firstRest (?first ?rest) .
+    ?first list:in ?rest .
+    ?rest this:unique ?result .
+} .
+
+{ ?list this:unique ?result } <= { 
+    ?list list:firstRest (?first ?rest) .
+    ?rest list:notMember ?first .
+    ?rest this:unique ?uniqueRest .
+    ?result list:firstRest (?first ?uniqueRest) .
+} .
+
+# eye has list:setNotEqualTo but eyeling lacks it, so we define it here
+{ ?list this:setNotEqualTo ?other } <= { 
+    ?x list:in ?list .
+    ?other list:notMember ?x .
+} .
+
+{ ?list this:setNotEqualTo ?other } <= { 
+    ?x list:in ?other .
+    ?list list:notMember ?x .
+} .
+
+
+# eyeling has dt:lexicalForm and dt:datatype but the eye reasoner lacks them
+{ ?x this:lexicalForm ?lexicalForm } <= { (?lexicalForm []) log:dtlit ?x } .
+{ ?x this:datatype ?datatype } <= { ([] ?datatype) log:dtlit ?x } .

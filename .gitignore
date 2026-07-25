@@ -1,3 +1,5 @@
 test-expected.ttl
 test-actual.ttl
 test-actual-report.ttl
+
+node_modules/
