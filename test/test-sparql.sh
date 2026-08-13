@@ -17,12 +17,12 @@ echo ""
 files=(
     "custom/test00.ttl" # false negative (recursive shapes not supported)
     "custom/test01.ttl"
-    "custom/test02.ttl"
-    "custom/test03.ttl"
+    "custom/test02.ttl" #
+    "custom/test03.ttl" #
     "custom/test04.ttl"
     "custom/test05.ttl"
     "custom/test06.ttl"
-    "custom/test07.ttl"
+    "custom/test07.ttl" #
     "custom/test08.ttl"
     "custom/test09.ttl"
     "custom/test10.ttl"
@@ -32,10 +32,10 @@ files=(
     "custom/test14.ttl"
     "custom/test15.ttl" # owl:import
     "custom/test16.ttl" # inner sh:qualifiedMinCount not implemented yet
-    "custom/test17.ttl" # false negative (eye number comparison)
+    "custom/test17.ttl" 
     "custom/test18.ttl" 
     "custom/test19.ttl" # sh:shapesGraph
-    "custom/test20.ttl"
+    "custom/test20.ttl" #
     "custom/test21.ttl"
     "custom/test22.ttl"
     "custom/test23.ttl" # false negative (sh:entailment not supported)
@@ -61,7 +61,7 @@ files=(
 
     # https://github.com/w3c/data-shapes/tree/gh-pages/data-shapes-test-suite/tests/core
 
-    "core/complex/personexample.ttl"
+    "core/complex/personexample.ttl" #
     "core/complex/shacl-shacl.ttl"
 
     "core/misc/deactivated-001.ttl"
@@ -74,7 +74,7 @@ files=(
     "core/node/and-002.ttl"
     "core/node/class-001.ttl"
     "core/node/class-002.ttl"
-    "core/node/class-003.ttl" # duplicates, likely for multiple targets
+    "core/node/class-003.ttl" 
     "core/node/closed-001.ttl"
     "core/node/closed-002.ttl"
     # "core/node/datatype-001.ttl" # parsing error
@@ -84,10 +84,10 @@ files=(
     "core/node/hasValue-001.ttl"
     "core/node/in-001.ttl"
     "core/node/languageIn-001.ttl"
-    "core/node/maxExclusive-001.ttl" # false negative (decimal comparison?)
-    "core/node/maxInclusive-001.ttl" # false negative (decimal comparison?)
+    "core/node/maxExclusive-001.ttl" 
+    "core/node/maxInclusive-001.ttl"
     "core/node/maxLength-001.ttl"
-    "core/node/minExclusive-001.ttl" # false negative (decimal comparison)
+    "core/node/minExclusive-001.ttl" 
     "core/node/minInclusive-001.ttl" 
     "core/node/minInclusive-002.ttl" # false negative (oxigraph, date without timezone)
     # "core/node/minInclusive-003.ttl" # date offset
@@ -103,7 +103,7 @@ files=(
     "core/node/xone-001.ttl"
     "core/node/xone-duplicate.ttl"
 
-    "core/path/path-alternative-001.ttl" # false negative (eye list comparison?)
+    "core/path/path-alternative-001.ttl" 
     "core/path/path-complex-001.ttl" 
     "core/path/path-complex-002.ttl"
     "core/path/path-inverse-001.ttl"
@@ -119,7 +119,7 @@ files=(
 
     "core/property/and-001.ttl"
     "core/property/class-001.ttl"
-    "core/property/datatype-001.ttl" # false negative?
+    "core/property/datatype-001.ttl" 
     "core/property/datatype-002.ttl"
     "core/property/datatype-003.ttl"
     # "core/property/datatype-ill-formed.ttl" # parsing issue
@@ -162,7 +162,7 @@ files=(
     "core/targets/targetNode-001.ttl"
     "core/targets/targetObjectsOf-001.ttl"
     "core/targets/targetSubjectsOf-001.ttl"
-    "core/targets/targetSubjectsOf-002.ttl" # duplicate result
+    "core/targets/targetSubjectsOf-002.ttl" 
 
     # "core/validation-reports/shared.ttl" # expected duplicate
 )

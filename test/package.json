@@ -7,6 +7,7 @@
     "test:expected": "eyeling report-expected.n3",
     "test:actual": "eyeling report-actual.n3",
     "test:create": "eyeling testFile.n3",
+    "test:create-sparql": "eyeling testFile-sparql.n3",
     "test": "eyeling ../rules/eye-shacl.n3",
     "test:eye": "eye --nope --quiet --pass-only-new ../rules/eye-shacl.n3",
     "test:check": "eyeling check.n3"
