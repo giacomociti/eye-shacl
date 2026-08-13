@@ -12,7 +12,7 @@
   "type": "module",
   "dependencies": {
     "express": "^5.2.1",
-    "eyeling": "^2.35.4",
+    "eyeling": "^2.35.6",
     "n3": "^2.0.3",
     "sparql-http-client": "^3.1.0"
   }

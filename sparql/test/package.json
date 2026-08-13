@@ -11,7 +11,7 @@
   "license": "ISC",
   "type": "module",
   "dependencies": {
-    "eyeling": "^2.35.4",
+    "eyeling": "^2.35.6",
     "n3": "^2.0.3",
     "oxigraph": "^0.5.2"
   }

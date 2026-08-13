@@ -7,17 +7,13 @@ import oxigraph from 'oxigraph';
 const __dirname = path.dirname(new URL(import.meta.url).pathname);
 
 const rulesText = fs.readFileSync(path.join(__dirname, '..', 'shapes.n3'), 'utf8')
-const parsedRules = eyeling.parseN3Text(rulesText, {
-  keepSourceArtifacts: false,
-});
 
 async function compile(shapesFile) {
    
     const shapesData = fs.readFileSync(shapesFile, 'utf8')
-    const quads = new n3.Parser().parse(shapesData)
     const result = new Map()
 
-    const streamResult = eyeling.reasonStream({ quads, frules: parsedRules.frules, brules: parsedRules.brules })
+    const streamResult = eyeling.reasonStream({ sources: [rulesText, shapesData] })
     for (const triple of streamResult.derived) {
         if (triple.fact.p.value === 'http://eye-shacl#sparql') {
             const query = JSON.parse(triple.fact.o.value)

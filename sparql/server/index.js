@@ -7,10 +7,6 @@ import SparqlClient from 'sparql-http-client'
 
 const __dirname = path.dirname(new URL(import.meta.url).pathname);
 const rulesText = fs.readFileSync(path.join(__dirname, '..', 'shapes.n3'), 'utf8')
-const parsedRules = eyeling.parseN3Text(rulesText, {
-  keepSourceArtifacts: false,
-});
-
 
 const PORT = process.env.PORT || 3000;
 
@@ -33,9 +29,9 @@ function getRawBody(req) {
 	});
 }
 
-const generateSPARQLQueries = (quads) => {
+const generateSPARQLQueries = (input) => {
 	const queries = []
-	const streamResult = eyeling.reasonStream({quads, frules: parsedRules.frules, brules: parsedRules.brules})
+	const streamResult = eyeling.reasonStream({sources: [rulesText, input]})
 	for (const triple of streamResult.derived) {
 		if (triple.fact.p.value === 'http://eye-shacl#sparql') {
 			const query = JSON.parse(triple.fact.o.value)
@@ -97,8 +93,7 @@ const app = express();
 app.post('/shacl', async (req, res) => {
 	try {
 		const input = await getRawBody(req);
-		const quads = new n3.Parser().parse(input);
-		const queries = generateSPARQLQueries(quads);
+		const queries = generateSPARQLQueries(input);
 		res.set('Content-Type', 'text/turtle');
 		await executeSPARQLQueries(queries, res);
 		
