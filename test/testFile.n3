@@ -1,9 +1,21 @@
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
 @prefix sht: <http://www.w3.org/ns/shacl-test#> .
-@prefix e: <http://eulersharp.sourceforge.net/2003/03swap/log-rules#>.
 @prefix mf: <http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#> .
-@prefix this: <http://eye-shacl#>.
 @prefix string: <http://www.w3.org/2000/10/swap/string#> .
 @prefix log: <http://www.w3.org/2000/10/swap/log#> .
+@prefix : <#> .
+
+:let :test "test" . # alternatively, use "test:eye" instead of "test"
+
+
+# in case the test file contains sh:entailment, include the corresponding rules
+<http://www.w3.org/ns/entailment/RDFS> rdfs:seeAlso <https://raw.githubusercontent.com/eyereasoner/lib-rdfs/main/lib-rdfs.n3> .
+<http://www.w3.org/ns/owl-profile/E> rdfs:seeAlso <https://raw.githubusercontent.com/eyereasoner/lib-owl/refs/heads/main/lib-owl-e.n3> .
+<http://www.w3.org/ns/owl-profile/P> rdfs:seeAlso <https://raw.githubusercontent.com/eyereasoner/lib-owl/refs/heads/main/lib-owl-p.n3> .
+<http://www.w3.org/ns/owl-profile/RL> rdfs:seeAlso 
+    # <https://raw.githubusercontent.com/eyereasoner/lib-owl/refs/heads/main/lib-owl-rl.n3> ,
+    <https://raw.githubusercontent.com/pietercolpaert/rdfjs-inference-engine/refs/heads/main/rules/owl2rl/owl2rl-eyeling.n3> .
 
 {
     ?validate a sht:Validate ;
@@ -11,10 +23,37 @@
             sht:dataGraph [ log:uri ?dataGraph ] ;
             sht:shapesGraph [ log:uri ?shapesGraph ] ;
         ] .
-    ("../dist/eye-shacl.sh %s %s > test-actual.ttl" ?shapesGraph ?dataGraph) string:format ?CMD.
-    ?CMD e:exec 0.
+    (?dataGraph "file://" "") string:replace ?dataArg .
+    (?shapesGraph "file://" "") string:replace ?shapesArg .
+    ?dataArg log:notEqualTo ?shapesArg .
+    :let :test ?test .
+    :let :entailments ?entailments .
+
+    ("npm run --silent " ?test " " ?shapesArg " " ?dataArg " " ?entailments) string:concatenation ?args
 }
 =>
 {
-    # ?CMD this:exec ?exec.
+    [] log:outputString ?args.
+} .
+
+{
+    ?validate a sht:Validate ;
+        mf:action [
+            sht:dataGraph [ log:uri ?dataAndShapesGraph ] ;
+            sht:shapesGraph [ log:uri ?dataAndShapesGraph ] ;
+        ] .
+    (?dataAndShapesGraph "file://" "") string:replace ?arg .
+    :let :test ?test .
+    :let :entailments ?entailments .
+    
+    ("npm run --silent " ?test " " ?arg " " ?entailments) string:concatenation ?args
+}
+=>
+{
+    [] log:outputString ?args.
+} .
+
+{ :let :entailments ?entailments } <= { 
+    (?x { [] sh:entailment [ rdfs:seeAlso [ log:uri ?x ] ] } ?xs) log:collectAllIn [] .
+    ?xs string:concatenation ?entailments .
 } .
