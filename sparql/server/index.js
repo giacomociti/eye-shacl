@@ -6,7 +6,11 @@ import eyeling from 'eyeling';
 import SparqlClient from 'sparql-http-client'
 
 const __dirname = path.dirname(new URL(import.meta.url).pathname);
-const rules = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'shapes.json'), 'utf8'))
+const rulesText = fs.readFileSync(path.join(__dirname, '..', 'shapes.n3'), 'utf8')
+const parsedRules = eyeling.parseN3Text(rulesText, {
+  keepSourceArtifacts: false,
+});
+
 
 const PORT = process.env.PORT || 3000;
 
@@ -31,7 +35,7 @@ function getRawBody(req) {
 
 const generateSPARQLQueries = (quads) => {
 	const queries = []
-	const streamResult = eyeling.reasonStream({quads, rules})
+	const streamResult = eyeling.reasonStream({quads, frules: parsedRules.frules, brules: parsedRules.brules})
 	for (const triple of streamResult.derived) {
 		if (triple.fact.p.value === 'http://eye-shacl#sparql') {
 			const query = JSON.parse(triple.fact.o.value)
