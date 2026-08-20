@@ -1,22 +1,23 @@
 # https://www.w3.org/TR/shacl/#core-components-string
+@prefix list: <http://www.w3.org/2000/10/swap/list#> .
+@prefix math: <http://www.w3.org/2000/10/swap/math#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix string: <http://www.w3.org/2000/10/swap/string#> .
 @prefix log: <http://www.w3.org/2000/10/swap/log#> .
 @prefix sh: <http://www.w3.org/ns/shacl#> .
 @prefix this: <http://eye-shacl#> .
 
-# UniqueLangConstraintComponent
+# MinLengthConstraintComponent
 
 {
-    ?shape sh:uniqueLang ?uniqueLang .
-    ?uniqueLang this:lexicalForm "true" . # "1" is ignored, see test uniqueLang-002.ttl
-    ?uniqueLang this:datatype xsd:boolean .
-    ?shape sh:path ?path .
+    ?shape sh:minLength ?minLength .
+    ?shape this:path ?path .
 
-    ?shape this:focusNode ?focusNode .
-    (?focusNode ?path) this:hasDuplicateLanguage ?lang .
+    ?shape this:focusNode ?node .
+    (?node ?path) this:value ?value .
+    [] log:notIncludes { ?value this:minLength ?minLength } .
 
-    ("Language \"%s\" has been used more than once" ?lang) string:format ?defaultMessage .
+    ("value %s should have at least %s characters" ?value ?minLength) string:format ?defaultMessage .
     (?shape ?defaultMessage) this:message ?message .
     ?shape this:severity ?severity .
     this: this:report ?report .
@@ -26,34 +27,75 @@
     ?report sh:result [
         a sh:ValidationResult ;
         sh:resultSeverity ?severity ;
-        sh:sourceConstraintComponent sh:UniqueLangConstraintComponent ;
+        sh:sourceConstraintComponent sh:MinLengthConstraintComponent ;
         sh:sourceShape ?shape ;
-        sh:focusNode ?focusNode ;
-        sh:resultPath ?path ;
+        sh:focusNode ?node ;
+        sh:value ?value ;
+        # sh:resultPath ?path ;
         sh:resultMessage ?message ;
     ] .
 } .
 
-{ ?node this:violates ?skolem } <= { 
-    ?shape this:skolem ?skolem .
-    ?shape sh:uniqueLang ?uniqueLang .
-    ?uniqueLang this:lexicalForm "true" . # "1" is ignored, see test uniqueLang-002.ttl
-    ?uniqueLang this:datatype xsd:boolean .
-    ?shape sh:path ?path .
-    (?node ?path) this:hasDuplicateLanguage [] 
-} .
-
-
 {
-    (?node ?path) this:hasDuplicateLanguage ?lang .
+    ?node this:violates ?skolem .
 }
 <=
 {
-    (?node ?path) this:value ?x, ?y .
-    ?x log:notEqualTo ?y .
-    ([] ?lang) log:langlit ?x .
-    ([] ?lang) log:langlit ?y .
+    ?shape this:skolem ?skolem .
+    ?shape sh:minLength ?minLength .
+    ?shape this:path ?path .
+    (?node ?path) this:value ?value .
+    [] log:notIncludes { ?value this:minLength ?minLength } 
 } .
+
+{ ?value this:minLength ?minLength } <= { (?text []) log:dtlit ?value . ?text string:length [math:notLessThan ?minLength] }.
+{ ?value this:minLength ?minLength } <= { ?value log:rawType log:Other ; log:uri ?text . ?text string:length [math:notLessThan ?minLength] }.
+
+# MaxLengthConstraintComponent
+
+{
+    ?shape sh:maxLength ?maxLength .
+    ?shape this:path ?path .
+
+    ?shape this:focusNode ?node .
+    (?node ?path) this:value ?value .
+    [] log:notIncludes { ?value this:maxLength ?maxLength } .
+
+    ("value %s should have at most %s characters" ?value ?maxLength) string:format ?defaultMessage .
+    (?shape ?defaultMessage) this:message ?message .
+    ?shape this:severity ?severity .
+    this: this:report ?report .
+}
+=>
+{
+    ?report sh:result [
+        a sh:ValidationResult ;
+        sh:resultSeverity ?severity ;
+        sh:sourceConstraintComponent sh:MaxLengthConstraintComponent ;
+        sh:sourceShape ?shape ;
+        sh:focusNode ?node ;
+        sh:value ?value ;
+        # sh:resultPath ?path ;
+        sh:resultMessage ?message ;
+    ] .
+} .
+
+{
+    ?node this:violates ?skolem .
+}
+<=
+{
+    ?shape this:skolem ?skolem .
+    ?shape sh:maxLength ?maxLength .
+    ?shape this:path ?path .
+    (?node ?path) this:value ?value .
+    [] log:notIncludes { ?value this:maxLength ?maxLength } 
+} .
+
+{ ?value this:maxLength ?maxLength } <= { (?text []) log:dtlit ?value . ?text string:length [math:notGreaterThan ?maxLength] }.
+{ ?value this:maxLength ?maxLength } <= { ?value log:rawType log:Other ; log:uri ?text . ?text string:length [math:notGreaterThan ?maxLength] }.
+
+
 
 
 # PatternConstraintComponent
@@ -116,3 +158,100 @@
     ("(?" ?flags ":" ?pattern ")") string:concatenation ?flaggedPattern .
 } .
 
+# LanguageInConstraintComponent
+
+{
+    ?shape sh:languageIn ?languageIn .
+    ?shape this:path ?path .
+
+    ?shape this:focusNode ?node .
+    (?node ?path) this:value ?value .
+    [] log:notIncludes { ?value this:languageIn ?languageIn } .
+
+    ("value %s should have one of the language tags: %s" ?value ?languageIn) string:format ?defaultMessage .
+    (?shape ?defaultMessage) this:message ?message .
+    ?shape this:severity ?severity .
+    this: this:report ?report .
+}
+=>
+{
+    ?report sh:result [
+        a sh:ValidationResult ;
+        sh:resultSeverity ?severity ;
+        sh:sourceConstraintComponent sh:LanguageInConstraintComponent ;
+        sh:sourceShape ?shape ;
+        sh:focusNode ?node ;
+        sh:value ?value ;
+        # sh:resultPath ?path ;
+        sh:resultMessage ?message ;
+    ] .
+} .
+
+{
+    ?node this:violates ?skolem .
+}
+<=
+{
+    ?shape this:skolem ?skolem .
+    ?shape sh:languageIn ?languageIn .
+    ?shape this:path ?path .
+    (?node ?path) this:value ?value .
+    [] log:notIncludes { ?value this:languageIn ?languageIn } 
+} .
+
+{ ?value this:languageIn ?languageIn } <= { 
+    ( [] ?lang ) log:langlit ?value .
+    ?x list:in ?languageIn .
+    ?lang string:startsWith ?x .
+}.
+
+
+# UniqueLangConstraintComponent
+
+{
+    ?shape sh:uniqueLang ?uniqueLang .
+    ?uniqueLang this:lexicalForm "true" . # "1" is ignored, see test uniqueLang-002.ttl
+    ?uniqueLang this:datatype xsd:boolean .
+    ?shape sh:path ?path .
+
+    ?shape this:focusNode ?focusNode .
+    (?focusNode ?path) this:hasDuplicateLanguage ?lang .
+
+    ("Language \"%s\" has been used more than once" ?lang) string:format ?defaultMessage .
+    (?shape ?defaultMessage) this:message ?message .
+    ?shape this:severity ?severity .
+    this: this:report ?report .
+}
+=>
+{
+    ?report sh:result [
+        a sh:ValidationResult ;
+        sh:resultSeverity ?severity ;
+        sh:sourceConstraintComponent sh:UniqueLangConstraintComponent ;
+        sh:sourceShape ?shape ;
+        sh:focusNode ?focusNode ;
+        sh:resultPath ?path ;
+        sh:resultMessage ?message ;
+    ] .
+} .
+
+{ ?node this:violates ?skolem } <= { 
+    ?shape this:skolem ?skolem .
+    ?shape sh:uniqueLang ?uniqueLang .
+    ?uniqueLang this:lexicalForm "true" . # "1" is ignored, see test uniqueLang-002.ttl
+    ?uniqueLang this:datatype xsd:boolean .
+    ?shape sh:path ?path .
+    (?node ?path) this:hasDuplicateLanguage [] 
+} .
+
+
+{
+    (?node ?path) this:hasDuplicateLanguage ?lang .
+}
+<=
+{
+    (?node ?path) this:value ?x, ?y .
+    ?x log:notEqualTo ?y .
+    ([] ?lang) log:langlit ?x .
+    ([] ?lang) log:langlit ?y .
+} .

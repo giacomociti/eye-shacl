@@ -7,8 +7,8 @@
 
 this: this:report [] .
 
-{ [] owl:imports [ log:semantics ?semantics ] } => ?semantics .
-{ [] sh:shapesGraph [ log:semantics ?semantics ] } => ?semantics .
+# { [] owl:imports [ log:semantics ?semantics ] } => ?semantics .
+# { [] sh:shapesGraph [ log:semantics ?semantics ] } => ?semantics .
 
 # skolemize inner shapes
 { 
@@ -58,9 +58,8 @@ this: this:report [] .
 { (?shape ?defaultMessage) this:message ?defaultMessage } <= { [] log:notIncludes { ?shape sh:message [] } } .
 
 
-# polyfill for list:unique and list:setNotEqualTo
-# (likely they are inefficient)
 
+# eye has list:unique but eyeling lacks it, so we define it here
 { () this:unique () } <= { } .
 
 { ?list this:unique ?result } <= { 
@@ -76,6 +75,7 @@ this: this:report [] .
     ?result list:firstRest (?first ?uniqueRest) .
 } .
 
+# eye has list:setNotEqualTo but eyeling lacks it, so we define it here
 { ?list this:setNotEqualTo ?other } <= { 
     ?x list:in ?list .
     ?other list:notMember ?x .
@@ -238,7 +238,8 @@ this: this:report [] .
 {
     ?shape sh:or ?or .
     ?shape this:path ?path .
-    (?or this:skolem) list:map ?skolems .
+    #(?or this:skolem) list:map ?skolems .
+    (?x { ?or list:member [ this:skolem ?x ] } ?skolems) log:collectAllIn [] .
     
     ?shape this:focusNode ?focusNode .
     (?focusNode ?path) this:value ?value .
@@ -271,7 +272,9 @@ this: this:report [] .
     ?shape sh:or ?or .
     ?shape this:path ?path .
     (?value ?path) this:value ?x .
-    (?or this:skolem) list:map ?skolems .
+    # (?or this:skolem) list:map ?skolems .
+    (?x { ?or list:member [ this:skolem ?x ] } ?skolems) log:collectAllIn [] .
+    
     (
         { ?sk list:in ?skolems}
         { ?x this:violates ?sk }
@@ -283,7 +286,9 @@ this: this:report [] .
 {
     ?shape sh:and ?and .
     ?shape this:path ?path .
-    (?and this:skolem) list:map ?skolems .
+    #(?and this:skolem) list:map ?skolems .
+    (?x { ?and list:member [ this:skolem ?x ] } ?skolems) log:collectAllIn [] .
+
     
     ?shape this:focusNode ?focusNode .
     (?focusNode ?path) this:value ?value .
@@ -315,7 +320,9 @@ this: this:report [] .
     ?shape sh:and ?and .
     ?shape this:path ?path .
     (?value ?path) this:value ?x .
-    (?and this:skolem) list:map ?skolems .
+    # (?and this:skolem) list:map ?skolems .
+    (?x { ?and list:member [ this:skolem ?x ] } ?skolems) log:collectAllIn [] .
+    
     ?sk list:in ?skolems . 
     ?x this:violates ?sk 
 } .
@@ -326,7 +333,9 @@ this: this:report [] .
 {
     ?shape sh:xone ?xone .
     ?shape this:path ?path .
-    (?xone this:skolem) list:map ?skolems .
+    # (?xone this:skolem) list:map ?skolems .
+    (?x { ?xone list:member [ this:skolem ?x ] } ?skolems) log:collectAllIn [] .
+
     
     ?shape this:focusNode ?focusNode .
     (?focusNode ?path) this:value ?value .
@@ -358,7 +367,8 @@ this: this:report [] .
     ?shape sh:xone ?xone .
     ?shape this:path ?path .
     (?value ?path) this:value ?v .
-    (?xone this:skolem) list:map ?skolems .
+    # (?xone this:skolem) list:map ?skolems .
+    (?x { ?xone list:member [ this:skolem ?x ] } ?skolems) log:collectAllIn [] .
     (?x { ?x list:in ?skolems . ?v this:violates ?x } ?failed) log:collectAllIn [] .
     (?x { ?x list:in ?skolems . ?failed list:notMember ?x } ?valid) log:collectAllIn [] .
     ?valid list:length [ log:notEqualTo 1 ].
@@ -701,6 +711,208 @@ this: this:report [] .
     [] log:notIncludes { ?value this:maxInclusive ?otherValue } .
 } .
 
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix math: <http://www.w3.org/2000/10/swap/math#> .
+@prefix string: <http://www.w3.org/2000/10/swap/string#> .
+@prefix list: <http://www.w3.org/2000/10/swap/list#> .
+@prefix log: <http://www.w3.org/2000/10/swap/log#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix this: <http://eye-shacl#> .
+
+
+
+# MinExclusiveConstraintComponent
+{
+    ?shape sh:minExclusive ?minExclusive .
+    ?shape this:path ?path .
+
+    ?shape this:focusNode ?node .
+    (?node ?path) this:value ?value .
+    [] log:notIncludes { ?value this:minExclusive ?minExclusive } .
+
+    ("value %s should be greater than %s" ?value ?minExclusive) string:format ?defaultMessage .
+    (?shape ?defaultMessage) this:message ?message .
+    ?shape this:severity ?severity .
+    this: this:report ?report .
+}
+=>
+{
+    ?report sh:result [
+        a sh:ValidationResult ;
+        sh:resultSeverity ?severity ;
+        sh:sourceConstraintComponent sh:MinExclusiveConstraintComponent ;
+        sh:sourceShape ?shape ;
+        sh:focusNode ?node ;
+        sh:value ?value ;
+        # sh:resultPath ?path ;
+        sh:resultMessage ?message ;
+    ] .
+} .
+
+{
+    ?node this:violates ?skolem .
+}
+<=
+{
+    ?shape this:skolem ?skolem .
+    ?shape sh:minExclusive ?minExclusive .
+    ?shape this:path ?path .
+    (?node ?path) this:value ?value .
+    [] log:notIncludes { ?value this:minExclusive ?minExclusive } 
+} .
+
+# MinInclusiveConstraintComponent
+{
+    ?shape sh:minInclusive ?minInclusive .
+    ?shape this:path ?path .
+
+    ?shape this:focusNode ?node .
+    (?node ?path) this:value ?value .
+    [] log:notIncludes { ?value this:minInclusive ?minInclusive } .
+
+    ("value %s should be greater than or equal to %s" ?value ?minInclusive) string:format ?defaultMessage .
+    (?shape ?defaultMessage) this:message ?message .
+    ?shape this:severity ?severity .
+    this: this:report ?report .
+}
+=>
+{
+    ?report sh:result [
+        a sh:ValidationResult ;
+        sh:resultSeverity ?severity ;
+        sh:sourceConstraintComponent sh:MinInclusiveConstraintComponent ;
+        sh:sourceShape ?shape ;
+        sh:focusNode ?node ;
+        sh:value ?value ;
+        # sh:resultPath ?path ;
+        sh:resultMessage ?message ;
+    ] .
+} .
+
+{
+    ?node this:violates ?skolem .
+}
+<=
+{
+    ?shape this:skolem ?skolem .
+    ?shape sh:minInclusive ?minInclusive .
+    ?shape this:path ?path .
+    (?node ?path) this:value ?value .
+    [] log:notIncludes { ?value this:minInclusive ?minInclusive } 
+} .
+
+# MaxExclusiveConstraintComponent
+{
+    ?shape sh:maxExclusive ?maxExclusive .
+    ?shape this:path ?path .
+
+    ?shape this:focusNode ?node .
+    (?node ?path) this:value ?value .
+    [] log:notIncludes { ?value this:maxExclusive ?maxExclusive } .
+
+    ("value %s should be less than %s" ?value ?maxExclusive) string:format ?defaultMessage .
+    (?shape ?defaultMessage) this:message ?message .
+    ?shape this:severity ?severity .
+    this: this:report ?report .
+}
+=>
+{
+    ?report sh:result [
+        a sh:ValidationResult ;
+        sh:resultSeverity ?severity ;
+        sh:sourceConstraintComponent sh:MaxExclusiveConstraintComponent ;
+        sh:sourceShape ?shape ;
+        sh:focusNode ?node ;
+        sh:value ?value ;
+        # sh:resultPath ?path ;
+        sh:resultMessage ?message ;
+    ] .
+} .
+
+{
+    ?node this:violates ?skolem .
+}
+<=
+{
+    ?shape this:skolem ?skolem .
+    ?shape sh:maxExclusive ?maxExclusive .
+    ?shape this:path ?path .
+    (?node ?path) this:value ?value .
+    [] log:notIncludes { ?value this:maxExclusive ?maxExclusive } 
+} .
+
+
+# MaxInclusiveConstraintComponent
+{
+    ?shape sh:maxInclusive ?maxInclusive .
+    ?shape this:path ?path .
+
+    ?shape this:focusNode ?node .
+    (?node ?path) this:value ?value .
+    [] log:notIncludes { ?value this:maxInclusive ?maxInclusive } .
+
+    ("value %s should be less than or equal to %s" ?value ?maxInclusive) string:format ?defaultMessage .
+    (?shape ?defaultMessage) this:message ?message .
+    ?shape this:severity ?severity .
+    this: this:report ?report .
+}
+=>
+{
+    ?report sh:result [
+        a sh:ValidationResult ;
+        sh:resultSeverity ?severity ;
+        sh:sourceConstraintComponent sh:MaxInclusiveConstraintComponent ;
+        sh:sourceShape ?shape ;
+        sh:focusNode ?node ;
+        sh:value ?value ;
+        # sh:resultPath ?path ;
+        sh:resultMessage ?message ;
+    ] .
+} .
+
+{
+    ?node this:violates ?skolem .
+}
+<=
+{
+    ?shape this:skolem ?skolem .
+    ?shape sh:maxInclusive ?maxInclusive .
+    ?shape this:path ?path .
+    (?node ?path) this:value ?value .
+    [] log:notIncludes { ?value this:maxInclusive ?maxInclusive } 
+} .
+
+
+
+
+
+{ ?value this:minExclusive ?minExclusive } <= {  ?value math:greaterThan ?minExclusive }.
+{ ?value this:minInclusive ?minInclusive } <= {  ?value math:notLessThan ?minInclusive }.
+{ ?value this:maxExclusive ?maxExclusive } <= {  ?value math:lessThan ?maxExclusive }.
+{ ?value this:maxInclusive ?maxInclusive } <= {  ?value math:notGreaterThan ?maxInclusive }.
+
+{ ?value this:minExclusive ?minExclusive } <= { 
+    ?minExclusive this:datatype ?datatype . 
+    ?datatype log:notEqualTo xsd:integer, xsd:decimal, xsd:double, xsd:float, xsd:dateTime .
+    ?value this:datatype ?datatype ; string:greaterThan ?minExclusive 
+} .
+{ ?value this:minInclusive ?minInclusive } <= { 
+    ?minInclusive this:datatype ?datatype . 
+    ?datatype log:notEqualTo xsd:integer, xsd:decimal, xsd:double, xsd:float, xsd:dateTime . 
+    ?value this:datatype ?datatype ; string:notLessThan ?minInclusive 
+} .
+{ ?value this:maxExclusive ?maxExclusive } <= { 
+    ?maxExclusive this:datatype ?datatype . 
+    ?datatype log:notEqualTo xsd:integer, xsd:decimal, xsd:double, xsd:float, xsd:dateTime . 
+    ?value this:datatype ?datatype ; string:lessThan ?maxExclusive 
+} .
+{ ?value this:maxInclusive ?maxInclusive } <= { 
+    ?maxInclusive this:datatype ?datatype . 
+    ?datatype log:notEqualTo xsd:integer, xsd:decimal, xsd:double, xsd:float, xsd:dateTime . 
+    ?value this:datatype ?datatype ; string:notGreaterThan ?maxInclusive 
+} .
 # https://www.w3.org/TR/shacl/#core-components-shape
 
 @prefix log: <http://www.w3.org/2000/10/swap/log#> .
@@ -886,24 +1098,25 @@ this: this:report [] .
     ?qualifiedCount math:greaterThan ?maxCount .
 } .
 # https://www.w3.org/TR/shacl/#core-components-string
+@prefix list: <http://www.w3.org/2000/10/swap/list#> .
+@prefix math: <http://www.w3.org/2000/10/swap/math#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix string: <http://www.w3.org/2000/10/swap/string#> .
 @prefix log: <http://www.w3.org/2000/10/swap/log#> .
 @prefix sh: <http://www.w3.org/ns/shacl#> .
 @prefix this: <http://eye-shacl#> .
 
-# UniqueLangConstraintComponent
+# MinLengthConstraintComponent
 
 {
-    ?shape sh:uniqueLang ?uniqueLang .
-    ?uniqueLang this:lexicalForm "true" . # "1" is ignored, see test uniqueLang-002.ttl
-    ?uniqueLang this:datatype xsd:boolean .
-    ?shape sh:path ?path .
+    ?shape sh:minLength ?minLength .
+    ?shape this:path ?path .
 
-    ?shape this:focusNode ?focusNode .
-    (?focusNode ?path) this:hasDuplicateLanguage ?lang .
+    ?shape this:focusNode ?node .
+    (?node ?path) this:value ?value .
+    [] log:notIncludes { ?value this:minLength ?minLength } .
 
-    ("Language \"%s\" has been used more than once" ?lang) string:format ?defaultMessage .
+    ("value %s should have at least %s characters" ?value ?minLength) string:format ?defaultMessage .
     (?shape ?defaultMessage) this:message ?message .
     ?shape this:severity ?severity .
     this: this:report ?report .
@@ -913,34 +1126,75 @@ this: this:report [] .
     ?report sh:result [
         a sh:ValidationResult ;
         sh:resultSeverity ?severity ;
-        sh:sourceConstraintComponent sh:UniqueLangConstraintComponent ;
+        sh:sourceConstraintComponent sh:MinLengthConstraintComponent ;
         sh:sourceShape ?shape ;
-        sh:focusNode ?focusNode ;
-        sh:resultPath ?path ;
+        sh:focusNode ?node ;
+        sh:value ?value ;
+        # sh:resultPath ?path ;
         sh:resultMessage ?message ;
     ] .
 } .
 
-{ ?node this:violates ?skolem } <= { 
-    ?shape this:skolem ?skolem .
-    ?shape sh:uniqueLang ?uniqueLang .
-    ?uniqueLang this:lexicalForm "true" . # "1" is ignored, see test uniqueLang-002.ttl
-    ?uniqueLang this:datatype xsd:boolean .
-    ?shape sh:path ?path .
-    (?node ?path) this:hasDuplicateLanguage [] 
-} .
-
-
 {
-    (?node ?path) this:hasDuplicateLanguage ?lang .
+    ?node this:violates ?skolem .
 }
 <=
 {
-    (?node ?path) this:value ?x, ?y .
-    ?x log:notEqualTo ?y .
-    ([] ?lang) log:langlit ?x .
-    ([] ?lang) log:langlit ?y .
+    ?shape this:skolem ?skolem .
+    ?shape sh:minLength ?minLength .
+    ?shape this:path ?path .
+    (?node ?path) this:value ?value .
+    [] log:notIncludes { ?value this:minLength ?minLength } 
 } .
+
+{ ?value this:minLength ?minLength } <= { (?text []) log:dtlit ?value . ?text string:length [math:notLessThan ?minLength] }.
+{ ?value this:minLength ?minLength } <= { ?value log:rawType log:Other ; log:uri ?text . ?text string:length [math:notLessThan ?minLength] }.
+
+# MaxLengthConstraintComponent
+
+{
+    ?shape sh:maxLength ?maxLength .
+    ?shape this:path ?path .
+
+    ?shape this:focusNode ?node .
+    (?node ?path) this:value ?value .
+    [] log:notIncludes { ?value this:maxLength ?maxLength } .
+
+    ("value %s should have at most %s characters" ?value ?maxLength) string:format ?defaultMessage .
+    (?shape ?defaultMessage) this:message ?message .
+    ?shape this:severity ?severity .
+    this: this:report ?report .
+}
+=>
+{
+    ?report sh:result [
+        a sh:ValidationResult ;
+        sh:resultSeverity ?severity ;
+        sh:sourceConstraintComponent sh:MaxLengthConstraintComponent ;
+        sh:sourceShape ?shape ;
+        sh:focusNode ?node ;
+        sh:value ?value ;
+        # sh:resultPath ?path ;
+        sh:resultMessage ?message ;
+    ] .
+} .
+
+{
+    ?node this:violates ?skolem .
+}
+<=
+{
+    ?shape this:skolem ?skolem .
+    ?shape sh:maxLength ?maxLength .
+    ?shape this:path ?path .
+    (?node ?path) this:value ?value .
+    [] log:notIncludes { ?value this:maxLength ?maxLength } 
+} .
+
+{ ?value this:maxLength ?maxLength } <= { (?text []) log:dtlit ?value . ?text string:length [math:notGreaterThan ?maxLength] }.
+{ ?value this:maxLength ?maxLength } <= { ?value log:rawType log:Other ; log:uri ?text . ?text string:length [math:notGreaterThan ?maxLength] }.
+
+
 
 
 # PatternConstraintComponent
@@ -1003,120 +1257,46 @@ this: this:report [] .
     ("(?" ?flags ":" ?pattern ")") string:concatenation ?flaggedPattern .
 } .
 
-@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-@prefix math: <http://www.w3.org/2000/10/swap/math#> .
-@prefix string: <http://www.w3.org/2000/10/swap/string#> .
-@prefix list: <http://www.w3.org/2000/10/swap/list#> .
-@prefix log: <http://www.w3.org/2000/10/swap/log#> .
-@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
-@prefix sh: <http://www.w3.org/ns/shacl#> .
-@prefix this: <http://eye-shacl#> .
-
-sh:class this:constraint sh:ClassConstraintComponent ; this:validator this:class ; 
-   this:messageFormat "value should be instance of %s".
-sh:nodeKind this:constraint sh:NodeKindConstraintComponent ; this:validator this:nodeKind ; 
-   this:messageFormat "value should have node kind %s".
-sh:minExclusive this:constraint sh:MinExclusiveConstraintComponent ; this:validator this:minExclusive ; 
-   this:messageFormat "value should be greater than %s".
-sh:minInclusive this:constraint sh:MinInclusiveConstraintComponent ; this:validator this:minInclusive ; 
-   this:messageFormat "value should be greater than or equal to %s".
-sh:maxExclusive this:constraint sh:MaxExclusiveConstraintComponent ; this:validator this:maxExclusive ; 
-   this:messageFormat "value should be less than %s".
-sh:maxInclusive this:constraint sh:MaxInclusiveConstraintComponent ; this:validator this:maxInclusive ; 
-   this:messageFormat "value should be less than or equal to %s".
-sh:minLength this:constraint sh:MinLengthConstraintComponent ; this:validator this:minLength ; 
-   this:messageFormat "value should have at least %s characters".
-sh:maxLength this:constraint sh:MaxLengthConstraintComponent ; this:validator this:maxLength ; 
-   this:messageFormat "value should have at most %s characters".
-sh:languageIn this:constraint sh:LanguageInConstraintComponent ; this:validator this:languageIn ; 
-   this:messageFormat "value should have one of the language tags: %s".
-
-
-
-# shapes with validator
+# LanguageInConstraintComponent
 
 {
-   ?param this:validator ?validator .
-   ?shape ?param ?paramValue .
-   ?shape this:path ?path .
+    ?shape sh:languageIn ?languageIn .
+    ?shape this:path ?path .
 
-   ?shape this:focusNode ?node .
-   (?node ?path) this:value ?value .
-   [] log:notIncludes { ?value ?validator ?paramValue } .
+    ?shape this:focusNode ?node .
+    (?node ?path) this:value ?value .
+    [] log:notIncludes { ?value this:languageIn ?languageIn } .
 
-   ?param this:constraint ?constraint ; this:messageFormat ?messageFormat .
-   (?messageFormat ?paramValue) string:format ?defaultMessage .
-   (?shape ?defaultMessage) this:message ?message .
-   ?shape this:severity ?severity .
-   this: this:report ?report .
+    ("value %s should have one of the language tags: %s" ?value ?languageIn) string:format ?defaultMessage .
+    (?shape ?defaultMessage) this:message ?message .
+    ?shape this:severity ?severity .
+    this: this:report ?report .
 }
-=> 
+=>
 {
-      ?report sh:result [
-         a sh:ValidationResult ;
-         sh:resultSeverity ?severity ;
-         sh:sourceConstraintComponent ?constraint ;
-         sh:sourceShape ?shape ;
-         sh:focusNode ?node ;
-         # sh:resultPath ?path ;
-         sh:value ?value ;
-         sh:resultMessage ?message ;
-      ] .
+    ?report sh:result [
+        a sh:ValidationResult ;
+        sh:resultSeverity ?severity ;
+        sh:sourceConstraintComponent sh:LanguageInConstraintComponent ;
+        sh:sourceShape ?shape ;
+        sh:focusNode ?node ;
+        sh:value ?value ;
+        # sh:resultPath ?path ;
+        sh:resultMessage ?message ;
+    ] .
 } .
 
 {
-   ?x this:violates ?skolem .
+    ?node this:violates ?skolem .
 }
-<= 
+<=
 {
-   ?shape this:skolem ?skolem .
-   ?shape ?param ?paramValue .
-   ?param this:validator ?validator .
-   ?shape this:path ?path .
-   (?x ?path) this:value ?value .
-   [] log:notIncludes { ?value ?validator ?paramValue } .
+    ?shape this:skolem ?skolem .
+    ?shape sh:languageIn ?languageIn .
+    ?shape this:path ?path .
+    (?node ?path) this:value ?value .
+    [] log:notIncludes { ?value this:languageIn ?languageIn } 
 } .
-
-
-
-
-
-# https://www.w3.org/TR/shacl/#core-components-range
-
-{ ?value this:minExclusive ?minExclusive } <= {  ?value math:greaterThan ?minExclusive }.
-{ ?value this:minInclusive ?minInclusive } <= {  ?value math:notLessThan ?minInclusive }.
-{ ?value this:maxExclusive ?maxExclusive } <= {  ?value math:lessThan ?maxExclusive }.
-{ ?value this:maxInclusive ?maxInclusive } <= {  ?value math:notGreaterThan ?maxInclusive }.
-
-{ ?value this:minExclusive ?minExclusive } <= { 
-    ?minExclusive this:datatype ?datatype . 
-    ?datatype log:notEqualTo xsd:integer, xsd:decimal, xsd:double, xsd:float, xsd:dateTime .
-    ?value this:datatype ?datatype ; string:greaterThan ?minExclusive 
-} .
-{ ?value this:minInclusive ?minInclusive } <= { 
-    ?minInclusive this:datatype ?datatype . 
-    ?datatype log:notEqualTo xsd:integer, xsd:decimal, xsd:double, xsd:float, xsd:dateTime . 
-    ?value this:datatype ?datatype ; string:notLessThan ?minInclusive 
-} .
-{ ?value this:maxExclusive ?maxExclusive } <= { 
-    ?maxExclusive this:datatype ?datatype . 
-    ?datatype log:notEqualTo xsd:integer, xsd:decimal, xsd:double, xsd:float, xsd:dateTime . 
-    ?value this:datatype ?datatype ; string:lessThan ?maxExclusive 
-} .
-{ ?value this:maxInclusive ?maxInclusive } <= { 
-    ?maxInclusive this:datatype ?datatype . 
-    ?datatype log:notEqualTo xsd:integer, xsd:decimal, xsd:double, xsd:float, xsd:dateTime . 
-    ?value this:datatype ?datatype ; string:notGreaterThan ?maxInclusive 
-} .
-
-
-{ ?value this:minLength ?minLength } <= { (?text []) log:dtlit ?value . ?text string:length [math:notLessThan ?minLength] }.
-{ ?value this:minLength ?minLength } <= { ?value log:rawType log:Other ; log:uri ?text . ?text string:length [math:notLessThan ?minLength] }.
-
-{ ?value this:maxLength ?maxLength } <= { (?text []) log:dtlit ?value . ?text string:length [math:notGreaterThan ?maxLength] }.
-{ ?value this:maxLength ?maxLength } <= { ?value log:rawType log:Other ; log:uri ?text . ?text string:length [math:notGreaterThan ?maxLength] }.
-
 
 { ?value this:languageIn ?languageIn } <= { 
     ( [] ?lang ) log:langlit ?value .
@@ -1125,47 +1305,107 @@ sh:languageIn this:constraint sh:LanguageInConstraintComponent ; this:validator 
 }.
 
 
-# https://www.w3.org/TR/shacl/#core-components-value-type
+# UniqueLangConstraintComponent
 
-{ ?value this:class ?class } <= { ?value a ?class } .
-{ ?value this:class ?class } <= { ?subclass rdfs:subClassOf ?class . ?value this:class ?subclass } .
+{
+    ?shape sh:uniqueLang ?uniqueLang .
+    ?uniqueLang this:lexicalForm "true" . # "1" is ignored, see test uniqueLang-002.ttl
+    ?uniqueLang this:datatype xsd:boolean .
+    ?shape sh:path ?path .
 
+    ?shape this:focusNode ?focusNode .
+    (?focusNode ?path) this:hasDuplicateLanguage ?lang .
 
-### nodeKind
-
-{ ?term this:nodeKind sh:Literal } <= { ?term log:rawType log:Literal } .
-
-
-# for the eye reasoner
-{ ?value this:nodeKind sh:BlankNode } <= { ?value log:rawType log:LabeledBlankNode }. 
-{ ?value this:nodeKind sh:BlankNode } <= { ?value log:rawType log:UnlabeledBlankNode }.
-{ ?value this:nodeKind sh:BlankNode } <= { ?value log:rawType log:SkolemIRI }.
-# for eyeling
-{ ?term this:nodeKind sh:BlankNode } <= { 
-    ?term log:rawType log:Other. 
-    ((?term) log:uri) list:map () .
+    ("Language \"%s\" has been used more than once" ?lang) string:format ?defaultMessage .
+    (?shape ?defaultMessage) this:message ?message .
+    ?shape this:severity ?severity .
+    this: this:report ?report .
+}
+=>
+{
+    ?report sh:result [
+        a sh:ValidationResult ;
+        sh:resultSeverity ?severity ;
+        sh:sourceConstraintComponent sh:UniqueLangConstraintComponent ;
+        sh:sourceShape ?shape ;
+        sh:focusNode ?focusNode ;
+        sh:resultPath ?path ;
+        sh:resultMessage ?message ;
+    ] .
 } .
 
-{ ?term this:nodeKind sh:IRI } <= { 
-    ?term log:rawType log:Other . 
-    ?term log:uri ?x . 
-    ?x log:rawType log:Literal . # necessary to exclude blank nodes in eyeling (why?)
+{ ?node this:violates ?skolem } <= { 
+    ?shape this:skolem ?skolem .
+    ?shape sh:uniqueLang ?uniqueLang .
+    ?uniqueLang this:lexicalForm "true" . # "1" is ignored, see test uniqueLang-002.ttl
+    ?uniqueLang this:datatype xsd:boolean .
+    ?shape sh:path ?path .
+    (?node ?path) this:hasDuplicateLanguage [] 
 } .
 
-{ ?value this:nodeKind sh:BlankNodeOrIRI } <= { ?value this:nodeKind sh:BlankNode }. 
-{ ?value this:nodeKind sh:BlankNodeOrIRI } <= { ?value this:nodeKind sh:IRI }. 
-{ ?value this:nodeKind sh:IRIOrLiteral } <= { ?value this:nodeKind sh:IRI }. 
-{ ?value this:nodeKind sh:IRIOrLiteral } <= { ?value this:nodeKind sh:Literal }. 
-{ ?value this:nodeKind sh:BlankNodeOrLiteral } <= { ?value this:nodeKind sh:BlankNode }. 
-{ ?value this:nodeKind sh:BlankNodeOrLiteral } <= { ?value this:nodeKind sh:Literal }. 
 
+{
+    (?node ?path) this:hasDuplicateLanguage ?lang .
+}
+<=
+{
+    (?node ?path) this:value ?x, ?y .
+    ?x log:notEqualTo ?y .
+    ([] ?lang) log:langlit ?x .
+    ([] ?lang) log:langlit ?y .
+} .
 # https://www.w3.org/TR/shacl/#core-components-value-type
 
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix log: <http://www.w3.org/2000/10/swap/log#> .
 @prefix string: <http://www.w3.org/2000/10/swap/string#> .
 @prefix dt: <https://eyereasoner.github.io/eyeling/datatype#> .
 @prefix sh: <http://www.w3.org/ns/shacl#>.
 @prefix this: <http://eye-shacl#> .
+
+# ClassConstraintComponent
+{
+    ?shape sh:class ?class .
+    ?shape this:path ?path .
+
+    ?shape this:focusNode ?node .
+    (?node ?path) this:value ?value .
+    [] log:notIncludes { ?value this:class ?class } .
+
+    ("value %s should be instance of %s" ?value ?class) string:format ?defaultMessage .
+    (?shape ?defaultMessage) this:message ?message .
+    ?shape this:severity ?severity .
+    this: this:report ?report .
+}
+=>
+{
+    ?report sh:result [
+        a sh:ValidationResult ;
+        sh:resultSeverity ?severity ;
+        sh:sourceConstraintComponent sh:ClassConstraintComponent ;
+        sh:sourceShape ?shape ;
+        sh:focusNode ?node ;
+        sh:value ?value ;
+        # sh:resultPath ?path ;
+        sh:resultMessage ?message ;
+    ] .
+} .
+
+{
+    ?node this:violates ?skolem .
+}
+<=
+{
+    ?shape this:skolem ?skolem .
+    ?shape sh:class ?class .
+    ?shape this:path ?path .
+    (?node ?path) this:value ?value .
+    [] log:notIncludes { ?value this:class ?class } 
+} .
+
+{ ?value this:class ?class } <= { ?value a ?class } .
+{ ?value this:class ?class } <= { ?subclass rdfs:subClassOf ?class . ?value this:class ?subclass } .
+
 
 # DatatypeConstraintComponent
 {
@@ -1213,6 +1453,74 @@ sh:languageIn this:constraint sh:LanguageInConstraintComponent ; this:validator 
 { ?x this:violatesDatatype ?datatype } <= { ?x this:datatype [ log:notEqualTo ?datatype ] } .
 # dt:invalidForDatatype is available only in eyeling
 { ?x this:violatesDatatype ?datatype } <= { ?x dt:invalidForDatatype ?datatype } .
+
+
+# NodeKindConstraintComponent
+{
+    ?shape sh:nodeKind ?nodeKind .
+    ?shape this:path ?path .
+
+    ?shape this:focusNode ?node .
+    (?node ?path) this:value ?value .
+    [] log:notIncludes { ?value this:nodeKind ?nodeKind } .
+
+    ("value %s should have node kind %s" ?value ?nodeKind) string:format ?defaultMessage .
+    (?shape ?defaultMessage) this:message ?message .
+    ?shape this:severity ?severity .
+    this: this:report ?report .
+}
+=>
+{
+    ?report sh:result [
+        a sh:ValidationResult ;
+        sh:resultSeverity ?severity ;
+        sh:sourceConstraintComponent sh:NodeKindConstraintComponent ;
+        sh:sourceShape ?shape ;
+        sh:focusNode ?node ;
+        sh:value ?value ;
+        # sh:resultPath ?path ;
+        sh:resultMessage ?message ;
+    ] .
+} .
+
+{
+    ?node this:violates ?skolem .
+}
+<=
+{
+    ?shape this:skolem ?skolem .
+    ?shape sh:nodeKind ?nodeKind .
+    ?shape this:path ?path .
+    (?node ?path) this:value ?value .
+    [] log:notIncludes { ?value this:nodeKind ?nodeKind } 
+} .
+
+
+{ ?term this:nodeKind sh:Literal } <= { ?term log:rawType log:Literal } .
+
+
+# for the eye reasoner
+{ ?value this:nodeKind sh:BlankNode } <= { ?value log:rawType log:LabeledBlankNode }. 
+{ ?value this:nodeKind sh:BlankNode } <= { ?value log:rawType log:UnlabeledBlankNode }.
+{ ?value this:nodeKind sh:BlankNode } <= { ?value log:rawType log:SkolemIRI }.
+# for eyeling
+# { ?term this:nodeKind sh:BlankNode } <= { 
+#     ?term log:rawType log:Other. 
+#     ((?term) log:uri) list:map () .
+# } .
+
+{ ?term this:nodeKind sh:IRI } <= { 
+    ?term log:rawType log:Other . 
+    ?term log:uri ?x . 
+   #  ?x log:rawType log:Literal . # necessary to exclude blank nodes in eyeling (why?)
+} .
+
+{ ?value this:nodeKind sh:BlankNodeOrIRI } <= { ?value this:nodeKind sh:BlankNode }. 
+{ ?value this:nodeKind sh:BlankNodeOrIRI } <= { ?value this:nodeKind sh:IRI }. 
+{ ?value this:nodeKind sh:IRIOrLiteral } <= { ?value this:nodeKind sh:IRI }. 
+{ ?value this:nodeKind sh:IRIOrLiteral } <= { ?value this:nodeKind sh:Literal }. 
+{ ?value this:nodeKind sh:BlankNodeOrLiteral } <= { ?value this:nodeKind sh:BlankNode }. 
+{ ?value this:nodeKind sh:BlankNodeOrLiteral } <= { ?value this:nodeKind sh:Literal }. 
 
 @prefix log: <http://www.w3.org/2000/10/swap/log#> .
 @prefix list: <http://www.w3.org/2000/10/swap/list#> .

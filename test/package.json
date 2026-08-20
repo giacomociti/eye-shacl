@@ -14,5 +14,8 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs"
+  "type": "commonjs",
+  "dependencies": {
+    "eyeling": "2.35.7"
+  }
 }

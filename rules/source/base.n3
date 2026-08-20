@@ -7,8 +7,8 @@
 
 this: this:report [] .
 
-{ [] owl:imports [ log:semantics ?semantics ] } => ?semantics .
-{ [] sh:shapesGraph [ log:semantics ?semantics ] } => ?semantics .
+# { [] owl:imports [ log:semantics ?semantics ] } => ?semantics .
+# { [] sh:shapesGraph [ log:semantics ?semantics ] } => ?semantics .
 
 # skolemize inner shapes
 { 

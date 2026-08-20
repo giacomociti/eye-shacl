@@ -52,7 +52,8 @@
 {
     ?shape sh:or ?or .
     ?shape this:path ?path .
-    (?or this:skolem) list:map ?skolems .
+    #(?or this:skolem) list:map ?skolems .
+    (?x { ?or list:member [ this:skolem ?x ] } ?skolems) log:collectAllIn [] .
     
     ?shape this:focusNode ?focusNode .
     (?focusNode ?path) this:value ?value .
@@ -85,7 +86,9 @@
     ?shape sh:or ?or .
     ?shape this:path ?path .
     (?value ?path) this:value ?x .
-    (?or this:skolem) list:map ?skolems .
+    # (?or this:skolem) list:map ?skolems .
+    (?x { ?or list:member [ this:skolem ?x ] } ?skolems) log:collectAllIn [] .
+    
     (
         { ?sk list:in ?skolems}
         { ?x this:violates ?sk }
@@ -97,7 +100,9 @@
 {
     ?shape sh:and ?and .
     ?shape this:path ?path .
-    (?and this:skolem) list:map ?skolems .
+    #(?and this:skolem) list:map ?skolems .
+    (?x { ?and list:member [ this:skolem ?x ] } ?skolems) log:collectAllIn [] .
+
     
     ?shape this:focusNode ?focusNode .
     (?focusNode ?path) this:value ?value .
@@ -129,7 +134,9 @@
     ?shape sh:and ?and .
     ?shape this:path ?path .
     (?value ?path) this:value ?x .
-    (?and this:skolem) list:map ?skolems .
+    # (?and this:skolem) list:map ?skolems .
+    (?x { ?and list:member [ this:skolem ?x ] } ?skolems) log:collectAllIn [] .
+    
     ?sk list:in ?skolems . 
     ?x this:violates ?sk 
 } .
@@ -140,7 +147,9 @@
 {
     ?shape sh:xone ?xone .
     ?shape this:path ?path .
-    (?xone this:skolem) list:map ?skolems .
+    # (?xone this:skolem) list:map ?skolems .
+    (?x { ?xone list:member [ this:skolem ?x ] } ?skolems) log:collectAllIn [] .
+
     
     ?shape this:focusNode ?focusNode .
     (?focusNode ?path) this:value ?value .
@@ -172,7 +181,8 @@
     ?shape sh:xone ?xone .
     ?shape this:path ?path .
     (?value ?path) this:value ?v .
-    (?xone this:skolem) list:map ?skolems .
+    # (?xone this:skolem) list:map ?skolems .
+    (?x { ?xone list:member [ this:skolem ?x ] } ?skolems) log:collectAllIn [] .
     (?x { ?x list:in ?skolems . ?v this:violates ?x } ?failed) log:collectAllIn [] .
     (?x { ?x list:in ?skolems . ?failed list:notMember ?x } ?valid) log:collectAllIn [] .
     ?valid list:length [ log:notEqualTo 1 ].

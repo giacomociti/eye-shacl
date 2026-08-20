@@ -1,10 +1,55 @@
 # https://www.w3.org/TR/shacl/#core-components-value-type
 
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix log: <http://www.w3.org/2000/10/swap/log#> .
 @prefix string: <http://www.w3.org/2000/10/swap/string#> .
 @prefix dt: <https://eyereasoner.github.io/eyeling/datatype#> .
 @prefix sh: <http://www.w3.org/ns/shacl#>.
 @prefix this: <http://eye-shacl#> .
+
+# ClassConstraintComponent
+{
+    ?shape sh:class ?class .
+    ?shape this:path ?path .
+
+    ?shape this:focusNode ?node .
+    (?node ?path) this:value ?value .
+    [] log:notIncludes { ?value this:class ?class } .
+
+    ("value %s should be instance of %s" ?value ?class) string:format ?defaultMessage .
+    (?shape ?defaultMessage) this:message ?message .
+    ?shape this:severity ?severity .
+    this: this:report ?report .
+}
+=>
+{
+    ?report sh:result [
+        a sh:ValidationResult ;
+        sh:resultSeverity ?severity ;
+        sh:sourceConstraintComponent sh:ClassConstraintComponent ;
+        sh:sourceShape ?shape ;
+        sh:focusNode ?node ;
+        sh:value ?value ;
+        # sh:resultPath ?path ;
+        sh:resultMessage ?message ;
+    ] .
+} .
+
+{
+    ?node this:violates ?skolem .
+}
+<=
+{
+    ?shape this:skolem ?skolem .
+    ?shape sh:class ?class .
+    ?shape this:path ?path .
+    (?node ?path) this:value ?value .
+    [] log:notIncludes { ?value this:class ?class } 
+} .
+
+{ ?value this:class ?class } <= { ?value a ?class } .
+{ ?value this:class ?class } <= { ?subclass rdfs:subClassOf ?class . ?value this:class ?subclass } .
+
 
 # DatatypeConstraintComponent
 {
@@ -52,4 +97,72 @@
 { ?x this:violatesDatatype ?datatype } <= { ?x this:datatype [ log:notEqualTo ?datatype ] } .
 # dt:invalidForDatatype is available only in eyeling
 { ?x this:violatesDatatype ?datatype } <= { ?x dt:invalidForDatatype ?datatype } .
+
+
+# NodeKindConstraintComponent
+{
+    ?shape sh:nodeKind ?nodeKind .
+    ?shape this:path ?path .
+
+    ?shape this:focusNode ?node .
+    (?node ?path) this:value ?value .
+    [] log:notIncludes { ?value this:nodeKind ?nodeKind } .
+
+    ("value %s should have node kind %s" ?value ?nodeKind) string:format ?defaultMessage .
+    (?shape ?defaultMessage) this:message ?message .
+    ?shape this:severity ?severity .
+    this: this:report ?report .
+}
+=>
+{
+    ?report sh:result [
+        a sh:ValidationResult ;
+        sh:resultSeverity ?severity ;
+        sh:sourceConstraintComponent sh:NodeKindConstraintComponent ;
+        sh:sourceShape ?shape ;
+        sh:focusNode ?node ;
+        sh:value ?value ;
+        # sh:resultPath ?path ;
+        sh:resultMessage ?message ;
+    ] .
+} .
+
+{
+    ?node this:violates ?skolem .
+}
+<=
+{
+    ?shape this:skolem ?skolem .
+    ?shape sh:nodeKind ?nodeKind .
+    ?shape this:path ?path .
+    (?node ?path) this:value ?value .
+    [] log:notIncludes { ?value this:nodeKind ?nodeKind } 
+} .
+
+
+{ ?term this:nodeKind sh:Literal } <= { ?term log:rawType log:Literal } .
+
+
+# for the eye reasoner
+{ ?value this:nodeKind sh:BlankNode } <= { ?value log:rawType log:LabeledBlankNode }. 
+{ ?value this:nodeKind sh:BlankNode } <= { ?value log:rawType log:UnlabeledBlankNode }.
+{ ?value this:nodeKind sh:BlankNode } <= { ?value log:rawType log:SkolemIRI }.
+# for eyeling
+# { ?term this:nodeKind sh:BlankNode } <= { 
+#     ?term log:rawType log:Other. 
+#     ((?term) log:uri) list:map () .
+# } .
+
+{ ?term this:nodeKind sh:IRI } <= { 
+    ?term log:rawType log:Other . 
+    ?term log:uri ?x . 
+   #  ?x log:rawType log:Literal . # necessary to exclude blank nodes in eyeling (why?)
+} .
+
+{ ?value this:nodeKind sh:BlankNodeOrIRI } <= { ?value this:nodeKind sh:BlankNode }. 
+{ ?value this:nodeKind sh:BlankNodeOrIRI } <= { ?value this:nodeKind sh:IRI }. 
+{ ?value this:nodeKind sh:IRIOrLiteral } <= { ?value this:nodeKind sh:IRI }. 
+{ ?value this:nodeKind sh:IRIOrLiteral } <= { ?value this:nodeKind sh:Literal }. 
+{ ?value this:nodeKind sh:BlankNodeOrLiteral } <= { ?value this:nodeKind sh:BlankNode }. 
+{ ?value this:nodeKind sh:BlankNodeOrLiteral } <= { ?value this:nodeKind sh:Literal }. 
 

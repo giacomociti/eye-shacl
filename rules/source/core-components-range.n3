@@ -1,0 +1,202 @@
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix math: <http://www.w3.org/2000/10/swap/math#> .
+@prefix string: <http://www.w3.org/2000/10/swap/string#> .
+@prefix list: <http://www.w3.org/2000/10/swap/list#> .
+@prefix log: <http://www.w3.org/2000/10/swap/log#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix this: <http://eye-shacl#> .
+
+
+
+# MinExclusiveConstraintComponent
+{
+    ?shape sh:minExclusive ?minExclusive .
+    ?shape this:path ?path .
+
+    ?shape this:focusNode ?node .
+    (?node ?path) this:value ?value .
+    [] log:notIncludes { ?value this:minExclusive ?minExclusive } .
+
+    ("value %s should be greater than %s" ?value ?minExclusive) string:format ?defaultMessage .
+    (?shape ?defaultMessage) this:message ?message .
+    ?shape this:severity ?severity .
+    this: this:report ?report .
+}
+=>
+{
+    ?report sh:result [
+        a sh:ValidationResult ;
+        sh:resultSeverity ?severity ;
+        sh:sourceConstraintComponent sh:MinExclusiveConstraintComponent ;
+        sh:sourceShape ?shape ;
+        sh:focusNode ?node ;
+        sh:value ?value ;
+        # sh:resultPath ?path ;
+        sh:resultMessage ?message ;
+    ] .
+} .
+
+{
+    ?node this:violates ?skolem .
+}
+<=
+{
+    ?shape this:skolem ?skolem .
+    ?shape sh:minExclusive ?minExclusive .
+    ?shape this:path ?path .
+    (?node ?path) this:value ?value .
+    [] log:notIncludes { ?value this:minExclusive ?minExclusive } 
+} .
+
+# MinInclusiveConstraintComponent
+{
+    ?shape sh:minInclusive ?minInclusive .
+    ?shape this:path ?path .
+
+    ?shape this:focusNode ?node .
+    (?node ?path) this:value ?value .
+    [] log:notIncludes { ?value this:minInclusive ?minInclusive } .
+
+    ("value %s should be greater than or equal to %s" ?value ?minInclusive) string:format ?defaultMessage .
+    (?shape ?defaultMessage) this:message ?message .
+    ?shape this:severity ?severity .
+    this: this:report ?report .
+}
+=>
+{
+    ?report sh:result [
+        a sh:ValidationResult ;
+        sh:resultSeverity ?severity ;
+        sh:sourceConstraintComponent sh:MinInclusiveConstraintComponent ;
+        sh:sourceShape ?shape ;
+        sh:focusNode ?node ;
+        sh:value ?value ;
+        # sh:resultPath ?path ;
+        sh:resultMessage ?message ;
+    ] .
+} .
+
+{
+    ?node this:violates ?skolem .
+}
+<=
+{
+    ?shape this:skolem ?skolem .
+    ?shape sh:minInclusive ?minInclusive .
+    ?shape this:path ?path .
+    (?node ?path) this:value ?value .
+    [] log:notIncludes { ?value this:minInclusive ?minInclusive } 
+} .
+
+# MaxExclusiveConstraintComponent
+{
+    ?shape sh:maxExclusive ?maxExclusive .
+    ?shape this:path ?path .
+
+    ?shape this:focusNode ?node .
+    (?node ?path) this:value ?value .
+    [] log:notIncludes { ?value this:maxExclusive ?maxExclusive } .
+
+    ("value %s should be less than %s" ?value ?maxExclusive) string:format ?defaultMessage .
+    (?shape ?defaultMessage) this:message ?message .
+    ?shape this:severity ?severity .
+    this: this:report ?report .
+}
+=>
+{
+    ?report sh:result [
+        a sh:ValidationResult ;
+        sh:resultSeverity ?severity ;
+        sh:sourceConstraintComponent sh:MaxExclusiveConstraintComponent ;
+        sh:sourceShape ?shape ;
+        sh:focusNode ?node ;
+        sh:value ?value ;
+        # sh:resultPath ?path ;
+        sh:resultMessage ?message ;
+    ] .
+} .
+
+{
+    ?node this:violates ?skolem .
+}
+<=
+{
+    ?shape this:skolem ?skolem .
+    ?shape sh:maxExclusive ?maxExclusive .
+    ?shape this:path ?path .
+    (?node ?path) this:value ?value .
+    [] log:notIncludes { ?value this:maxExclusive ?maxExclusive } 
+} .
+
+
+# MaxInclusiveConstraintComponent
+{
+    ?shape sh:maxInclusive ?maxInclusive .
+    ?shape this:path ?path .
+
+    ?shape this:focusNode ?node .
+    (?node ?path) this:value ?value .
+    [] log:notIncludes { ?value this:maxInclusive ?maxInclusive } .
+
+    ("value %s should be less than or equal to %s" ?value ?maxInclusive) string:format ?defaultMessage .
+    (?shape ?defaultMessage) this:message ?message .
+    ?shape this:severity ?severity .
+    this: this:report ?report .
+}
+=>
+{
+    ?report sh:result [
+        a sh:ValidationResult ;
+        sh:resultSeverity ?severity ;
+        sh:sourceConstraintComponent sh:MaxInclusiveConstraintComponent ;
+        sh:sourceShape ?shape ;
+        sh:focusNode ?node ;
+        sh:value ?value ;
+        # sh:resultPath ?path ;
+        sh:resultMessage ?message ;
+    ] .
+} .
+
+{
+    ?node this:violates ?skolem .
+}
+<=
+{
+    ?shape this:skolem ?skolem .
+    ?shape sh:maxInclusive ?maxInclusive .
+    ?shape this:path ?path .
+    (?node ?path) this:value ?value .
+    [] log:notIncludes { ?value this:maxInclusive ?maxInclusive } 
+} .
+
+
+
+
+
+{ ?value this:minExclusive ?minExclusive } <= {  ?value math:greaterThan ?minExclusive }.
+{ ?value this:minInclusive ?minInclusive } <= {  ?value math:notLessThan ?minInclusive }.
+{ ?value this:maxExclusive ?maxExclusive } <= {  ?value math:lessThan ?maxExclusive }.
+{ ?value this:maxInclusive ?maxInclusive } <= {  ?value math:notGreaterThan ?maxInclusive }.
+
+{ ?value this:minExclusive ?minExclusive } <= { 
+    ?minExclusive this:datatype ?datatype . 
+    ?datatype log:notEqualTo xsd:integer, xsd:decimal, xsd:double, xsd:float, xsd:dateTime .
+    ?value this:datatype ?datatype ; string:greaterThan ?minExclusive 
+} .
+{ ?value this:minInclusive ?minInclusive } <= { 
+    ?minInclusive this:datatype ?datatype . 
+    ?datatype log:notEqualTo xsd:integer, xsd:decimal, xsd:double, xsd:float, xsd:dateTime . 
+    ?value this:datatype ?datatype ; string:notLessThan ?minInclusive 
+} .
+{ ?value this:maxExclusive ?maxExclusive } <= { 
+    ?maxExclusive this:datatype ?datatype . 
+    ?datatype log:notEqualTo xsd:integer, xsd:decimal, xsd:double, xsd:float, xsd:dateTime . 
+    ?value this:datatype ?datatype ; string:lessThan ?maxExclusive 
+} .
+{ ?value this:maxInclusive ?maxInclusive } <= { 
+    ?maxInclusive this:datatype ?datatype . 
+    ?datatype log:notEqualTo xsd:integer, xsd:decimal, xsd:double, xsd:float, xsd:dateTime . 
+    ?value this:datatype ?datatype ; string:notGreaterThan ?maxInclusive 
+} .
