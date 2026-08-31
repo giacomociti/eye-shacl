@@ -1,36 +1,13 @@
-@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix list: <http://www.w3.org/2000/10/swap/list#> .
+@prefix log: <http://www.w3.org/2000/10/swap/log#> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix sh: <http://www.w3.org/ns/shacl#> .
-@prefix log: <http://www.w3.org/2000/10/swap/log#> .
 @prefix this: <http://eye-shacl#> .
 
 this: this:report [] .
 
-# { [] owl:imports [ log:semantics ?semantics ] } => ?semantics .
-# { [] sh:shapesGraph [ log:semantics ?semantics ] } => ?semantics .
-
-# skolemize inner shapes
-{ 
-    [] ?p ?shape .
-    ?p list:in (sh:node sh:property sh:not sh:qualifiedValueShape) .
-    ?shape log:skolem ?skolem .
-} 
-=> 
-{ 
-    ?shape this:skolem ?skolem
-} .
-
-{ 
-    [] ?p ?list .
-    ?p list:in (sh:or sh:and sh:xone) .
-    ?list list:member ?shape .
-    ?shape log:skolem ?skolem .
-} 
-=> 
-{ 
-    ?shape this:skolem ?skolem
-} .
+{ [] owl:imports [ log:semantics ?semantics ] } => ?semantics .
+{ [] sh:shapesGraph [ log:semantics ?semantics ] } => ?semantics .
 
 
 # resultPath

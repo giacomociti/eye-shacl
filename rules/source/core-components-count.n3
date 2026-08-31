@@ -37,11 +37,10 @@
 
 
 {
-    ?node this:violates ?skolem .
+    ?node this:violates ?shape .
 }
 <=
 {
-    ?shape this:skolem ?skolem .
     ?shape sh:minCount ?minCount .
     ?shape sh:path ?path .
     (?node ?path) this:values ?values .
@@ -81,11 +80,10 @@
 
 
 {
-    ?node this:violates ?skolem .        
+    ?node this:violates ?shape .        
 }
 <=
 {
-    ?shape this:skolem ?skolem .
     ?shape sh:maxCount ?maxCount .
     ?shape sh:path ?path .
     (?node ?path) this:values ?values .

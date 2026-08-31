@@ -1,36 +1,13 @@
-@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix list: <http://www.w3.org/2000/10/swap/list#> .
+@prefix log: <http://www.w3.org/2000/10/swap/log#> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix sh: <http://www.w3.org/ns/shacl#> .
-@prefix log: <http://www.w3.org/2000/10/swap/log#> .
 @prefix this: <http://eye-shacl#> .
 
 this: this:report [] .
 
-# { [] owl:imports [ log:semantics ?semantics ] } => ?semantics .
-# { [] sh:shapesGraph [ log:semantics ?semantics ] } => ?semantics .
-
-# skolemize inner shapes
-{ 
-    [] ?p ?shape .
-    ?p list:in (sh:node sh:property sh:not sh:qualifiedValueShape) .
-    ?shape log:skolem ?skolem .
-} 
-=> 
-{ 
-    ?shape this:skolem ?skolem
-} .
-
-{ 
-    [] ?p ?list .
-    ?p list:in (sh:or sh:and sh:xone) .
-    ?list list:member ?shape .
-    ?shape log:skolem ?skolem .
-} 
-=> 
-{ 
-    ?shape this:skolem ?skolem
-} .
+{ [] owl:imports [ log:semantics ?semantics ] } => ?semantics .
+{ [] sh:shapesGraph [ log:semantics ?semantics ] } => ?semantics .
 
 
 # resultPath
@@ -128,11 +105,10 @@ this: this:report [] .
 
 
 {
-    ?node this:violates ?skolem .
+    ?node this:violates ?shape .
 }
 <=
 {
-    ?shape this:skolem ?skolem .
     ?shape sh:minCount ?minCount .
     ?shape sh:path ?path .
     (?node ?path) this:values ?values .
@@ -172,11 +148,10 @@ this: this:report [] .
 
 
 {
-    ?node this:violates ?skolem .        
+    ?node this:violates ?shape .        
 }
 <=
 {
-    ?shape this:skolem ?skolem .
     ?shape sh:maxCount ?maxCount .
     ?shape sh:path ?path .
     (?node ?path) this:values ?values .
@@ -198,11 +173,10 @@ this: this:report [] .
 {
     ?shape sh:not ?not .
     ?shape this:path ?path .
-    ?not this:skolem ?skolem .
     
     ?shape this:focusNode ?focusNode .
     (?focusNode ?path) this:value ?value .
-    [] log:notIncludes { ?value this:violates ?skolem } .
+    [] log:notIncludes { ?value this:violates ?not } .
 
     ("value should not satisfy shape %s " ?not) string:format ?defaultMessage .
     (?shape ?defaultMessage) this:message ?message .
@@ -218,18 +192,15 @@ this: this:report [] .
         sh:sourceShape ?shape ;
         sh:focusNode ?focusNode ;
         sh:value ?value ;
-        # sh:resultPath ?path ;
         sh:resultMessage ?message ;
     ] .
 } .
 
-{ ?value this:violates ?skolem } <= { 
-    ?shape this:skolem ?skolem .
+{ ?value this:violates ?shape } <= { 
     ?shape sh:not ?not .
     ?shape this:path ?path .
     (?value ?path) this:value ?x .
-    ?not this:skolem ?innerSkolem .
-    [] log:notIncludes { ?x this:violates ?innerSkolem } .
+    [] log:notIncludes { ?x this:violates ?not } .
 } .
 
 
@@ -238,13 +209,11 @@ this: this:report [] .
 {
     ?shape sh:or ?or .
     ?shape this:path ?path .
-    #(?or this:skolem) list:map ?skolems .
-    (?x { ?or list:member [ this:skolem ?x ] } ?skolems) log:collectAllIn [] .
     
     ?shape this:focusNode ?focusNode .
     (?focusNode ?path) this:value ?value .
     (
-        { ?x list:in ?skolems}
+        { ?x list:in ?or}
         { ?value this:violates ?x }
     ) log:forAllIn [] .
 
@@ -262,21 +231,17 @@ this: this:report [] .
         sh:sourceShape ?shape ;
         sh:focusNode ?focusNode ;
         sh:value ?value ;
-        # sh:resultPath ?path ;
         sh:resultMessage ?message ;
     ] .
 } .
 
-{ ?value this:violates ?skolem } <= { 
-    ?shape this:skolem ?skolem .
+{ ?value this:violates ?shape } <= { 
     ?shape sh:or ?or .
     ?shape this:path ?path .
     (?value ?path) this:value ?x .
-    # (?or this:skolem) list:map ?skolems .
-    (?x { ?or list:member [ this:skolem ?x ] } ?skolems) log:collectAllIn [] .
     
     (
-        { ?sk list:in ?skolems}
+        { ?sk list:in ?or}
         { ?x this:violates ?sk }
     ) log:forAllIn [] .
 } .
@@ -286,15 +251,12 @@ this: this:report [] .
 {
     ?shape sh:and ?and .
     ?shape this:path ?path .
-    #(?and this:skolem) list:map ?skolems .
-    (?x { ?and list:member [ this:skolem ?x ] } ?skolems) log:collectAllIn [] .
-
     
     ?shape this:focusNode ?focusNode .
     (?focusNode ?path) this:value ?value .
 
-    ?sk list:in ?skolems . 
-    ?value this:violates ?sk .
+    ?x list:in ?and . 
+    ?value this:violates ?x .
 
     ("value should satisfy all shapes in: %s " ?and) string:format ?defaultMessage .
     (?shape ?defaultMessage) this:message ?message .
@@ -310,21 +272,16 @@ this: this:report [] .
         sh:sourceShape ?shape ;
         sh:focusNode ?focusNode ;
         sh:value ?value ;
-        # sh:resultPath ?path ;
         sh:resultMessage ?message ;
     ] .
 } .
 
-{ ?value this:violates ?skolem } <= { 
-    ?shape this:skolem ?skolem .
+{ ?value this:violates ?shape } <= { 
     ?shape sh:and ?and .
     ?shape this:path ?path .
     (?value ?path) this:value ?x .
-    # (?and this:skolem) list:map ?skolems .
-    (?x { ?and list:member [ this:skolem ?x ] } ?skolems) log:collectAllIn [] .
-    
-    ?sk list:in ?skolems . 
-    ?x this:violates ?sk 
+    ?innerShape list:in ?and . 
+    ?x this:violates ?innerShape 
 } .
 
 
@@ -333,14 +290,11 @@ this: this:report [] .
 {
     ?shape sh:xone ?xone .
     ?shape this:path ?path .
-    # (?xone this:skolem) list:map ?skolems .
-    (?x { ?xone list:member [ this:skolem ?x ] } ?skolems) log:collectAllIn [] .
-
     
     ?shape this:focusNode ?focusNode .
     (?focusNode ?path) this:value ?value .
-    (?x { ?x list:in ?skolems . ?value this:violates ?x } ?failed) log:collectAllIn [] .
-    (?x { ?x list:in ?skolems . ?failed list:notMember ?x } ?valid) log:collectAllIn [] .
+    (?x { ?x list:in ?xone . ?value this:violates ?x } ?failed) log:collectAllIn [] .
+    (?x { ?x list:in ?xone . ?failed list:notMember ?x } ?valid) log:collectAllIn [] .
     ?valid list:length [ log:notEqualTo 1 ].
 
     ("value should satisfy exactly one shape in: %s " ?xone) string:format ?defaultMessage .
@@ -357,22 +311,19 @@ this: this:report [] .
         sh:sourceShape ?shape ;
         sh:focusNode ?focusNode ;
         sh:value ?value ;
-        # sh:resultPath ?path ;
         sh:resultMessage ?message ;
     ] .
 } .
 
-{ ?value this:violates ?skolem } <= { 
-    ?shape this:skolem ?skolem .
+{ ?value this:violates ?shape } <= { 
     ?shape sh:xone ?xone .
     ?shape this:path ?path .
     (?value ?path) this:value ?v .
-    # (?xone this:skolem) list:map ?skolems .
-    (?x { ?xone list:member [ this:skolem ?x ] } ?skolems) log:collectAllIn [] .
-    (?x { ?x list:in ?skolems . ?v this:violates ?x } ?failed) log:collectAllIn [] .
-    (?x { ?x list:in ?skolems . ?failed list:notMember ?x } ?valid) log:collectAllIn [] .
+    (?x { ?x list:in ?xone . ?v this:violates ?x } ?failed) log:collectAllIn [] .
+    (?x { ?x list:in ?xone . ?failed list:notMember ?x } ?valid) log:collectAllIn [] .
     ?valid list:length [ log:notEqualTo 1 ].
 } .
+
 # https://www.w3.org/TR/shacl/#core-components-others
 
 @prefix list: <http://www.w3.org/2000/10/swap/list#> .
@@ -412,11 +363,10 @@ this: this:report [] .
 } .
 
 {
-    ?node this:violates ?skolem .
+    ?node this:violates ?shape .
 }
 <=
 {
-    ?shape this:skolem ?skolem .
     ?shape sh:closed true .
     ?shape this:allowedProperties ?allowed .
     ?node ?property [] .
@@ -457,17 +407,15 @@ this: this:report [] .
         sh:sourceConstraintComponent sh:HasValueConstraintComponent ;
         sh:sourceShape ?shape ;
         sh:focusNode ?focusNode ;
-        # sh:resultPath ?path ;
         sh:resultMessage ?message ;
     ] .
 } .
 
 {
-    ?node this:violates ?skolem .
+    ?node this:violates ?shape .
 }
 <=
 {
-    ?shape this:skolem ?skolem .
     ?shape sh:hasValue ?hasValue .
     ?shape this:path ?path .
     (?node ?path) this:values ?values .
@@ -501,17 +449,15 @@ this: this:report [] .
         sh:sourceShape ?shape ;
         sh:focusNode ?focusNode ;
         sh:value ?value ;
-        # sh:resultPath ?path ;
         sh:resultMessage ?message ;
     ] .
 } .
 
 {
-    ?node this:violates ?skolem .
+    ?node this:violates ?shape .
 }
 <=
 {
-    ?shape this:skolem ?skolem .
     ?shape sh:in ?in ; this:path ?path .
     (?node ?path) this:value ?value .
     ?in list:notMember ?value .
@@ -550,7 +496,6 @@ this: this:report [] .
         sh:sourceConstraintComponent sh:EqualsConstraintComponent ;
         sh:sourceShape ?shape ;
         sh:focusNode ?focusNode ;
-        # sh:resultPath ?path ;
         sh:value ?value ;
         sh:resultMessage ?message ;
     ]
@@ -570,11 +515,10 @@ this: this:report [] .
 
 
 {
-    ?node this:violates ?skolem .
+    ?node this:violates ?shape .
 }
 <=
 {
-    ?shape this:skolem ?skolem .
     ?shape sh:equals ?otherPredicate ; this:path ?path .
     (?node ?path) this:values ?thisValues .
     (?node ?otherPredicate) this:values ?otherValues .
@@ -607,17 +551,15 @@ this: this:report [] .
         sh:sourceShape ?shape ;
         sh:focusNode ?focusNode ;
         sh:value ?value ;
-        # sh:resultPath ?path ;
         sh:resultMessage ?message ;
     ]
 } .
 
 {
-    ?node this:violates ?skolem .
+    ?node this:violates ?shape .
 }
 <=
 {
-    ?shape this:skolem ?skolem .
     ?shape sh:disjoint ?otherPredicate ; this:path ?path .
     (?node ?path) this:value ?value .
     (?node ?otherPredicate) this:value ?value .
@@ -655,11 +597,10 @@ this: this:report [] .
 } .
 
 {
-    ?node this:violates ?skolem .
+    ?node this:violates ?shape .
 }
 <=
 {
-    ?shape this:skolem ?skolem .
     ?shape sh:lessThan ?otherPredicate ; sh:path ?path .
     (?node ?path) this:value ?value .
     (?node ?otherPredicate) this:value ?otherValue .
@@ -700,11 +641,10 @@ this: this:report [] .
 
 
 {
-    ?node this:violates ?skolem .
+    ?node this:violates ?shape .
 }
 <=
 {
-    ?shape this:skolem ?skolem .
     ?shape sh:lessThanOrEquals ?otherPredicate ; sh:path ?path .
     (?node ?path) this:value ?value .
     (?node ?otherPredicate) this:value ?otherValue .
@@ -746,17 +686,15 @@ this: this:report [] .
         sh:sourceShape ?shape ;
         sh:focusNode ?node ;
         sh:value ?value ;
-        # sh:resultPath ?path ;
         sh:resultMessage ?message ;
     ] .
 } .
 
 {
-    ?node this:violates ?skolem .
+    ?node this:violates ?shape .
 }
 <=
 {
-    ?shape this:skolem ?skolem .
     ?shape sh:minExclusive ?minExclusive .
     ?shape this:path ?path .
     (?node ?path) this:value ?value .
@@ -786,17 +724,15 @@ this: this:report [] .
         sh:sourceShape ?shape ;
         sh:focusNode ?node ;
         sh:value ?value ;
-        # sh:resultPath ?path ;
         sh:resultMessage ?message ;
     ] .
 } .
 
 {
-    ?node this:violates ?skolem .
+    ?node this:violates ?shape .
 }
 <=
 {
-    ?shape this:skolem ?skolem .
     ?shape sh:minInclusive ?minInclusive .
     ?shape this:path ?path .
     (?node ?path) this:value ?value .
@@ -826,17 +762,15 @@ this: this:report [] .
         sh:sourceShape ?shape ;
         sh:focusNode ?node ;
         sh:value ?value ;
-        # sh:resultPath ?path ;
         sh:resultMessage ?message ;
     ] .
 } .
 
 {
-    ?node this:violates ?skolem .
+    ?node this:violates ?shape .
 }
 <=
 {
-    ?shape this:skolem ?skolem .
     ?shape sh:maxExclusive ?maxExclusive .
     ?shape this:path ?path .
     (?node ?path) this:value ?value .
@@ -867,17 +801,15 @@ this: this:report [] .
         sh:sourceShape ?shape ;
         sh:focusNode ?node ;
         sh:value ?value ;
-        # sh:resultPath ?path ;
         sh:resultMessage ?message ;
     ] .
 } .
 
 {
-    ?node this:violates ?skolem .
+    ?node this:violates ?shape .
 }
 <=
 {
-    ?shape this:skolem ?skolem .
     ?shape sh:maxInclusive ?maxInclusive .
     ?shape this:path ?path .
     (?node ?path) this:value ?value .
@@ -927,11 +859,10 @@ this: this:report [] .
 {
     ?shape sh:node ?node .
     ?shape this:path ?path .
-    ?node this:skolem ?skolem .
     
     ?shape this:focusNode ?focusNode .
     (?focusNode ?path) this:value ?value .
-    ?value this:violates ?skolem .
+    ?value this:violates ?node .
 
     ("value should satisfy shape %s " ?node) string:format ?defaultMessage .
     (?shape ?defaultMessage) this:message ?message .
@@ -947,34 +878,29 @@ this: this:report [] .
         sh:sourceShape ?shape ;
         sh:focusNode ?focusNode ;
         sh:value ?value ;
-        # sh:resultPath ?path ;
         sh:resultMessage ?message ;
     ] .
 } .
 
-{ ?value this:violates ?skolem } <= { 
-    ?shape this:skolem ?skolem .
+{ ?value this:violates ?shape } <= { 
     ?shape sh:node ?node .
-    ?node this:skolem ?innerSkolem .
     ?shape this:path ?path .
     (?value ?path) this:value ?x .
-    ?x this:violates ?innerSkolem .
+    ?x this:violates ?node .
 } .
 
 
 # PropertyShapeComponent
 
 { 
-    ?node this:violates ?skolem 
+    ?node this:violates ?shape 
 } 
 <=
 { 
-    ?shape this:skolem ?skolem .
     ?shape sh:property ?propertyShape .
-    ?propertyShape this:skolem ?innerSkolem .
     ?shape this:path ?path .
     (?node ?path) this:value ?value .
-    ?value this:violates ?innerSkolem .
+    ?value this:violates ?propertyShape .
 } .
 
 
@@ -1038,28 +964,24 @@ this: this:report [] .
 
 
 {
-    # should we use the skolem of the shape instead?
     (?node ?shape) this:qualifiedCount ?qualifiedCount .
 }
 <=
 {
-    #?shape this:skolem ?skolem .
     ?shape sh:qualifiedValueShape ?valueShape ; sh:path ?path .
-    ?valueShape this:skolem ?valueShapeSkolem .
     (
         ?x {
             ?shape sh:qualifiedValueShapesDisjoint true .
             ?parent sh:property ?shape, ?other .
             ?shape log:notEqualTo ?other .
-            ?other sh:qualifiedValueShape ?q .
-            ?q this:skolem ?x .
+            ?other sh:qualifiedValueShape ?x .
         } ?siblings
     ) log:collectAllIn [] .
     
     (?node ?path) this:values ?values .
     (?x { 
         ?x list:in ?values . 
-        [] log:notIncludes { ?x this:violates ?valueShapeSkolem } .
+        [] log:notIncludes { ?x this:violates ?valueShape } .
         (
             { ?sibling list:in ?siblings }
             { ?x this:violates ?sibling }
@@ -1073,11 +995,10 @@ this: this:report [] .
 
 
 {
-    ?node this:violates ?skolem .
+    ?node this:violates ?shape .
 }
 <=
 {
-    ?shape this:skolem ?skolem .
     ?shape sh:qualifiedMinCount ?minCount .
     ?shape sh:path ?path .
     (?node ?shape) this:qualifiedCount ?qualifiedCount .
@@ -1087,16 +1008,16 @@ this: this:report [] .
 
 
 {   
-    ?node this:violates ?skolem .
+    ?node this:violates ?shape .
 }
 <=
 {
-    ?shape this:skolem ?skolem .
     ?shape sh:qualifiedMaxCount ?maxCount .
     ?shape sh:path ?path .
     (?node ?shape) this:qualifiedCount ?qualifiedCount .
     ?qualifiedCount math:greaterThan ?maxCount .
 } .
+
 # https://www.w3.org/TR/shacl/#core-components-string
 @prefix list: <http://www.w3.org/2000/10/swap/list#> .
 @prefix math: <http://www.w3.org/2000/10/swap/math#> .
@@ -1130,17 +1051,15 @@ this: this:report [] .
         sh:sourceShape ?shape ;
         sh:focusNode ?node ;
         sh:value ?value ;
-        # sh:resultPath ?path ;
         sh:resultMessage ?message ;
     ] .
 } .
 
 {
-    ?node this:violates ?skolem .
+    ?node this:violates ?shape .
 }
 <=
 {
-    ?shape this:skolem ?skolem .
     ?shape sh:minLength ?minLength .
     ?shape this:path ?path .
     (?node ?path) this:value ?value .
@@ -1174,17 +1093,15 @@ this: this:report [] .
         sh:sourceShape ?shape ;
         sh:focusNode ?node ;
         sh:value ?value ;
-        # sh:resultPath ?path ;
         sh:resultMessage ?message ;
     ] .
 } .
 
 {
-    ?node this:violates ?skolem .
+    ?node this:violates ?shape .
 }
 <=
 {
-    ?shape this:skolem ?skolem .
     ?shape sh:maxLength ?maxLength .
     ?shape this:path ?path .
     (?node ?path) this:value ?value .
@@ -1209,7 +1126,8 @@ this: this:report [] .
 
     ?shape this:focusNode ?focusNode .
     (?focusNode ?path) this:value ?value .
-    # ?use string:format (instead of dt:lexicalForm) to include also non-literals
+    # use string:format (instead of dt:lexicalForm) to include also non-literals
+    # TODO:handle lang literals?
     ("%s" ?value) string:format ?x .
     ?x string:notMatches ?pattern .
 
@@ -1227,17 +1145,15 @@ this: this:report [] .
         sh:sourceShape ?shape ;
         sh:focusNode ?focusNode ;
         sh:value ?value ;
-        # sh:resultPath ?path ;
         sh:resultMessage ?message ;
     ] .
 } .
 
 {
-    ?node this:violates ?skolem .
+    ?node this:violates ?shape .
 }
 <=
 {
-    ?shape this:skolem ?skolem .
     ?shape this:pattern ?pattern .
     ?shape this:path ?path .
     (?node ?path) this:value ?value .
@@ -1281,17 +1197,15 @@ this: this:report [] .
         sh:sourceShape ?shape ;
         sh:focusNode ?node ;
         sh:value ?value ;
-        # sh:resultPath ?path ;
         sh:resultMessage ?message ;
     ] .
 } .
 
 {
-    ?node this:violates ?skolem .
+    ?node this:violates ?shape .
 }
 <=
 {
-    ?shape this:skolem ?skolem .
     ?shape sh:languageIn ?languageIn .
     ?shape this:path ?path .
     (?node ?path) this:value ?value .
@@ -1334,8 +1248,7 @@ this: this:report [] .
     ] .
 } .
 
-{ ?node this:violates ?skolem } <= { 
-    ?shape this:skolem ?skolem .
+{ ?node this:violates ?shape } <= { 
     ?shape sh:uniqueLang ?uniqueLang .
     ?uniqueLang this:lexicalForm "true" . # "1" is ignored, see test uniqueLang-002.ttl
     ?uniqueLang this:datatype xsd:boolean .
@@ -1386,17 +1299,15 @@ this: this:report [] .
         sh:sourceShape ?shape ;
         sh:focusNode ?node ;
         sh:value ?value ;
-        # sh:resultPath ?path ;
         sh:resultMessage ?message ;
     ] .
 } .
 
 {
-    ?node this:violates ?skolem .
+    ?node this:violates ?shape .
 }
 <=
 {
-    ?shape this:skolem ?skolem .
     ?shape sh:class ?class .
     ?shape this:path ?path .
     (?node ?path) this:value ?value .
@@ -1430,18 +1341,16 @@ this: this:report [] .
         sh:sourceShape ?shape ;
         sh:focusNode ?node ;
         sh:value ?value ;
-        # sh:resultPath ?path ;
         sh:resultMessage ?message ;
     ] .
 } .
 
 
 {
-    ?node this:violates ?skolem .
+    ?node this:violates ?shape .
 }
 <=
 {
-    ?shape this:skolem ?skolem .
     ?shape sh:datatype ?datatype .
     ?shape this:path ?path .
     (?node ?path) this:value ?value .
@@ -1478,17 +1387,15 @@ this: this:report [] .
         sh:sourceShape ?shape ;
         sh:focusNode ?node ;
         sh:value ?value ;
-        # sh:resultPath ?path ;
         sh:resultMessage ?message ;
     ] .
 } .
 
 {
-    ?node this:violates ?skolem .
+    ?node this:violates ?shape .
 }
 <=
 {
-    ?shape this:skolem ?skolem .
     ?shape sh:nodeKind ?nodeKind .
     ?shape this:path ?path .
     (?node ?path) this:value ?value .
@@ -1498,22 +1405,11 @@ this: this:report [] .
 
 { ?term this:nodeKind sh:Literal } <= { ?term log:rawType log:Literal } .
 
-
-# for the eye reasoner
 { ?value this:nodeKind sh:BlankNode } <= { ?value log:rawType log:LabeledBlankNode }. 
 { ?value this:nodeKind sh:BlankNode } <= { ?value log:rawType log:UnlabeledBlankNode }.
 { ?value this:nodeKind sh:BlankNode } <= { ?value log:rawType log:SkolemIRI }.
-# for eyeling
-# { ?term this:nodeKind sh:BlankNode } <= { 
-#     ?term log:rawType log:Other. 
-#     ((?term) log:uri) list:map () .
-# } .
 
-{ ?term this:nodeKind sh:IRI } <= { 
-    ?term log:rawType log:Other . 
-    ?term log:uri ?x . 
-   #  ?x log:rawType log:Literal . # necessary to exclude blank nodes in eyeling (why?)
-} .
+{ ?term this:nodeKind sh:IRI } <= { ?term log:rawType log:Other ; log:uri [] } .
 
 { ?value this:nodeKind sh:BlankNodeOrIRI } <= { ?value this:nodeKind sh:BlankNode }. 
 { ?value this:nodeKind sh:BlankNodeOrIRI } <= { ?value this:nodeKind sh:IRI }. 

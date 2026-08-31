@@ -12,11 +12,10 @@
 {
     ?shape sh:node ?node .
     ?shape this:path ?path .
-    ?node this:skolem ?skolem .
     
     ?shape this:focusNode ?focusNode .
     (?focusNode ?path) this:value ?value .
-    ?value this:violates ?skolem .
+    ?value this:violates ?node .
 
     ("value should satisfy shape %s " ?node) string:format ?defaultMessage .
     (?shape ?defaultMessage) this:message ?message .
@@ -32,34 +31,29 @@
         sh:sourceShape ?shape ;
         sh:focusNode ?focusNode ;
         sh:value ?value ;
-        # sh:resultPath ?path ;
         sh:resultMessage ?message ;
     ] .
 } .
 
-{ ?value this:violates ?skolem } <= { 
-    ?shape this:skolem ?skolem .
+{ ?value this:violates ?shape } <= { 
     ?shape sh:node ?node .
-    ?node this:skolem ?innerSkolem .
     ?shape this:path ?path .
     (?value ?path) this:value ?x .
-    ?x this:violates ?innerSkolem .
+    ?x this:violates ?node .
 } .
 
 
 # PropertyShapeComponent
 
 { 
-    ?node this:violates ?skolem 
+    ?node this:violates ?shape 
 } 
 <=
 { 
-    ?shape this:skolem ?skolem .
     ?shape sh:property ?propertyShape .
-    ?propertyShape this:skolem ?innerSkolem .
     ?shape this:path ?path .
     (?node ?path) this:value ?value .
-    ?value this:violates ?innerSkolem .
+    ?value this:violates ?propertyShape .
 } .
 
 
@@ -123,28 +117,24 @@
 
 
 {
-    # should we use the skolem of the shape instead?
     (?node ?shape) this:qualifiedCount ?qualifiedCount .
 }
 <=
 {
-    #?shape this:skolem ?skolem .
     ?shape sh:qualifiedValueShape ?valueShape ; sh:path ?path .
-    ?valueShape this:skolem ?valueShapeSkolem .
     (
         ?x {
             ?shape sh:qualifiedValueShapesDisjoint true .
             ?parent sh:property ?shape, ?other .
             ?shape log:notEqualTo ?other .
-            ?other sh:qualifiedValueShape ?q .
-            ?q this:skolem ?x .
+            ?other sh:qualifiedValueShape ?x .
         } ?siblings
     ) log:collectAllIn [] .
     
     (?node ?path) this:values ?values .
     (?x { 
         ?x list:in ?values . 
-        [] log:notIncludes { ?x this:violates ?valueShapeSkolem } .
+        [] log:notIncludes { ?x this:violates ?valueShape } .
         (
             { ?sibling list:in ?siblings }
             { ?x this:violates ?sibling }
@@ -158,11 +148,10 @@
 
 
 {
-    ?node this:violates ?skolem .
+    ?node this:violates ?shape .
 }
 <=
 {
-    ?shape this:skolem ?skolem .
     ?shape sh:qualifiedMinCount ?minCount .
     ?shape sh:path ?path .
     (?node ?shape) this:qualifiedCount ?qualifiedCount .
@@ -172,13 +161,13 @@
 
 
 {   
-    ?node this:violates ?skolem .
+    ?node this:violates ?shape .
 }
 <=
 {
-    ?shape this:skolem ?skolem .
     ?shape sh:qualifiedMaxCount ?maxCount .
     ?shape sh:path ?path .
     (?node ?shape) this:qualifiedCount ?qualifiedCount .
     ?qualifiedCount math:greaterThan ?maxCount .
 } .
+

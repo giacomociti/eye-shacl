@@ -31,7 +31,6 @@
         sh:sourceConstraintComponent sh:EqualsConstraintComponent ;
         sh:sourceShape ?shape ;
         sh:focusNode ?focusNode ;
-        # sh:resultPath ?path ;
         sh:value ?value ;
         sh:resultMessage ?message ;
     ]
@@ -51,11 +50,10 @@
 
 
 {
-    ?node this:violates ?skolem .
+    ?node this:violates ?shape .
 }
 <=
 {
-    ?shape this:skolem ?skolem .
     ?shape sh:equals ?otherPredicate ; this:path ?path .
     (?node ?path) this:values ?thisValues .
     (?node ?otherPredicate) this:values ?otherValues .
@@ -88,17 +86,15 @@
         sh:sourceShape ?shape ;
         sh:focusNode ?focusNode ;
         sh:value ?value ;
-        # sh:resultPath ?path ;
         sh:resultMessage ?message ;
     ]
 } .
 
 {
-    ?node this:violates ?skolem .
+    ?node this:violates ?shape .
 }
 <=
 {
-    ?shape this:skolem ?skolem .
     ?shape sh:disjoint ?otherPredicate ; this:path ?path .
     (?node ?path) this:value ?value .
     (?node ?otherPredicate) this:value ?value .
@@ -136,11 +132,10 @@
 } .
 
 {
-    ?node this:violates ?skolem .
+    ?node this:violates ?shape .
 }
 <=
 {
-    ?shape this:skolem ?skolem .
     ?shape sh:lessThan ?otherPredicate ; sh:path ?path .
     (?node ?path) this:value ?value .
     (?node ?otherPredicate) this:value ?otherValue .
@@ -181,11 +176,10 @@
 
 
 {
-    ?node this:violates ?skolem .
+    ?node this:violates ?shape .
 }
 <=
 {
-    ?shape this:skolem ?skolem .
     ?shape sh:lessThanOrEquals ?otherPredicate ; sh:path ?path .
     (?node ?path) this:value ?value .
     (?node ?otherPredicate) this:value ?otherValue .

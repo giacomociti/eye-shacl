@@ -37,11 +37,10 @@
 } .
 
 {
-    ?node this:violates ?skolem .
+    ?node this:violates ?shape .
 }
 <=
 {
-    ?shape this:skolem ?skolem .
     ?shape sh:closed true .
     ?shape this:allowedProperties ?allowed .
     ?node ?property [] .
@@ -82,17 +81,15 @@
         sh:sourceConstraintComponent sh:HasValueConstraintComponent ;
         sh:sourceShape ?shape ;
         sh:focusNode ?focusNode ;
-        # sh:resultPath ?path ;
         sh:resultMessage ?message ;
     ] .
 } .
 
 {
-    ?node this:violates ?skolem .
+    ?node this:violates ?shape .
 }
 <=
 {
-    ?shape this:skolem ?skolem .
     ?shape sh:hasValue ?hasValue .
     ?shape this:path ?path .
     (?node ?path) this:values ?values .
@@ -126,17 +123,15 @@
         sh:sourceShape ?shape ;
         sh:focusNode ?focusNode ;
         sh:value ?value ;
-        # sh:resultPath ?path ;
         sh:resultMessage ?message ;
     ] .
 } .
 
 {
-    ?node this:violates ?skolem .
+    ?node this:violates ?shape .
 }
 <=
 {
-    ?shape this:skolem ?skolem .
     ?shape sh:in ?in ; this:path ?path .
     (?node ?path) this:value ?value .
     ?in list:notMember ?value .

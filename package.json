@@ -22,6 +22,6 @@
   },
   "homepage": "https://github.com/giacomociti/eye-shacl#readme",
   "dependencies": {
-    "eyeling": "^2.35.7"
+    "eyeling": "^2.35.17"
   }
 }

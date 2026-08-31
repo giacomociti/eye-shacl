@@ -12,11 +12,10 @@
 {
     ?shape sh:not ?not .
     ?shape this:path ?path .
-    ?not this:skolem ?skolem .
     
     ?shape this:focusNode ?focusNode .
     (?focusNode ?path) this:value ?value .
-    [] log:notIncludes { ?value this:violates ?skolem } .
+    [] log:notIncludes { ?value this:violates ?not } .
 
     ("value should not satisfy shape %s " ?not) string:format ?defaultMessage .
     (?shape ?defaultMessage) this:message ?message .
@@ -32,18 +31,15 @@
         sh:sourceShape ?shape ;
         sh:focusNode ?focusNode ;
         sh:value ?value ;
-        # sh:resultPath ?path ;
         sh:resultMessage ?message ;
     ] .
 } .
 
-{ ?value this:violates ?skolem } <= { 
-    ?shape this:skolem ?skolem .
+{ ?value this:violates ?shape } <= { 
     ?shape sh:not ?not .
     ?shape this:path ?path .
     (?value ?path) this:value ?x .
-    ?not this:skolem ?innerSkolem .
-    [] log:notIncludes { ?x this:violates ?innerSkolem } .
+    [] log:notIncludes { ?x this:violates ?not } .
 } .
 
 
@@ -52,13 +48,11 @@
 {
     ?shape sh:or ?or .
     ?shape this:path ?path .
-    #(?or this:skolem) list:map ?skolems .
-    (?x { ?or list:member [ this:skolem ?x ] } ?skolems) log:collectAllIn [] .
     
     ?shape this:focusNode ?focusNode .
     (?focusNode ?path) this:value ?value .
     (
-        { ?x list:in ?skolems}
+        { ?x list:in ?or}
         { ?value this:violates ?x }
     ) log:forAllIn [] .
 
@@ -76,21 +70,17 @@
         sh:sourceShape ?shape ;
         sh:focusNode ?focusNode ;
         sh:value ?value ;
-        # sh:resultPath ?path ;
         sh:resultMessage ?message ;
     ] .
 } .
 
-{ ?value this:violates ?skolem } <= { 
-    ?shape this:skolem ?skolem .
+{ ?value this:violates ?shape } <= { 
     ?shape sh:or ?or .
     ?shape this:path ?path .
     (?value ?path) this:value ?x .
-    # (?or this:skolem) list:map ?skolems .
-    (?x { ?or list:member [ this:skolem ?x ] } ?skolems) log:collectAllIn [] .
     
     (
-        { ?sk list:in ?skolems}
+        { ?sk list:in ?or}
         { ?x this:violates ?sk }
     ) log:forAllIn [] .
 } .
@@ -100,15 +90,12 @@
 {
     ?shape sh:and ?and .
     ?shape this:path ?path .
-    #(?and this:skolem) list:map ?skolems .
-    (?x { ?and list:member [ this:skolem ?x ] } ?skolems) log:collectAllIn [] .
-
     
     ?shape this:focusNode ?focusNode .
     (?focusNode ?path) this:value ?value .
 
-    ?sk list:in ?skolems . 
-    ?value this:violates ?sk .
+    ?x list:in ?and . 
+    ?value this:violates ?x .
 
     ("value should satisfy all shapes in: %s " ?and) string:format ?defaultMessage .
     (?shape ?defaultMessage) this:message ?message .
@@ -124,21 +111,16 @@
         sh:sourceShape ?shape ;
         sh:focusNode ?focusNode ;
         sh:value ?value ;
-        # sh:resultPath ?path ;
         sh:resultMessage ?message ;
     ] .
 } .
 
-{ ?value this:violates ?skolem } <= { 
-    ?shape this:skolem ?skolem .
+{ ?value this:violates ?shape } <= { 
     ?shape sh:and ?and .
     ?shape this:path ?path .
     (?value ?path) this:value ?x .
-    # (?and this:skolem) list:map ?skolems .
-    (?x { ?and list:member [ this:skolem ?x ] } ?skolems) log:collectAllIn [] .
-    
-    ?sk list:in ?skolems . 
-    ?x this:violates ?sk 
+    ?innerShape list:in ?and . 
+    ?x this:violates ?innerShape 
 } .
 
 
@@ -147,14 +129,11 @@
 {
     ?shape sh:xone ?xone .
     ?shape this:path ?path .
-    # (?xone this:skolem) list:map ?skolems .
-    (?x { ?xone list:member [ this:skolem ?x ] } ?skolems) log:collectAllIn [] .
-
     
     ?shape this:focusNode ?focusNode .
     (?focusNode ?path) this:value ?value .
-    (?x { ?x list:in ?skolems . ?value this:violates ?x } ?failed) log:collectAllIn [] .
-    (?x { ?x list:in ?skolems . ?failed list:notMember ?x } ?valid) log:collectAllIn [] .
+    (?x { ?x list:in ?xone . ?value this:violates ?x } ?failed) log:collectAllIn [] .
+    (?x { ?x list:in ?xone . ?failed list:notMember ?x } ?valid) log:collectAllIn [] .
     ?valid list:length [ log:notEqualTo 1 ].
 
     ("value should satisfy exactly one shape in: %s " ?xone) string:format ?defaultMessage .
@@ -171,19 +150,16 @@
         sh:sourceShape ?shape ;
         sh:focusNode ?focusNode ;
         sh:value ?value ;
-        # sh:resultPath ?path ;
         sh:resultMessage ?message ;
     ] .
 } .
 
-{ ?value this:violates ?skolem } <= { 
-    ?shape this:skolem ?skolem .
+{ ?value this:violates ?shape } <= { 
     ?shape sh:xone ?xone .
     ?shape this:path ?path .
     (?value ?path) this:value ?v .
-    # (?xone this:skolem) list:map ?skolems .
-    (?x { ?xone list:member [ this:skolem ?x ] } ?skolems) log:collectAllIn [] .
-    (?x { ?x list:in ?skolems . ?v this:violates ?x } ?failed) log:collectAllIn [] .
-    (?x { ?x list:in ?skolems . ?failed list:notMember ?x } ?valid) log:collectAllIn [] .
+    (?x { ?x list:in ?xone . ?v this:violates ?x } ?failed) log:collectAllIn [] .
+    (?x { ?x list:in ?xone . ?failed list:notMember ?x } ?valid) log:collectAllIn [] .
     ?valid list:length [ log:notEqualTo 1 ].
 } .
+
