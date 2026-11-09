@@ -8,7 +8,8 @@ RUN apk add --no-cache bash
 # Copy the entire project into the container
 COPY . /workspace
 
-RUN npm install
+# ignore package-lock to ensure use of latest version of eyeling
+RUN npm install --package-lock=false
 
 # Make the scripts executable
 RUN chmod +x build.sh test/test.sh test/testFile.sh
